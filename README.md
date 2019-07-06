@@ -8,6 +8,16 @@ Materijali i podjela po zadacima na : https://drive.google.com/drive/folders/1oX
 - Tarik Čolakhodžić
 - Mario Prusina
 - Amer Kovač
+###Tehnologije
+- Front application:
+  HTML5
+  CSS with SCSS preprocessor
+  Javascript, Vue.js
+
+- Backend service:
+  PHP (Symfony/Laravel) or Java (Spring)
+  MariaDB
+
 
 
 ### Opis modula
