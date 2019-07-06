@@ -18,7 +18,7 @@ Materijali i podjela zadataka na : https://drive.google.com/drive/folders/1oX5iD
   CSS with SCSS preprocessor
   Javascript, Vue.js
 - Backend service:
-  PHP (Symfony/Laravel) or Java (Spring)
+  Java (Spring)
   MariaDB
   
 ### Opis modula
