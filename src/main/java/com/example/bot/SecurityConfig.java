@@ -11,7 +11,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().anyRequest().authenticated().and().oauth2Login();
+        http.authorizeRequests().anyRequest().authenticated()
+                .and()
+                .oauth2Login()
+                .redirectionEndpoint()
+                .baseUri("/oauth2/callback/*")
+                .and()
+                .userInfoEndpoint()
+                .oidcUserService(oidcUserService);
     }
 
 }
