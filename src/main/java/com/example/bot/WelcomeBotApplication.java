@@ -6,14 +6,14 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@EnableJpaRepositories("repository") 
-@EntityScan("model")
+@EnableJpaRepositories("com.repository")
+@EntityScan("com.model")
+@ComponentScan(basePackages="com.controller")
+
 @SpringBootApplication
-@ComponentScan(basePackages="controller")
 public class WelcomeBotApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(WelcomeBotApplication.class, args);
 	}
-
 }
