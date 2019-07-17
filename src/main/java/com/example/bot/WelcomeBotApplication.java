@@ -7,8 +7,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @EnableJpaRepositories("com.repository")
-@EntityScan("com.model")
-@ComponentScan(basePackages="com.controller")
+@EntityScan("com.domain")
+//@ComponentScan(basePackages="com.controller")
+@ComponentScan("com")
 
 @SpringBootApplication
 public class WelcomeBotApplication {
