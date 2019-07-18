@@ -1,31 +1,6 @@
-# incubator-2019-slack-bot-services
-Slack bot services repository
+## Spring Security Using Mysql Authorization in a Spring Boot App
 
-# WELCOME-BOT
-Materijali i podjela zadataka na : https://drive.google.com/drive/folders/1oX5iD3qJL6NcMcSVcKLciVfY976Ohw8E?usp=sharing
-
-## Tema - Modul za welcome bota
-
-### Članovi tima
-- Amina Fajić
-- Tarik Čolakhodžić
-- Mario Prusina
-- Amer Kovač
-
-### Tehnologije
-- Front application:
-  HTML5
-  CSS with SCSS preprocessor
-  Javascript, Vue.js
-- Backend service:
-  Java (Spring)
-  MariaDB
-  
-### Opis modula
-Welcome Bot je sistem koji pruža korisniku opciju da instalira bot u Slack sistem.
-Bot je odgovoran za objavljivanje poruka na kanalu ili privatnih poruka.Bot je kontrolisan unutar Bot Admin aplikacije.
-### Uloge u sistemu
-- Administrator
--Korisnik
-
-
+This example covers the following:
+- Authentication using MySql DB Connectivity using custom user details service.
+- Authorization using GrantedAuthority roles for method level security
+- Leveraging Spring Security's login page for injecting login details

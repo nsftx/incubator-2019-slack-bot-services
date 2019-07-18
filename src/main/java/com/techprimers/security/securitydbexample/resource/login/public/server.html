@@ -1,0 +1,37 @@
+<html>
+  <head>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="470792821854-f8mflht9e484on0h7kb2s4tgssucp7ml.apps.googleusercontent.com">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/4.12.0/bootstrap-social.min.css">
+  </head>
+
+  <body>
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+    </a>
+
+    <script>
+      // $('#google-button').on('click', function() {
+        // Initialize with your OAuth.io app public key
+       // OAuth.initialize('bBUsPw9py2pIdh3qpozP-lIe-Yo');
+        // Use popup for OAuth
+       // OAuth.popup('google').then(google => {
+         // console.log('google:',google);
+          // Retrieves user data from oauth provider
+          // Prompts 'welcome' message with User's email on successful login
+          // #me() is a convenient method to retrieve user data without requiring you
+          // to know which OAuth provider url to call
+          //google.me().then(data => {
+            console.log('me data:', data);
+            alert('Google says your email is:' + data.email + ".\nView browser 'Console Log' for more details");
+          //});
+          // Retrieves user data from OAuth provider by using #get() and
+          // OAuth provider url
+         // google.get('/plus/v1/people/me').then(data => {
+           // console.log('self data:', data);
+          //})
+       // });
+      // })
+    </script>
+  </body>
+</html>
