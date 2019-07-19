@@ -1,50 +1,75 @@
 package com.adapters;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.domain.Message;
-import com.ports.MessageControllerPort;
-import com.service.MessageService;
+import com.repository.MessageRepository;
 
 
 
 @RestController
-public class MessageControllerAdapter implements MessageControllerPort{
+public class MessageControllerAdapter{
 
 	@Autowired
-	MessageService messageService;
+	MessageRepository messageRepository;
 
-	@Override
-	public Iterable<Message> getAllMessage() {
-		return messageService.getAllMessages();
+	@GetMapping("/api/message")
+	public Iterable<Message> getAllMessage(){
+		Iterable<Message> messages = messageRepository.findAll();
+		return messages;
 	}
 	
-	@Override
-	public Message getMessage(Integer id) {
-		return messageService.getMessage(id);
+	@GetMapping("/api/message/{id}")
+	public Message getMessage(@PathVariable Integer id) {
+		Message message = messageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message data not found"));
+		return message;
 	}
 
-	@Override
-	public Message createMessage(Message message) {
-		return messageService.createMessage(message);
-	}
-
-	@Override
-	public Iterable<Message> getMessagesByTitle(String title) {
-		return messageService.getMessagesByTitle(title);
-	}
-
-	@Override
-	public Message updateMessage(Integer id, Message message) {
-		return messageService.updateMessage(id, message);
-	}
-
-	@Override
-	public Message deleteMessage(Integer id) {
-		return messageService.deleteMessage(id);
+	@PostMapping("/api/message")
+	@ResponseStatus(HttpStatus.CREATED)
+	public @ResponseBody Message createMessage(@RequestBody Message message) {
+		message.setCreated_at();
+		messageRepository.save(message);
+		return message;
 	}
 	
+	@GetMapping("/api/messagesByTitle")
+	public @ResponseBody Iterable<Message> getMessagesByTitle(@RequestParam String title) {
+		Iterable<Message> lista = messageRepository.getMessagesByTitle(title);
+		return lista;
+	}
+
+	@PutMapping("/api/message/{id}")
+	public Message updateMessage(@PathVariable Integer id, @RequestBody Message message) {
+		Message m1 = messageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message data not found"));
+		m1.setTitle(message.getTitle());
+		m1.setText(message.getText());
+		messageRepository.save(m1);
+		return m1;
+	}
+
+	@DeleteMapping("/api/message/{id}")
+	public Message deleteMessage(@PathVariable Integer id){
+		Message message = messageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message data not found"));
+		messageRepository.delete(message);
+		return message;
+	}
+	
+	
+	
+
 	//OVO JE SAMO NEKI TEST
 //	@GetMapping("/api/testmessage")
 //	public @ResponseBody Iterable<Message> getMessagesTest(){
