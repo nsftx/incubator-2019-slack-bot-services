@@ -8,8 +8,8 @@ import javax.persistence.Id;
 @Entity
 public class User {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer userId;
 	
 	private String name;
 	private String surname;
@@ -26,10 +26,10 @@ public class User {
 	}
 	
 	public Integer getId() {
-		return id;
+		return userId;
 	}
-	public void setId(Integer id) {
-		this.id = id;
+	public void setId(Integer userId) {
+		this.userId = userId;
 	}
 	public String getName() {
 		return name;
@@ -55,5 +55,4 @@ public class User {
 	public void setRola(String rola) {
 		this.rola = rola;
 	}
-	
 }

@@ -15,6 +15,7 @@ import com.repository.UserRepository;
 import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 //import org.springframework.stereotype.Controller;
@@ -30,18 +31,21 @@ public class UserControllerAdapter{
 	@PostMapping("/api/user")
 	public User AddUser(@RequestBody User user) {
 		
-	
 		userRepository.save(user);
 		return user;
 	}
 	
+	//U sustini ovo je bez Pageable al bolje je sa pageablom
 	//@PathParam(value = "page") Integer page, @PathParam(value = "size") Integer size
+	//PageRequest.of(page, size)
+	
+	
 	@GetMapping("/api/user")
 	public Iterable<User> GetUsers(Pageable pageable) {
-		Iterable<User> postobj = userRepository.findAll(pageable);
+		Page<User> usersPage = userRepository.findAll(pageable);
 		
-		Iterable<User> users = userRepository.findAll();
-		return postobj;
+		//Iterable<User> users = userRepository.findAll();
+		return usersPage;
 	}
 	
 	@GetMapping("/api/user/{id}")

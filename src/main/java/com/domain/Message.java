@@ -6,56 +6,56 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 
 
 @Entity
+//@JsonPropertyOrder({"messageId", "title", "text", "createdAt"})
 public class Message {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
-
-	private String Title;
-	private String Text;
-
-//	@Basic
-//	@Temporal(TemporalType.DATE)
-	private Date created_at;
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer messageId;
 
+	private String title;
+	private String text;
+	private Date createdAt;
+	
 	public Message() {
 		
 	}
 	
 	public Message(String title, String text) {
-		Title = title;
-		Text = text;
-		created_at = new Date();
+		this.title = title;
+		this.text = text;
+		createdAt = new Date();
 	}
 	
-	public Integer getId() {
-		return id;
+	public int getId() {
+		return messageId;
 	}
-	public void setId(Integer id) {
-		this.id = id;
+	public void setId(int messageId) {
+		this.messageId = messageId;
 	}
 	public String getTitle() {
-		return Title;
+		return title;
 	}
 	public void setTitle(String title) {
-		Title = title;
+		this.title = title;
 	}
 	public String getText() {
-		return Text;
+		return text;
 	}
 	public void setText(String text) {
-		Text = text;
+		this.text = text;
 	}
 	public Date getCreated_at() {
-		return created_at;
+		return createdAt;
 	}
 	public void setCreated_at() {
 		//this.created_at = new LocalDateTime().toDate();
-		this.created_at = new Date();
+		this.createdAt = new Date();
 	}	
 }
