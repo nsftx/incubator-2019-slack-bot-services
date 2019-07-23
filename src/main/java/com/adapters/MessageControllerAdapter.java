@@ -1,6 +1,7 @@
 package com.adapters;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +21,9 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.domain.Message;
-import com.models.MessageModel;
+import com.domain.Trigger;
 import com.repository.MessageRepository;
+import com.repository.TriggerRepository;
 
 
 
@@ -30,11 +32,15 @@ public class MessageControllerAdapter{
 
 	@Autowired
 	MessageRepository messageRepository;
+	
+	@Autowired
+	TriggerRepository triggerRepository;
 
 	//get all messages
 	@GetMapping("/api/message")
 	public ResponseEntity<Page<Message>> getAllMessage(Pageable pageParam){
-		Page<Message> messagePage = messageRepository.findAll(pageParam);	
+		Page<Message> messagePage = messageRepository.findAll(pageParam);
+		
 		HttpStatus status = HttpStatus.OK;
 		if (messagePage.isEmpty()) {
 			 status = HttpStatus.NO_CONTENT;
@@ -54,11 +60,15 @@ public class MessageControllerAdapter{
 	//@ResponseStatus(HttpStatus.CREATED)
 	public @ResponseBody ResponseEntity<Message> createMessage(@RequestBody Message message, UriComponentsBuilder ucb) {
 		
+		//save message
 		message.setCreated_at();
 		messageRepository.save(message);
+		
+		//make location header
 		Integer messageId = message.getId();
 		UriComponents uriComponents = ucb.path("/api/message/{id}").buildAndExpand(messageId);
 							
+		//return https status with header "location" and response body
 		return ResponseEntity
 				.created(uriComponents.toUri())
 				.body(message);
@@ -86,29 +96,37 @@ public class MessageControllerAdapter{
 	@DeleteMapping("/api/message/{id}")
 	public Message deleteMessage(@PathVariable Integer id){
 		Message message = messageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message data not found"));
+		
+		//delete all triggers connected with messages
+		List<Trigger> listaTrigera = triggerRepository.findAllByMessage(message);
+		triggerRepository.deleteAll(listaTrigera);
+		
+		System.out.println(listaTrigera);
+		
+		
 		messageRepository.delete(message);
 		return message;
 	}
 	
 	
 	//CUSTOM METHOD for getting pageableeeee stuffffffffffffffff
-	@GetMapping("message")
-	public ResponseEntity<MessageModel> customGetMessage(Pageable pageable) {
-
-		List<Message> lista = messageRepository.findAll();
-		
-		HttpStatus status = HttpStatus.OK;
-		if (lista.isEmpty()) {
-			 status = HttpStatus.NO_CONTENT;
-		}
-		
-		MessageModel messageModel = new MessageModel();
-		messageModel.setMessages(lista);
-		messageModel.setPage(pageable.getPageNumber());
-		messageModel.setSize(pageable.getPageSize());
-		
-		return ResponseEntity.status(status).body(messageModel);
-	}
+//	@GetMapping("message")
+//	public ResponseEntity<MessageModel> customGetMessage(Pageable pageable) {
+//
+//		List<Message> lista = messageRepository.findAll();
+//		
+//		HttpStatus status = HttpStatus.OK;
+//		if (lista.isEmpty()) {
+//			 status = HttpStatus.NO_CONTENT;
+//		}
+//		
+//		MessageModel messageModel = new MessageModel();
+//		messageModel.setMessages(lista);
+//		messageModel.setPage(pageable.getPageNumber());
+//		messageModel.setSize(pageable.getPageSize());
+//		
+//		return ResponseEntity.status(status).body(messageModel);
+//	}
 	
 //---------------------------------------------------------------------------------------------------------	
 //	

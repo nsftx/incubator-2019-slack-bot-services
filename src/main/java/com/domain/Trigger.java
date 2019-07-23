@@ -30,10 +30,13 @@ public class Trigger {
     //@OnDelete(action = OnDeleteAction.CASCADE)
     //@JsonIgnore
 	
-	//@ManyToOne
+
 	//OBRATI PAZNJU NA OPTIONAL TRUE FALSE
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "message_id", nullable = false)
+//	@ManyToOne(fetch = FetchType.EAGER, optional = true)
+//	@JoinColumn(name = "message_id", nullable = false)
+	
+	@ManyToOne
+	@JoinColumn(name = "message_id")
 	private Message message;
     
 	public Trigger() {
