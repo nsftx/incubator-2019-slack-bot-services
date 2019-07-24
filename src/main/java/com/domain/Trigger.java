@@ -1,19 +1,18 @@
 package com.domain;
 
+
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity(name = "trigger_tbl")
+@JsonPropertyOrder({"triggerId", "channel", "triggerType", "active"})
 //@javax.persistence.Table(name = "\"trigger\"")
 public class Trigger {
 	
@@ -25,11 +24,9 @@ public class Trigger {
 	private String channel;
 	private String triggerType;
 	private boolean active;
-	
 
     //@OnDelete(action = OnDeleteAction.CASCADE)
     //@JsonIgnore
-	
 
 	//OBRATI PAZNJU NA OPTIONAL TRUE FALSE
 //	@ManyToOne(fetch = FetchType.EAGER, optional = true)
@@ -39,7 +36,15 @@ public class Trigger {
 	@JoinColumn(name = "message_id")
 	private Message message;
     
-	public Trigger() {
+	
+	public Trigger(String channel, String triggerType, boolean active, Message message) {
+		this.channel = channel;
+		this.triggerType = triggerType;
+		this.active = active;
+		this.message = message;
+	}
+
+	protected Trigger() {
 		
 	}
 
@@ -88,6 +93,5 @@ public class Trigger {
 		return "Trigger [triggerId=" + triggerId + ", channel=" + channel + ", triggerType=" + triggerType + ", active="
 				+ active + ", message=" + message + "]";
 	}
-	
 	
 }

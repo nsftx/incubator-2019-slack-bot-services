@@ -8,13 +8,9 @@ import javax.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-
-
-@Entity
-//@JsonPropertyOrder({"messageId", "title", "text", "createdAt"})
+@Entity(name = "message")
+@JsonPropertyOrder({"id", "title", "text", "createdAt"})
 public class Message {
-
-	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer messageId;
@@ -57,5 +53,12 @@ public class Message {
 	public void setCreated_at() {
 		//this.created_at = new LocalDateTime().toDate();
 		this.createdAt = new Date();
+	}
+
+	@Override
+	public String toString() {
+		return "Message [messageId=" + messageId + ", title=" + title + ", text=" + text + ", createdAt=" + createdAt
+				+ "]";
 	}	
+	
 }

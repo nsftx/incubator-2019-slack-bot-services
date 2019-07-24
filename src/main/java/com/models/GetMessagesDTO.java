@@ -4,12 +4,12 @@ import java.util.List;
 
 import com.domain.Message;
 
-public class MessageModel {
+public class GetMessagesDTO {
 	private List<Message> messages;
 	private Integer size;
 	private Integer page;
 	
-	public MessageModel() {
+	public GetMessagesDTO() {
 
 	}
 	

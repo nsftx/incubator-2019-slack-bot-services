@@ -1,16 +1,13 @@
 package com.models;
 
-public class TriggerCreateModel {
+public class TriggerDTO {
 
-	
-	private Integer messageId;
-	private String messageTitle;
 	private String channel;
 	private String triggerType;
 	private boolean active;
+	private Integer messageId;
 	
-	
-	public TriggerCreateModel() {
+	public TriggerDTO() {
 		
 	}
 	public Integer getMessageId() {
@@ -18,12 +15,6 @@ public class TriggerCreateModel {
 	}
 	public void setMessageId(Integer messageId) {
 		this.messageId = messageId;
-	}
-	public String getMessageTitle() {
-		return messageTitle;
-	}
-	public void setMessageTitle(String messageTitle) {
-		this.messageTitle = messageTitle;
 	}
 	public String getChannel() {
 		return channel;
@@ -43,5 +34,12 @@ public class TriggerCreateModel {
 	public void setActive(boolean active) {
 		this.active = active;
 	}
-	
 }
+//
+//
+//
+//
+//private String channel;
+//private String triggerType;
+//private boolean active;
+//private Integer messageId;

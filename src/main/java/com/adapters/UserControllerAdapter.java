@@ -28,6 +28,7 @@ public class UserControllerAdapter{
 	@Autowired
 	UserRepository userRepository;
 	
+	
 	@PostMapping("/api/user")
 	public User AddUser(@RequestBody User user) {
 		
@@ -35,16 +36,9 @@ public class UserControllerAdapter{
 		return user;
 	}
 	
-	//U sustini ovo je bez Pageable al bolje je sa pageablom
-	//@PathParam(value = "page") Integer page, @PathParam(value = "size") Integer size
-	//PageRequest.of(page, size)
-	
-	
 	@GetMapping("/api/user")
 	public Iterable<User> GetUsers(Pageable pageable) {
 		Page<User> usersPage = userRepository.findAll(pageable);
-		
-		//Iterable<User> users = userRepository.findAll();
 		return usersPage;
 	}
 	

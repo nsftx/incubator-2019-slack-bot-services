@@ -1,5 +1,10 @@
 package com.domain;
 
-public class Schedule {
 
+//@Entity
+public class Schedule {
+	//@Id
+	//private Integer id;
+	//private 
+	
 }

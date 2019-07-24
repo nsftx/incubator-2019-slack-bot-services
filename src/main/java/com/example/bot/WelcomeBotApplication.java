@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @EnableJpaRepositories("com.repository")
 @EntityScan("com.domain")
-@ComponentScan(basePackages="com.adapters")
-//@ComponentScan("com")
+//@ComponentScan(basePackages="com.adapters")
+@ComponentScan("com")
 
 @SpringBootApplication
 public class WelcomeBotApplication {
