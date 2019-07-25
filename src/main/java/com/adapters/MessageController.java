@@ -21,7 +21,7 @@ import com.services.MessageService;
 
 
 @RestController
-public class MessageControllerAdapter{
+public class MessageController{
 
 	
 	@Autowired

@@ -24,7 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
 @RestController
-public class UserControllerAdapter{
+public class UserController{
 	@Autowired
 	UserRepository userRepository;
 	

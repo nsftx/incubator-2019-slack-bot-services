@@ -20,7 +20,7 @@ import com.models.TriggerDTO;
 import com.services.TriggerService;
 
 @RestController
-public class TriggerControllerAdapter {
+public class TriggerController {
 	
 	@Autowired
 	TriggerService triggerService;

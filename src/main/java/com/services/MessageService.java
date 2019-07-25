@@ -17,8 +17,10 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.domain.Message;
+import com.domain.Schedule;
 import com.domain.Trigger;
 import com.repository.MessageRepository;
+import com.repository.ScheduleRepository;
 import com.repository.TriggerRepository;
 
 @Service
@@ -29,6 +31,9 @@ public class MessageService {
 	
 	@Autowired
 	TriggerRepository triggerRepository;
+	
+	@Autowired
+	ScheduleRepository scheduleRepository;
 
 	public ResponseEntity<Page<Message>> getAllMessages(Pageable pageParam){
 		Page<Message> messagePage = messageRepository.findAll(pageParam);
@@ -78,16 +83,19 @@ public class MessageService {
 		//find message
 		Message message = messageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message data not found"));
 		
-		//delete all triggers connected with messages
-		List<Trigger> listaTrigera = triggerRepository.findAllByMessage(message);
-		if(!listaTrigera.isEmpty()) {
-			triggerRepository.deleteAll(listaTrigera);
+		//delete all triggers connected with message
+		List<Trigger> triggersList = triggerRepository.findAllByMessage(message);
+		if(!triggersList.isEmpty()) {
+			triggerRepository.deleteAll(triggersList);
+		}
+		//delete all schedules connected with message
+		List<Schedule> schedueList = scheduleRepository.findAllByMessage(message);
+		if(!schedueList.isEmpty()) {
+			scheduleRepository.deleteAll(schedueList);
 		}
 
 		//delete message
 		messageRepository.delete(message);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 	}
-	
-
 }
