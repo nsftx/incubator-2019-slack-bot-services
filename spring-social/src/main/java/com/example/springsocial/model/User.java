@@ -28,7 +28,8 @@ public class User {
 
     @JsonIgnore
     private String password;
-
+    @Column
+        private String role;
     @NotNull
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
@@ -97,5 +98,12 @@ public class User {
 
     public void setProviderId(String providerId) {
         this.providerId = providerId;
+    }
+        public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
