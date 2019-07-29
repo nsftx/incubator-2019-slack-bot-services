@@ -17,7 +17,7 @@ import slack.api.utils.MessageSender;
 import slack.api.utils.PayloadGenerator;
 
 @Service
-public class SlackClientService implements SlackClientApi {
+public class SlackClientService implements SlackClientApi, ApplicationListener<SlackEventTriggeredEvent> {
 
 	private ConnectionGenerator connectionGen = new ConnectionGenerator();
 	private PayloadGenerator payloadGen = new PayloadGenerator();
@@ -180,6 +180,11 @@ public class SlackClientService implements SlackClientApi {
 		return allChannels;
 	}
 
-	
+	// Delete on final review --- this method and 2nd implementation --- amer will implement this functionality
+	@Override
+	public void onApplicationEvent(SlackEventTriggeredEvent event) {
+		HashMap<String, String> eventData = event.getEventData();
+		sendMessage(eventData.get("channel"), eventData.get("type"));
+	}
 }
 /*This spot is used to park cursor -->> /  \ <<--*/
