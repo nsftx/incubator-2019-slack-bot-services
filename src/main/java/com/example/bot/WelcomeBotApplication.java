@@ -6,10 +6,8 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@EnableJpaRepositories("repository") 
-@EntityScan("model")
 @SpringBootApplication
-@ComponentScan(basePackages="controller")
+@ComponentScan(basePackages="slack.api")
 public class WelcomeBotApplication {
 
 	public static void main(String[] args) {
