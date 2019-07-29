@@ -2,7 +2,8 @@
 Slack bot services repository
 
 # WELCOME-BOT
-Materijali i podjela zadataka na : https://drive.google.com/drive/folders/1oX5iD3qJL6NcMcSVcKLciVfY976Ohw8E?usp=sharing
+Welcome Bot je sistem koji pruža korisniku opciju da instalira bot u Slack sistem.
+Bot je odgovoran za objavljivanje poruka na kanalu ili privatnih poruka.Bot je kontrolisan unutar Bot Admin aplikacije.
 
 ## Tema - Modul za welcome bota
 
@@ -21,9 +22,9 @@ Materijali i podjela zadataka na : https://drive.google.com/drive/folders/1oX5iD
   Java (Spring)
   MariaDB
   
-### Opis modula
-Welcome Bot je sistem koji pruža korisniku opciju da instalira bot u Slack sistem.
-Bot je odgovoran za objavljivanje poruka na kanalu ili privatnih poruka.Bot je kontrolisan unutar Bot Admin aplikacije.
+### Linkovi
+Materijali i podjela zadataka na : https://drive.google.com/drive/folders/1oX5iD3qJL6NcMcSVcKLciVfY976Ohw8E?usp=sharing
+
 ### Uloge u sistemu
 - Administrator
 -Korisnik
