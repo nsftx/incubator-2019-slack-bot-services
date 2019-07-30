@@ -1,6 +1,4 @@
-package slack.api.model.messagepayloadmodel;
-
-import java.util.List;
+package com.welcome.bot.slack.api.model.messagepayloadmodel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,22 +7,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
 "type",
-"text",
-"elements"
+"text"
 })
-public class PayloadBlock {
+public class PayloadBlockText {
 
 	// Properties
 	@JsonProperty("type")
 	private String type;
 	@JsonProperty("text")
-	private PayloadBlockText text;
-	@JsonProperty("elements")
-	private List<PayloadElement> element = null;
+	private String text;
 	
 	// Constructor
-	public PayloadBlock() {}
-
+	public PayloadBlockText() {}
+	
 	// Getters/Setters
 	public String getType() {
 		return type;
@@ -32,18 +27,10 @@ public class PayloadBlock {
 	public void setType(String type) {
 		this.type = type;
 	}
-
-	public PayloadBlockText getText() {
+	public String getText() {
 		return text;
 	}
-	public void setText(PayloadBlockText text) {
+	public void setText(String text) {
 		this.text = text;
-	}
-
-	public List<PayloadElement> getElement() {
-		return element;
-	}
-	public void setElement(List<PayloadElement> element) {
-		this.element = element;
 	}
 }

@@ -1,4 +1,4 @@
-package slack.api;
+package com.welcome.bot.slack.api;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import slack.api.model.messagepayloadmodel.MessagePayload;
-import slack.api.utils.ConnectionGenerator;
-import slack.api.utils.MessageSender;
-import slack.api.utils.PayloadGenerator;
+import com.welcome.bot.slack.api.model.messagepayloadmodel.MessagePayload;
+import com.welcome.bot.slack.api.utils.ConnectionGenerator;
+import com.welcome.bot.slack.api.utils.MessageSender;
+import com.welcome.bot.slack.api.utils.PayloadGenerator;
 
 @Service
 public class SlackClientService implements SlackClientApi, ApplicationListener<SlackEventTriggeredEvent> {
@@ -77,11 +77,14 @@ public class SlackClientService implements SlackClientApi, ApplicationListener<S
 	}
 
 	@Override
-	public String createSchedule(String channel, String text, Date postAt) {
+	public String createSchedule(String channel, String text, Date postAt, boolean doRepeat) {
 		String messageID = "";
 		
-		MessagePayload payload = payloadGen.getStyledSchedulePayload(channel, text, postAt);
+		MessagePayload payload = new MessagePayload();
 		String payloadJSON = "";
+		if(doRepeat) {
+			payload = payloadGen.getStyledSchedulePayload(channel, text, postAt);
+		}
 		
 		try {
 			payloadJSON = jsonMapper.writeValueAsString(payload);

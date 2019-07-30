@@ -1,4 +1,4 @@
-package slack.api.utils;
+package com.welcome.bot.slack.api.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;

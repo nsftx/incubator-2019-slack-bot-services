@@ -8,11 +8,11 @@
 		<version>2.1.6.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example</groupId>
+	<groupId>com.welcome</groupId>
 	<artifactId>welcome_bot</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>welcome_bot</name>
-	<description>Test project for welcome bot</description>
+	<description>Spring Project for Welcome-Bot</description>
 
 	<properties>
 		<java.version>1.8</java.version>
