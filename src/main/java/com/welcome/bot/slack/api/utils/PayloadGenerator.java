@@ -1,17 +1,19 @@
-package slack.api.utils;
+package com.welcome.bot.slack.api.utils;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import slack.api.model.messagepayloadmodel.MessagePayload;
-import slack.api.model.messagepayloadmodel.PayloadAttachment;
-import slack.api.model.messagepayloadmodel.PayloadBlock;
-import slack.api.model.messagepayloadmodel.PayloadBlockText;
-import slack.api.model.messagepayloadmodel.PayloadElement;
-import slack.api.model.messagepayloadmodel.PayloadElementText;
+import com.welcome.bot.slack.api.model.messagepayloadmodel.MessagePayload;
+import com.welcome.bot.slack.api.model.messagepayloadmodel.PayloadAttachment;
+import com.welcome.bot.slack.api.model.messagepayloadmodel.PayloadBlock;
+import com.welcome.bot.slack.api.model.messagepayloadmodel.PayloadBlockText;
+import com.welcome.bot.slack.api.model.messagepayloadmodel.PayloadElement;
+import com.welcome.bot.slack.api.model.messagepayloadmodel.PayloadElementText;
 
 public class PayloadGenerator {
+	
+	DateOperator dateUtil = new DateOperator();
 
 	// Constructor
 	public PayloadGenerator() {}
@@ -38,8 +40,8 @@ public class PayloadGenerator {
 		return generateStyledScheduleDeletePayload(channel,messageID);
 	}
 	
-	public MessagePayload getStyledReminderPayload(String text, String user, Date date) {
-		return generateStyledReminderPayload(text, user, date);
+	public MessagePayload getStyledReminderPayload(String text, String user, Date remindAt) {
+		return generateStyledReminderPayload(text, user, remindAt);
 	}
 	
 	public MessagePayload getStyledReminderDeletePayload(String reminderID) {
@@ -127,9 +129,7 @@ public class PayloadGenerator {
 	}
 	
 	private MessagePayload generateStyledSchedulePayload(MessagePayload payload, Date postAt) {
-		postAt = new Date(); // delete at end
-		
-		payload.setPostAt(convertToEpoch(postAt));
+		payload.setPostAt(dateUtil.convertToEpoch(postAt));
 		return payload;
 	}
 	
@@ -142,15 +142,12 @@ public class PayloadGenerator {
 		return payload;
 	}
 	
-	private MessagePayload generateStyledReminderPayload(String text, String user, Date date) {
+	private MessagePayload generateStyledReminderPayload(String text, String user, Date remindAt) {
 		MessagePayload payload = new MessagePayload();
 		
-		//payload.setText(text);
-		//payload.setTime(convertToEpoch(date));
-		
-		payload.setText("Reminder of SUCCESSFUL TEST");
-		payload.setTime("1563966000");
-		
+		payload.setText(text);
+		payload.setTime(dateUtil.convertToReminder(remindAt));
+				
 		if(user != null) {
 			payload.setUser(user);
 		}
@@ -164,10 +161,5 @@ public class PayloadGenerator {
 		payload.setReminder(reminderID);
 		
 		return payload;
-	}
-	
-	private String convertToEpoch(Date date) {
-		String epochTime = String.valueOf(date.getTime()/1000);
-		return epochTime;
 	}
 }

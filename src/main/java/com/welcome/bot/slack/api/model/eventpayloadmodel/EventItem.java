@@ -1,4 +1,4 @@
-package slack.api.model.eventpayloadmodel;
+package com.welcome.bot.slack.api.model.eventpayloadmodel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

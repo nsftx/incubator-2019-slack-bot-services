@@ -1,11 +1,11 @@
-package slack.api;
+package com.welcome.bot.slack.api;
 
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import slack.api.model.messagepayloadmodel.MessagePayload;
+import com.welcome.bot.slack.api.model.messagepayloadmodel.MessagePayload;
 
 @Service
 public class SlackCommandService {

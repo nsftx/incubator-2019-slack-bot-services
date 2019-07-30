@@ -1,4 +1,4 @@
-package slack.api;
+package com.welcome.bot.slack.api;
 
 import java.util.HashMap;
 
@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-import slack.api.model.eventpayloadmodel.EventPayload;
+import com.welcome.bot.slack.api.model.eventpayloadmodel.EventPayload;
 
 @Component
 public class SlackEventService {
@@ -21,7 +21,7 @@ public class SlackEventService {
 			String user = event.getEventItem().getUser();
 			String channel = event.getEventItem().getChannel();
 			
-			handleEvent(channel, eventType, user);
+			passEvent(channel, eventType, user);
 		}
 		else if(event.getType().equals("url_verification")) {
 			return event.getChallenge();
@@ -29,7 +29,7 @@ public class SlackEventService {
 		return null;
 	}
 	
-	private void handleEvent(String channel, String eventType, String user) {
+	private void passEvent(String channel, String eventType, String user) {
 		HashMap<String, String> eventData = new HashMap<String,String>();
 		eventData.put("channel", channel);
 		eventData.put("type", eventType);

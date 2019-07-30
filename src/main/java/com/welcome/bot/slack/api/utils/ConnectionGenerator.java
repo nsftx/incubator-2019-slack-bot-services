@@ -1,4 +1,4 @@
-package slack.api.utils;
+package com.welcome.bot.slack.api.utils;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -6,8 +6,8 @@ import java.net.URL;
 
 public class ConnectionGenerator {
 	
-	static final String TOKEN_BOT = "xoxb-692746321984-692302263812-pbCjphAhfxxASnvKYj6HwMOa";
-	static final String TOKEN_USER = "xoxp-692746321984-692279219956-706352001428-28053851304311795bd4ccebeece5302";
+	static final String TOKEN_BOT = "xoxb-692746321984-692302263812-4eYldz41UHFTjcjByfLZMSxU";
+	static final String TOKEN_USER = "xoxp-692746321984-692279219956-698563167106-e7117c8405bc1529d313967576e6239c";
 
 	public ConnectionGenerator() {}
 	

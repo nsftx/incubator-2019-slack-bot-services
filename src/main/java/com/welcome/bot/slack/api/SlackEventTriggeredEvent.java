@@ -1,4 +1,4 @@
-package slack.api;
+package com.welcome.bot.slack.api;
 
 import java.util.HashMap;
 

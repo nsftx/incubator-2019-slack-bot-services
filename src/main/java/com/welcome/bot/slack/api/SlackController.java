@@ -1,4 +1,4 @@
-package slack.api;
+package com.welcome.bot.slack.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import slack.api.model.eventpayloadmodel.EventPayload;
+import com.welcome.bot.slack.api.model.eventpayloadmodel.EventPayload;
 
 @Controller
 public class SlackController {

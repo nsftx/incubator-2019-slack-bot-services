@@ -1,4 +1,4 @@
-package slack.api;
+package com.welcome.bot.slack.api;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -12,7 +12,7 @@ public interface SlackClientApi {
 	boolean sendPrivateMessage(String channel, String text, String user);
 	
 	// Send schedule to slack
-	String createSchedule(String channel, String text, Date postAt);
+	String createSchedule(String channel, String text, Date postAt, boolean doRepeat);
 	
 	// Delete schedule from slack
 	void deleteSchedule(String channel, String messageID);
