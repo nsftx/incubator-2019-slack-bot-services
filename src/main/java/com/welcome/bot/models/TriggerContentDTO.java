@@ -1,11 +1,14 @@
 package com.welcome.bot.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class TriggerContentDTO {
 
 	private Integer triggerId;
 	private String channel;
 	private String triggerType;
 	private boolean active;
+	@JsonProperty("message")
 	private MessageDTO messageDto;
 	
 	

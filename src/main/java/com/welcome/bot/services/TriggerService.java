@@ -40,12 +40,8 @@ public class TriggerService {
 	public TriggerContentDTO getTrigger(@PathVariable Integer triggerId) {
 		Trigger trigger = triggerRepository.findById(triggerId)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trigger not found"));		
-//		return trigger;	
-		Message message = messageRepository.findById(trigger.getMessage().getMessageId())
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message not found"));		
 		
-		TriggerContentDTO triggerContentDTO = modelMapper.map(trigger, TriggerContentDTO.class);
-		triggerContentDTO.setMessageDto(modelMapper.map(message, MessageDTO.class));
+		TriggerContentDTO triggerContentDTO = convertToContentDto(trigger);
 		
 		return triggerContentDTO;
 	}
@@ -59,19 +55,19 @@ public class TriggerService {
 		List<Trigger> triggerList = triggerPage.getContent();
 		
 		//mapping to DTO 
-		List<TriggerContentDTO> triggerContentDTOs = new ArrayList<>();
+		List<TriggerContentDTO> triggerContentDTOlist = new ArrayList<>();
 		for(Integer i = 0; i < triggerPage.getTotalElements(); i++) {
 			Trigger trigger = triggerList.get(i);
-			TriggerContentDTO trig = modelMapper.map(trigger, TriggerContentDTO.class);
-			trig.setMessageDto(modelMapper.map(trigger.getMessage(), MessageDTO.class));
-			triggerContentDTOs.add(trig);
+			TriggerContentDTO triggerContentDTO = convertToContentDto(trigger);
+			triggerContentDTOlist.add(triggerContentDTO);
 		}
 		
 		//creating page with DTO
-		Page<TriggerContentDTO> triggerContentDTOPage = new PageImpl<TriggerContentDTO>(triggerContentDTOs, pageable, triggerPage.getTotalElements());
+		Page<TriggerContentDTO> triggerContentDTOPage = new PageImpl<TriggerContentDTO>(triggerContentDTOlist, pageable, triggerPage.getTotalElements());
 		
+		//return that page
 		return triggerContentDTOPage;
-//		return list;
+
 	}
 
 	public List<Trigger> getTriggerByMessage(@PathVariable Integer messageId){
@@ -83,27 +79,50 @@ public class TriggerService {
 	
 	
 	//create trigger
-	public Trigger createTrigger(@RequestBody TriggerDTO triggerModel) {
+	public TriggerContentDTO createTrigger(@RequestBody TriggerDTO triggerModel) {
 		Message message = messageRepository.findById(triggerModel.getMessageId())
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message not found"));
-		Trigger trigger = new Trigger(triggerModel.getChannel(), triggerModel.getTriggerType(), triggerModel.isActive(), message);	
-		return triggerRepository.save(trigger); 		
+		
+		Trigger trigger = new Trigger(triggerModel.getChannel(), 
+									triggerModel.getTriggerType(),
+									triggerModel.isActive(), 
+									message);
+		
+		triggerRepository.save(trigger); 		
+		
+		TriggerContentDTO triggerContentDTO = convertToContentDto(trigger);
+		return triggerContentDTO;
 	}
 	
-	public Trigger updateTrigger(@PathVariable Integer triggerId, @RequestBody TriggerDTO triggerModel) {
+	public TriggerContentDTO updateTrigger(@PathVariable Integer triggerId, @RequestBody TriggerDTO triggerModel) {
 		Trigger trigger = triggerRepository.findById(triggerId).orElseThrow();
 		trigger.setActive(triggerModel.isActive());
 		trigger.setChannel(triggerModel.getChannel());
-		trigger.setTriggerType(triggerModel.getTriggerType());
+		trigger.setTriggerType(triggerModel.getTriggerType());		
+
+		//if message is not updated there are no needs to access database
 		if(trigger.getMessage().getMessageId() != triggerModel.getMessageId()) {
 			Message message = messageRepository.findById(triggerModel.getMessageId()).orElseThrow();
 			trigger.setMessage(message);
 		}
-		return trigger;
+		
+		//add trigger content to DTO class
+		// add message content to message DTO
+		TriggerContentDTO triggerContentDTO = convertToContentDto(trigger);
+
+		//return trigger content dto
+		return triggerContentDTO;
 	}
 	
 	public ResponseEntity<Trigger> deleteTrigger(@PathVariable Integer triggerId) {
 		triggerRepository.deleteById(triggerId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 	}
+	
+	private TriggerContentDTO convertToContentDto(Trigger trigger) {
+		TriggerContentDTO triggerContentDTO = modelMapper.map(trigger, TriggerContentDTO.class);
+		triggerContentDTO.setMessageDto(modelMapper.map(trigger.getMessage(), MessageDTO.class));
+	    return triggerContentDTO;
+	}
+	
 }

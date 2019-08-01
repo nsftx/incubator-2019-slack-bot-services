@@ -47,12 +47,12 @@ public class TriggerController {
 	
 	//create trigger
 	@PostMapping("/api/triggers")
-	public Trigger createTrigger(@RequestBody TriggerDTO triggerModel) {
+	public TriggerContentDTO createTrigger(@RequestBody TriggerDTO triggerModel) {
 		return triggerService.createTrigger(triggerModel);		
 	}
 	
 	@PutMapping("/api/triggers/{triggerId}")
-	public Trigger updateTrigger(@PathVariable Integer triggerId, @RequestBody TriggerDTO triggerModel) {
+	public TriggerContentDTO updateTrigger(@PathVariable Integer triggerId, @RequestBody TriggerDTO triggerModel) {
 		return triggerService.updateTrigger(triggerId, triggerModel);
 	}
 	

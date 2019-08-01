@@ -28,8 +28,6 @@ import com.welcome.bot.repository.MessageRepository;
 import com.welcome.bot.repository.ScheduleRepository;
 import com.welcome.bot.repository.TriggerRepository;
 
-
-
 @Service
 public class MessageService {
 	
@@ -81,7 +79,6 @@ public class MessageService {
 		
 		//set atributes to message DTO
 		MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
-		
 							
 		//return https status with header "location" and response body
 		return ResponseEntity
@@ -96,21 +93,20 @@ public class MessageService {
 	
 	public MessageDTO updateMessage(@PathVariable Integer id, @RequestBody MessageDTO messageModel) {
 		//find message
-		Message m1 = messageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message data not found"));
+		Message message = messageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message data not found"));
 		//set updated attributes of message
-		m1.setUpdatedAt();
-		m1.setTitle(messageModel.getTitle());
-		m1.setText(messageModel.getText());
+		message.setUpdatedAt();
+		message.setTitle(messageModel.getTitle());
+		message.setText(messageModel.getText());
 		
 		//save message
-		messageRepository.save(m1);
+		messageRepository.save(message);
 		
 		//set attributes to message DTO
-		messageModel.setCreatedAt(m1.getCreatedAt());
-		messageModel.setMessageId(m1.getMessageId());
-		
+		MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class); 
+				
 		//return message DTO
-		return messageModel;
+		return messageDTO;
 	}
 	
 	public ResponseEntity<Message> deleteMessage(@PathVariable Integer id){
