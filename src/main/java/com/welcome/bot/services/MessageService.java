@@ -1,7 +1,10 @@
 package com.welcome.bot.services;
 
+import static org.hamcrest.CoreMatchers.nullValue;
+
 import java.util.List;
 
+import javax.validation.ConstraintViolationException;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -23,6 +26,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.welcome.bot.domain.Message;
 import com.welcome.bot.domain.Schedule;
 import com.welcome.bot.domain.Trigger;
+import com.welcome.bot.exception.BadRequestException;
 import com.welcome.bot.models.MessageDTO;
 import com.welcome.bot.repository.MessageRepository;
 import com.welcome.bot.repository.ScheduleRepository;
@@ -62,6 +66,7 @@ public class MessageService {
 	public MessageDTO getMessage(@PathVariable Integer message_id) {
 		Message message = messageRepository.findById(message_id)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message data not found"));
+		
 		MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
 		return messageDTO;
 	}
@@ -71,7 +76,11 @@ public class MessageService {
 		
 		//save message
 		message.setCreatedAt();
-		messageRepository.save(message);
+		try {
+			messageRepository.save(message);
+		}catch(ConstraintViolationException e) {
+			throw new BadRequestException("Bad request");		
+		}
 		
 		//make location header
 		Integer messageId = message.getMessageId();
@@ -100,7 +109,11 @@ public class MessageService {
 		message.setText(messageModel.getText());
 		
 		//save message
-		messageRepository.save(message);
+		try {
+			messageRepository.save(message);
+		}catch(ConstraintViolationException e) {
+			throw new BadRequestException("Bad request pleeease");
+		}
 		
 		//set attributes to message DTO
 		MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class); 
@@ -111,7 +124,8 @@ public class MessageService {
 	
 	public ResponseEntity<Message> deleteMessage(@PathVariable Integer id){
 		//find message
-		Message message = messageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message data not found"));
+		Message message = messageRepository.findById(id)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message data not found"));
 		
 		//delete all triggers connected with message
 		List<Trigger> triggersList = triggerRepository.findAllByMessage(message);
@@ -127,8 +141,7 @@ public class MessageService {
 		//delete message
 		messageRepository.delete(message);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-	}
-	
+	}	
 }
 
 

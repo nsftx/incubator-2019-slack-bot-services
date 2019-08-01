@@ -38,8 +38,9 @@ public class TriggerService {
 	
 	//get trigger
 	public TriggerContentDTO getTrigger(@PathVariable Integer triggerId) {
+		
 		Trigger trigger = triggerRepository.findById(triggerId)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trigger not found"));		
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trigger data not found"));		
 		
 		TriggerContentDTO triggerContentDTO = convertToContentDto(trigger);
 		
