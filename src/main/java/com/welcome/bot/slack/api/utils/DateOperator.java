@@ -40,11 +40,7 @@ public class DateOperator {
 			day = "Saturday";
 			break;
 		}
-		
 		String reminder = "Every " + day + " at " + hour + ":" + minute;
-		
-		System.out.println("TIME NOW IS : " + reminder); // TEST
-		
 		return reminder;
 	}
 	

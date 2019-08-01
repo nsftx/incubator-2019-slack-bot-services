@@ -2,8 +2,10 @@ package com.welcome.bot.slack.api;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
@@ -27,13 +29,22 @@ public class SlackClientService implements SlackClientApi, ApplicationListener<S
 
 	//Constructor
 	public SlackClientService() {}
-
+	
 	@Override
-	public boolean sendMessage(String channel, String text) {
+	public HashMap<String, String> sendMessage(String channel, String text) {
+		HashMap<String,String> statusMessage = new HashMap<String,String>();
+		
+		if(channel == null || channel.isEmpty() || text == null || text.isEmpty()) {
+			statusMessage.put("status","error");
+			statusMessage.put("message","Some or all arguments are either null or empty");
+			return statusMessage;
+		}
+		
 		boolean status = false;
-
-		MessagePayload payload = payloadGen.getStyledMessagePayload(channel, text);
+		MessagePayload payload = new MessagePayload();
 		String payloadJSON = "";
+		
+		payload = payloadGen.getStyledMessagePayload(channel, text);
 		
 		try {
 			payloadJSON = jsonMapper.writeValueAsString(payload);
@@ -43,21 +54,38 @@ public class SlackClientService implements SlackClientApi, ApplicationListener<S
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		
 		status = sender.sendMessageAndGetStatus(slackConnection, payloadJSON);
 
 		slackConnection.disconnect();
 		slackConnection = null;
 		
-		return status;
+		if(status) {
+			statusMessage.put("status", "ok");
+			statusMessage.put("message", "Message sent successfully");
+		} else {
+			statusMessage.put("status", "error");
+			statusMessage.put("message", "Message sending failed");
+		}
+		
+		return null;
 	}
 
 	@Override
-	public boolean sendPrivateMessage(String channel, String text, String user) {
+	public HashMap<String,String> sendMessage(String channel, String text, String user) {
+		HashMap<String,String> statusMessage = new HashMap<String,String>();
+		
+		if(channel == null || channel.isEmpty() || text == null || text.isEmpty() || user == null || user.isEmpty()) {
+			statusMessage.put("status","error");
+			statusMessage.put("message","Some or all arguments are either null or empty");
+			return statusMessage;
+		}
+		
 		boolean status = false;
-
-		MessagePayload payload = payloadGen.getStyledPrivatePayload(channel, text, user);
+		MessagePayload payload = new MessagePayload();
 		String payloadJSON = "";
+		
+		payload = payloadGen.getStyledPrivatePayload(channel, text, user);
 		
 		try {
 			payloadJSON = jsonMapper.writeValueAsString(payload);
@@ -73,105 +101,101 @@ public class SlackClientService implements SlackClientApi, ApplicationListener<S
 		slackConnection.disconnect();
 		slackConnection = null;
 		
-		return status;
+		if(status) {
+			statusMessage.put("status", "ok");
+			statusMessage.put("message", "Message send successfully");
+		} else {
+			statusMessage.put("status", "error");
+			statusMessage.put("message", "Message sending failed");
+		}
+		
+		return statusMessage;
 	}
 
 	@Override
 	public String createSchedule(String channel, String text, Date postAt, boolean doRepeat) {
 		String messageID = "";
 		
+		if(channel == null || channel.isEmpty() || text == null || text.isEmpty() || postAt == null) {
+			messageID = "Error: Some or all arguments are either null or empty";
+			return messageID;
+		}
+		
 		MessagePayload payload = new MessagePayload();
 		String payloadJSON = "";
+		
 		if(doRepeat) {
+			payload = payloadGen.getStyledReminderPayload(text, postAt, null);
+		} else {
 			payload = payloadGen.getStyledSchedulePayload(channel, text, postAt);
 		}
 		
 		try {
 			payloadJSON = jsonMapper.writeValueAsString(payload);
-			slackConnection = connectionGen.getScheduleMsgConnection();
+			if(doRepeat) {
+				slackConnection = connectionGen.getReminderMsgConnection();
+			} else {
+				slackConnection = connectionGen.getScheduleMsgConnection();
+			}
 		} catch (JsonProcessingException e1) {
 			e1.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		messageID = sender.sendScheduleAndGetMessageId(slackConnection, payloadJSON);
+		if(doRepeat) {
+			messageID = sender.sendReminderAndGetReminderId(slackConnection, payloadJSON);
+		} else {
+			messageID = sender.sendScheduleAndGetMessageId(slackConnection, payloadJSON);
+		}
 		
 		slackConnection.disconnect();
 		slackConnection = null;
 
 		return messageID;
 	}
-
+	
 	@Override
-	public void deleteSchedule(String channel, String messageID) {
-		MessagePayload payload = payloadGen.getStyledScheduleDeletePayload(channel, messageID);
+	public boolean deleteSchedule(String messageID, String channel, boolean wasRepeat) {
+		boolean status = false;
+		
+		if(messageID == null || messageID.isEmpty() || channel == null || channel.isEmpty()) {
+			return status;
+		}
+		
+		MessagePayload payload = new MessagePayload();
 		String payloadJSON = "";
+		
+		if(!wasRepeat) {
+			payload = payloadGen.getStyledScheduleDeletePayload(channel, messageID);
+		} else {
+			payload = payloadGen.getStyledReminderDeletePayload(messageID);
+		}
 		
 		try {
 			payloadJSON = jsonMapper.writeValueAsString(payload);
-			slackConnection = connectionGen.getDeleteScheduledMsgConnection();
+			if(!wasRepeat) {
+				slackConnection = connectionGen.getDeleteScheduledMsgConnection();
+			} else {
+				slackConnection = connectionGen.getDeleteReminderMsgConnection();
+			}
 		} catch (JsonProcessingException e1) {
 			e1.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		sender.sendMessageAndGetStatus(slackConnection, payloadJSON);
-		
-		slackConnection.disconnect();
-		slackConnection = null;
-	}
-
-	@Override
-	public String createReminder(String text, String user) {
-		String reminderID = "";
-		
-		Date date = new Date();
-		
-		MessagePayload payload = payloadGen.getStyledReminderPayload(text, user, date);
-		String payloadJSON = "";
-		
-		try {
-			payloadJSON = jsonMapper.writeValueAsString(payload);
-			slackConnection = connectionGen.getReminderMsgConnection();
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		reminderID = sender.sendReminderAndGetReminderId(slackConnection, payloadJSON);
-		
+		status = sender.sendMessageAndGetStatus(slackConnection, payloadJSON);
+	
 		slackConnection.disconnect();
 		slackConnection = null;
 		
-		return reminderID;
-	}
-
-	@Override
-	public void deleteReminder(String reminderID) {
-		MessagePayload payload = payloadGen.getStyledReminderDeletePayload(reminderID);
-		String payloadJSON = "";
-		
-		try {
-			payloadJSON = jsonMapper.writeValueAsString(payload);
-			slackConnection = connectionGen.getDeleteReminderMsgConnection();
-		} catch (JsonProcessingException e1) {
-			e1.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		sender.sendMessageAndGetStatus(slackConnection, payloadJSON);
-		
-		slackConnection.disconnect();
-		slackConnection = null;
+		return status;
 	}
 	
 	@Override
-	public HashMap<String,String> getChannelsList() {
-		HashMap<String,String> allChannels = new HashMap<String,String>();
+	public List<String> getChannelsList() {
+		List<String> allChannels = new ArrayList<>();
 		
 		try {
 			slackConnection = connectionGen.getChannelsListConnection();
@@ -183,11 +207,16 @@ public class SlackClientService implements SlackClientApi, ApplicationListener<S
 		return allChannels;
 	}
 
-	// Delete on final review --- this method and 2nd implementation --- amer will implement this functionality
+	// Delete on final review --- this method and 2nd implementation are Easter Eggs
 	@Override
 	public void onApplicationEvent(SlackEventTriggeredEvent event) {
 		HashMap<String, String> eventData = event.getEventData();
-		sendMessage(eventData.get("channel"), eventData.get("type"));
+		String response = sendMessage(eventData.get("channel"), eventData.get("type"), eventData.get("user")).toString();
+		System.out.println("RESPONSE FROM SEND MESSAGE: " + response);
+		getChannelsList();
 	}
+	
+	//	___
+	//	|P| - Parking spot reserved for mouse pointer
+	
 }
-/*This spot is used to park cursor -->> /  \ <<--*/

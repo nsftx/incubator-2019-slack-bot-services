@@ -6,8 +6,8 @@ import java.net.URL;
 
 public class ConnectionGenerator {
 	
-	static final String TOKEN_BOT = "INSERT BOT TOKEN HERE";
-	static final String TOKEN_USER = "INSERT USER TOKEN HERE";
+	static final String TOKEN_BOT = "xoxb-692746321984-692302263812-scJon3oKpF9mlgo9Z9R3WhPU";
+	static final String TOKEN_USER = "xoxp-692746321984-692279219956-698779146611-b183d49f03132b9022074b1e9173d3ba";
 
 	public ConnectionGenerator() {}
 	
@@ -53,7 +53,6 @@ public class ConnectionGenerator {
 		connection.setRequestProperty("Accept", "application/json");
 		connection.setRequestProperty("Authorization", "Bearer " + token);
 		connection.setDoOutput(true);
-		
 		return connection;
 	}
 	
@@ -63,7 +62,6 @@ public class ConnectionGenerator {
 		connection.setRequestProperty("Content-type", "application/json");
 		connection.setRequestProperty("Accept", "application/json");
 		connection.setRequestProperty("Authorization", "Bearer " + token);
-		
 		return connection;
 	}
 }

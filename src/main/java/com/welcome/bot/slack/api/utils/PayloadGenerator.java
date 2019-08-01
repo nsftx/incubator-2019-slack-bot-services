@@ -40,8 +40,8 @@ public class PayloadGenerator {
 		return generateStyledScheduleDeletePayload(channel,messageID);
 	}
 	
-	public MessagePayload getStyledReminderPayload(String text, String user, Date remindAt) {
-		return generateStyledReminderPayload(text, user, remindAt);
+	public MessagePayload getStyledReminderPayload(String text, Date postAt, String user) {
+		return generateStyledReminderPayload(text, postAt, user);
 	}
 	
 	public MessagePayload getStyledReminderDeletePayload(String reminderID) {
@@ -69,6 +69,10 @@ public class PayloadGenerator {
 		
 		List<PayloadAttachment> attachments = new ArrayList<>();
 		attachments.add(attachment);
+		
+		if(channel == null || channel.isEmpty()) {
+			channel = "#general";
+		}
 		
 		payload.setChannel(channel);
 		payload.setAttachments(attachments);
@@ -116,7 +120,11 @@ public class PayloadGenerator {
 
 		List<PayloadAttachment> attachments = new ArrayList<>();
 		attachments.add(attachment);
-
+		
+		if(channel == null || channel.isEmpty()) {
+			channel = "#general";
+		}
+		
 		payload.setChannel(channel);
 		payload.setAttachments(attachments);
 
@@ -136,17 +144,21 @@ public class PayloadGenerator {
 	private MessagePayload generateStyledScheduleDeletePayload(String channel, String messageID) {
 		MessagePayload payload = new MessagePayload();
 		
+		if(channel == null || channel.isEmpty()) {
+			channel = "#general";
+		}
+		
 		payload.setChannel(channel);
 		payload.setScheduledMessageId(messageID);
 		
 		return payload;
 	}
 	
-	private MessagePayload generateStyledReminderPayload(String text, String user, Date remindAt) {
+	private MessagePayload generateStyledReminderPayload(String text, Date postAt, String user) {
 		MessagePayload payload = new MessagePayload();
 		
 		payload.setText(text);
-		payload.setTime(dateUtil.convertToReminder(remindAt));
+		payload.setTime(dateUtil.convertToReminder(postAt));
 				
 		if(user != null) {
 			payload.setUser(user);
@@ -155,10 +167,10 @@ public class PayloadGenerator {
 		return payload;
 	}
 	
-	private MessagePayload generateStyledReminderDeletePayload(String reminderID) {
+	private MessagePayload generateStyledReminderDeletePayload(String messageID) {
 		MessagePayload payload = new MessagePayload();
 		
-		payload.setReminder(reminderID);
+		payload.setReminder(messageID);
 		
 		return payload;
 	}

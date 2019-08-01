@@ -5,13 +5,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MessageSender {
+	
+	private HashMap<String, String> channelNameID;
 
 	public MessageSender() {}
 
@@ -52,27 +56,31 @@ public class MessageSender {
 		return reminderID;
 	}
 	
-	public HashMap<String,String> sendRequestToGetChannelsList(HttpURLConnection slackConnection) {
-		HashMap<String,String> allChannels = new HashMap<String,String>();
-		
+	public List<String> sendRequestToGetChannelsList(HttpURLConnection slackConnection) {
+		List<String> channelList = new ArrayList<>();
+		channelNameID = new HashMap<String,String>();
 		JSONObject result = getChannelsList(slackConnection);
 		JSONArray channelsArray = new JSONArray();
 		
 		try {
 			channelsArray = result.getJSONArray("channels");
 			for(int i=0;i<channelsArray.length();i++) {
-				String channelName = channelsArray.getJSONObject(i).getString("name");
+				String channelName = "#"+channelsArray.getJSONObject(i).getString("name");
 				String channelID = channelsArray.getJSONObject(i).getString("id");
 				
-				System.out.println("IN FOR ::: CHANNEL NAME: " + channelName + " ::: CHANNEL ID: " + channelID);
+				channelList.add(channelName);
+				channelNameID.put(channelName, channelID);
 				
-				allChannels.put(channelName, channelID);
+				System.out.println("IN FOR ::: CHANNEL NAME: " + channelName + " ::: CHANNEL ID: " + channelID);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		
-		return allChannels;
+		System.out.println("Channel Names and IDs are: " + channelNameID.toString());
+		System.out.println("Channel List is: " + channelList.toString());
+		
+		return channelList;
 	}
 
 	private JSONObject sendMessageReadResponse(HttpURLConnection connection, String dataPayload) {
@@ -126,5 +134,12 @@ public class MessageSender {
 			e.printStackTrace();
 		}
 		return response;
+	}
+	
+	public HashMap<String, String> getChannelNameIDList(){
+		if(channelNameID == null) {
+			return null;
+		}
+		return channelNameID;
 	}
 }

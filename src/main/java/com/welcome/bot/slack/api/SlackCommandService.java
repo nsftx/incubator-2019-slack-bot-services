@@ -19,6 +19,7 @@ public class SlackCommandService {
 			System.out.println("SlackCommandService SWITCH = ABOUT");
 			responseText = "NSoft provides betting solutions to its clients, starting from live betting, bingo, to plenty of different virtual games.";
 			response = generateJSONResponse(responseText);
+			
 			break;
 		case "benefits":
 			System.out.println("SlackCommandService SWITCH = BENEFITS");
