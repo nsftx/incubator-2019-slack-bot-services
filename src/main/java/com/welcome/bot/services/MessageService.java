@@ -1,7 +1,10 @@
 package com.welcome.bot.services;
 
+import static org.hamcrest.CoreMatchers.nullValue;
+
 import java.util.List;
 
+import javax.validation.ConstraintViolationException;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -23,12 +26,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.welcome.bot.domain.Message;
 import com.welcome.bot.domain.Schedule;
 import com.welcome.bot.domain.Trigger;
+import com.welcome.bot.exception.BadRequestException;
 import com.welcome.bot.models.MessageDTO;
 import com.welcome.bot.repository.MessageRepository;
 import com.welcome.bot.repository.ScheduleRepository;
 import com.welcome.bot.repository.TriggerRepository;
-
-
 
 @Service
 public class MessageService {
@@ -64,6 +66,7 @@ public class MessageService {
 	public MessageDTO getMessage(@PathVariable Integer message_id) {
 		Message message = messageRepository.findById(message_id)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message data not found"));
+		
 		MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
 		return messageDTO;
 	}
@@ -73,7 +76,11 @@ public class MessageService {
 		
 		//save message
 		message.setCreatedAt();
-		messageRepository.save(message);
+		try {
+			messageRepository.save(message);
+		}catch(ConstraintViolationException e) {
+			throw new BadRequestException("Bad request");		
+		}
 		
 		//make location header
 		Integer messageId = message.getMessageId();
@@ -81,7 +88,6 @@ public class MessageService {
 		
 		//set atributes to message DTO
 		MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
-		
 							
 		//return https status with header "location" and response body
 		return ResponseEntity
@@ -96,26 +102,30 @@ public class MessageService {
 	
 	public MessageDTO updateMessage(@PathVariable Integer id, @RequestBody MessageDTO messageModel) {
 		//find message
-		Message m1 = messageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message data not found"));
+		Message message = messageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message data not found"));
 		//set updated attributes of message
-		m1.setUpdatedAt();
-		m1.setTitle(messageModel.getTitle());
-		m1.setText(messageModel.getText());
+		message.setUpdatedAt();
+		message.setTitle(messageModel.getTitle());
+		message.setText(messageModel.getText());
 		
 		//save message
-		messageRepository.save(m1);
+		try {
+			messageRepository.save(message);
+		}catch(ConstraintViolationException e) {
+			throw new BadRequestException("Bad request pleeease");
+		}
 		
 		//set attributes to message DTO
-		messageModel.setCreatedAt(m1.getCreatedAt());
-		messageModel.setMessageId(m1.getMessageId());
-		
+		MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class); 
+				
 		//return message DTO
-		return messageModel;
+		return messageDTO;
 	}
 	
 	public ResponseEntity<Message> deleteMessage(@PathVariable Integer id){
 		//find message
-		Message message = messageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message data not found"));
+		Message message = messageRepository.findById(id)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message data not found"));
 		
 		//delete all triggers connected with message
 		List<Trigger> triggersList = triggerRepository.findAllByMessage(message);
@@ -131,8 +141,7 @@ public class MessageService {
 		//delete message
 		messageRepository.delete(message);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-	}
-	
+	}	
 }
 
 

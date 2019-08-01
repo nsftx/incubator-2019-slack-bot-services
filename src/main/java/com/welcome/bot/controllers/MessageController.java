@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.welcome.bot.domain.Message;
+import com.welcome.bot.exception.BadRequestException;
 import com.welcome.bot.models.MessageDTO;
 import com.welcome.bot.services.MessageService;
 
