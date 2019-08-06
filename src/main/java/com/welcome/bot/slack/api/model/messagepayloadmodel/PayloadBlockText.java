@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 "text"
 })
 public class PayloadBlockText {
-
 	// Properties
 	@JsonProperty("type")
 	private String type;

@@ -16,7 +16,6 @@ public class SlackEventService {
 	
 	public String handleEvent(EventPayload event) {
 		if(event.getType().equals("event_callback")) {
-			
 			String eventType = event.getEventItem().getType();
 			String user = event.getEventItem().getUser();
 			String channel = event.getEventItem().getChannel();

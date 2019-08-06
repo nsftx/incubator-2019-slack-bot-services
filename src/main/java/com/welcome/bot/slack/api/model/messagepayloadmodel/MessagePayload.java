@@ -22,6 +22,7 @@ public class MessagePayload {
 	// Properties
 	@JsonProperty("channel")
 	public String channel;
+	
 	@JsonProperty("attachments")
 	public List<PayloadAttachment> attachments = null;
 	
@@ -48,8 +49,10 @@ public class MessagePayload {
 	@JsonProperty("scheduled_message_id")
 	public String scheduled_message_id;
 	
+	
 	// Constructor
 	public MessagePayload() {}
+	
 	
 	// Getters/Setters
 	public String getChannel() {
@@ -114,6 +117,4 @@ public class MessagePayload {
 	public void setScheduledMessageId(String scheduled_message_id) {
 		this.scheduled_message_id = scheduled_message_id;
 	}
-	
-	
 }

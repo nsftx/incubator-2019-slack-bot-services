@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 "value"
 })
 public class PayloadElement {
-
 	// Properties
 	@JsonProperty("type")
 	private String type;

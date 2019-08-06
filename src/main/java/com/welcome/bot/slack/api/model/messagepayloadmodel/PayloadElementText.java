@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 "emoji"
 })
 public class PayloadElementText {
-
 	// Properties
 	@JsonProperty("type")
 	private String type;

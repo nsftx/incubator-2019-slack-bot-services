@@ -16,7 +16,6 @@ public class DateOperator {
 		int minute = c.get(Calendar.MINUTE);
 		
 		String day = null;
-		
 		switch(dayIndex) {
 		case(1): 
 			day = "Sunday";
@@ -46,7 +45,6 @@ public class DateOperator {
 	
 	public String convertToEpoch(Date date) {
 		String epochTime = String.valueOf(date.getTime()/1000);
-		
 		return epochTime;
 	}
 }

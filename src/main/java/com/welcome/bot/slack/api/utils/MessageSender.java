@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -14,8 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MessageSender {
-	
-	private HashMap<String, String> channelNameID;
 
 	public MessageSender() {}
 
@@ -37,7 +34,12 @@ public class MessageSender {
 		JSONObject result = sendMessageReadResponse(slackConnection, payload);
 
 		try {
-			messageID = result.getString("scheduled_message_id");
+			boolean isOk = result.getBoolean("ok");
+			if(isOk) {
+				messageID = result.getString("scheduled_message_id");
+			} else {
+				messageID = null;
+			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -58,7 +60,6 @@ public class MessageSender {
 	
 	public List<String> sendRequestToGetChannelsList(HttpURLConnection slackConnection) {
 		List<String> channelList = new ArrayList<>();
-		channelNameID = new HashMap<String,String>();
 		JSONObject result = getChannelsList(slackConnection);
 		JSONArray channelsArray = new JSONArray();
 		
@@ -66,19 +67,13 @@ public class MessageSender {
 			channelsArray = result.getJSONArray("channels");
 			for(int i=0;i<channelsArray.length();i++) {
 				String channelName = "#"+channelsArray.getJSONObject(i).getString("name");
-				String channelID = channelsArray.getJSONObject(i).getString("id");
+				//String channelID = channelsArray.getJSONObject(i).getString("id");
 				
 				channelList.add(channelName);
-				channelNameID.put(channelName, channelID);
-				
-				System.out.println("IN FOR ::: CHANNEL NAME: " + channelName + " ::: CHANNEL ID: " + channelID);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
-		System.out.println("Channel Names and IDs are: " + channelNameID.toString());
-		System.out.println("Channel List is: " + channelList.toString());
 		
 		return channelList;
 	}
@@ -100,7 +95,7 @@ public class MessageSender {
 			while ((responseLine = br.readLine()) != null) {
 				responseBuilder.append(responseLine.trim());
 			}
-			System.out.println("SLACK RESPONSE --- >>> " + responseBuilder.toString());
+			System.out.println("SLACK RESPONSE --- >>> " + responseBuilder.toString()); // TODO delete
 
 			response = new JSONObject(responseBuilder.toString());
 			
@@ -123,7 +118,6 @@ public class MessageSender {
 			while ((responseLine = br.readLine()) != null) {
 				responseBuilder.append(responseLine.trim());
 			}
-			System.out.println("SLACK CHANNEL RESPONSE --- >>> " + responseBuilder.toString());
 
 			response = new JSONObject(responseBuilder.toString());
 
@@ -134,12 +128,5 @@ public class MessageSender {
 			e.printStackTrace();
 		}
 		return response;
-	}
-	
-	public HashMap<String, String> getChannelNameIDList(){
-		if(channelNameID == null) {
-			return null;
-		}
-		return channelNameID;
 	}
 }

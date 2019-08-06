@@ -8,12 +8,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-"type",
-"text",
-"elements"
+	"type",
+	"text",
+	"elements",
+	"image_url",
+	"alt_text"
 })
 public class PayloadBlock {
-
 	// Properties
 	@JsonProperty("type")
 	private String type;
@@ -21,11 +22,38 @@ public class PayloadBlock {
 	private PayloadBlockText text;
 	@JsonProperty("elements")
 	private List<PayloadElement> element = null;
-	
+	@JsonProperty("image_url")
+	private String image_url;
+	@JsonProperty("alt_text")
+	private String alt_text;
+	@JsonProperty("accessory")
+	private PayloadElement accesosory;
+
 	// Constructor
 	public PayloadBlock() {}
-
+	
 	// Getters/Setters
+	public PayloadElement getAccesosory() {
+		return accesosory;
+	}
+	public void setAccesosory(PayloadElement accesosory) {
+		this.accesosory = accesosory;
+	}
+
+	public String getImage_url() {
+		return image_url;
+	}
+	public void setImage_url(String image_url) {
+		this.image_url = image_url;
+	}
+
+	public String getAlt_text() {
+		return alt_text;
+	}
+	public void setAlt_text(String alt_text) {
+		this.alt_text = alt_text;
+	}
+
 	public String getType() {
 		return type;
 	}
