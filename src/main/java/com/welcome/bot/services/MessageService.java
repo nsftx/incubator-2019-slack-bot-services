@@ -1,11 +1,9 @@
 package com.welcome.bot.services;
 
-import static org.hamcrest.CoreMatchers.nullValue;
 
 import java.util.List;
 
-import javax.validation.ConstraintViolationException;
-
+import org.hibernate.exception.ConstraintViolationException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +17,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-
 import com.welcome.bot.domain.Message;
-import com.welcome.bot.domain.Schedule;
 import com.welcome.bot.domain.Trigger;
-import com.welcome.bot.exception.BadRequestException;
+import com.welcome.bot.exception.MessageValidationException;
+import com.welcome.bot.exception.MessageNotFoundException;
+import com.welcome.bot.models.MessageCreateDTO;
 import com.welcome.bot.models.MessageDTO;
 import com.welcome.bot.repository.MessageRepository;
 import com.welcome.bot.repository.ScheduleRepository;
@@ -42,7 +39,13 @@ public class MessageService {
 	TriggerRepository triggerRepository;
 	
 	@Autowired
+	TriggerService triggerService;
+	
+	@Autowired
 	ScheduleRepository scheduleRepository;
+	
+	@Autowired
+	ScheduleService scheduleService;
 	
 	@Autowired
 	ModelMapper modelMapper;
@@ -53,40 +56,38 @@ public class MessageService {
 		
 		//preparing data for mapping
 		List<Message> messagesList = messagePage.getContent();
-		
+
 		//mapping message to DTO
 		List<MessageDTO> messageDTOs = modelMapper.map(messagesList, new TypeToken<List<MessageDTO>>(){}.getType());
 
 		//creating Page with DTO
 		Page<MessageDTO> messageDTOPage = new PageImpl<MessageDTO>(messageDTOs, pageParam, messagePage.getTotalElements());
-		
+
 		return messageDTOPage;
 	}
 	
 	public MessageDTO getMessage(@PathVariable Integer message_id) {
 		Message message = messageRepository.findById(message_id)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message data not found"));
+				.orElseThrow(() -> new MessageNotFoundException(message_id));
 		
 		MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
 		return messageDTO;
 	}
 	
-	public @ResponseBody ResponseEntity<MessageDTO> createMessage(@RequestBody MessageDTO messageModel, UriComponentsBuilder ucb) {
+	public @ResponseBody ResponseEntity<MessageDTO> createMessage(@RequestBody MessageCreateDTO messageModel, UriComponentsBuilder ucb) {
+		//throws exception if validation don't pass
+		validateMessageInput(messageModel);
+		
 		Message message = new Message(messageModel.getTitle(), messageModel.getText());
 		
 		//save message
-		message.setCreatedAt();
-		try {
-			messageRepository.save(message);
-		}catch(ConstraintViolationException e) {
-			throw new BadRequestException("Bad request");		
-		}
+		messageRepository.save(message);
 		
 		//make location header
 		Integer messageId = message.getMessageId();
 		UriComponents uriComponents = ucb.path("/api/message/{id}").buildAndExpand(messageId);
 		
-		//set atributes to message DTO
+		//set attributes to message DTO
 		MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
 							
 		//return https status with header "location" and response body
@@ -100,20 +101,21 @@ public class MessageService {
 		return messagesByTitles;
 	}
 	
-	public MessageDTO updateMessage(@PathVariable Integer id, @RequestBody MessageDTO messageModel) {
-		//find message
-		Message message = messageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message data not found"));
+	public MessageDTO updateMessage(@PathVariable Integer id, @RequestBody MessageCreateDTO messageModel) {
+		Message message = messageRepository.findById(id)
+				.orElseThrow(() -> new MessageNotFoundException(id));
+
+		//throws exception if not validated
+		validateMessageInput(messageModel);
+
 		//set updated attributes of message
-		message.setUpdatedAt();
 		message.setTitle(messageModel.getTitle());
 		message.setText(messageModel.getText());
 		
 		//save message
-		try {
-			messageRepository.save(message);
-		}catch(ConstraintViolationException e) {
-			throw new BadRequestException("Bad request pleeease");
-		}
+		message.setUpdatedAt();
+		messageRepository.save(message);
+
 		
 		//set attributes to message DTO
 		MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class); 
@@ -122,26 +124,35 @@ public class MessageService {
 		return messageDTO;
 	}
 	
-	public ResponseEntity<Message> deleteMessage(@PathVariable Integer id){
+	public ResponseEntity<MessageDTO> deleteMessage(@PathVariable Integer id){
 		//find message
 		Message message = messageRepository.findById(id)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message data not found"));
+				.orElseThrow(() -> new MessageNotFoundException(id));
 		
-		//delete all triggers connected with message
-		List<Trigger> triggersList = triggerRepository.findAllByMessage(message);
-		if(!triggersList.isEmpty()) {
-			triggerRepository.deleteAll(triggersList);
-		}
-		//delete all schedules connected with message
-		List<Schedule> schedueList = scheduleRepository.findAllByMessage(message);
-		if(!schedueList.isEmpty()) {
-			scheduleRepository.deleteAll(schedueList);
-		}
+		//deletes all triggers connected with message
+		triggerService.deleteAllTriggersByMessage(message);
+		
+		//deletes all scheduals connected with message
+		scheduleService.deleteAllSchedulesByMessage(message);
 
 		//delete message
 		messageRepository.delete(message);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 	}	
+	
+	//validate message input
+	private void validateMessageInput(MessageCreateDTO messageModel) throws MessageValidationException{
+		if(messageModel.getTitle().length() < 5 || messageModel.getTitle().length() > 30) {
+			throw new MessageValidationException(messageModel.getTitle());
+		}
+		if(messageModel.getText().length() < 20) {
+			throw new MessageValidationException(messageModel.getText());
+		}
+		List<Message> msglist = messageRepository.findAllByTitle(messageModel.getTitle());;
+		if(!msglist.isEmpty()) {
+			throw new MessageValidationException(messageModel.getTitle(), "Message is duplicate");
+		}
+	}
 }
 
 

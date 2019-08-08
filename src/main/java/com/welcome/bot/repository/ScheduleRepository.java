@@ -13,5 +13,7 @@ public interface ScheduleRepository extends PagingAndSortingRepository<Schedule,
 	
 	public List<Schedule> findAllByMessage(Message message);
 	
+	public List<Schedule> findAllByChannel(String channel);
+	
 	//public Page<Schedule> findAll(Pageable pageParam);
 }

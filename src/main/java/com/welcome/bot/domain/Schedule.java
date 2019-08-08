@@ -27,22 +27,29 @@ public class Schedule {
 	@Column(name = "`repeat`") 
 	private Boolean repeat;
 	private Date runAt;
+	private String channel;
+	private String slackMessageId;
+	private Date createdAt;
+	private Date updatedAt;
+	
 	
 	@ManyToOne
 	@JoinColumn(name = "message_id")
 	private Message message;
-		
-	public Schedule(boolean active, boolean repeat, Date runAt, Message message) {
+	
+	public Schedule(Boolean active, Boolean repeat, Date runAt, String channel, Message message) {
 		this.active = active;
 		this.repeat = repeat;
 		this.runAt = runAt;
+		this.channel = channel;
 		this.message = message;
+		this.createdAt = new Date();
+	}
+	
+	public Schedule() {
+
 	}
 
-	protected Schedule() {
-		
-	}
-		
 	public Integer getScheduleId() {
 		return scheduleId;
 	}
@@ -75,6 +82,38 @@ public class Schedule {
 		this.runAt = runAt;
 	}
 
+	public String getChannel() {
+		return channel;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
+
+	public String getSlackMessageId() {
+		return slackMessageId;
+	}
+
+	public void setSlackMessageId(String slackMessageId) {
+		this.slackMessageId = slackMessageId;
+	}
+
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt() {
+		this.createdAt = new Date();
+	}
+
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt() {
+		this.updatedAt = new Date();
+	}
+
 	public Message getMessage() {
 		return message;
 	}
@@ -82,11 +121,7 @@ public class Schedule {
 	public void setMessage(Message message) {
 		this.message = message;
 	}
-
-	@Override
-	public String toString() {
-		return "Schedule [scheduleId=" + scheduleId + ", active=" + active + ", repeat=" + repeat + ", runAt=" + runAt + ", message="
-				+ message + "]";
-	}
+	
 }
+
 

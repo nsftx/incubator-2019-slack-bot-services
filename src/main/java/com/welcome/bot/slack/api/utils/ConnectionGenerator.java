@@ -6,8 +6,8 @@ import java.net.URL;
 
 public class ConnectionGenerator {
 	
-	static final String TOKEN_BOT = "xoxb-692746321984-692302263812-scJon3oKpF9mlgo9Z9R3WhPU";
-	static final String TOKEN_USER = "xoxp-692746321984-692279219956-698779146611-b183d49f03132b9022074b1e9173d3ba";
+	static final String TOKEN_BOT = "xoxb-692746321984-692302263812-xcMVBuQg4dZvXw5mnobQGZOL";
+	static final String TOKEN_USER = "xoxp-692746321984-692279219956-705915627570-61300ce3bdc65dca4571a71a235da14e";
 
 	public ConnectionGenerator() {}
 	

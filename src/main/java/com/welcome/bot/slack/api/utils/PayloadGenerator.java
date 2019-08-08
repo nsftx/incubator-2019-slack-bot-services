@@ -55,8 +55,8 @@ public class PayloadGenerator {
 		PayloadBlockText blockText = new PayloadBlockText();
 		
 		blockText.setType("mrkdwn");
-		// blockText.setText(text);
-		blockText.setText("Hi There and welcome to NSoft universe :wave:\n \nGreat to see you here! This is TEST, and looks like it works. For more information about benefits, flexible work hours, documentation, etc... use available Slack commands.\n\nThat's all for start. Bye :wave:");
+		blockText.setText(text);
+		//blockText.setText("Hi There and welcome to NSoft universe :wave:\n \nGreat to see you here! This is TEST, and looks like it works. For more information about benefits, flexible work hours, documentation, etc... use available Slack commands.\n\nThat's all for start. Bye :wave:");
 		
 		block.setType("section");
 		block.setText(blockText);

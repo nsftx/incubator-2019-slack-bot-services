@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.welcome.bot.domain.Message;
-import com.welcome.bot.exception.BadRequestException;
+import com.welcome.bot.models.MessageCreateDTO;
 import com.welcome.bot.models.MessageDTO;
 import com.welcome.bot.services.MessageService;
 
@@ -36,13 +36,6 @@ public class MessageController{
 		return messageService.getAllMessages(pageParam);
 	}
 	
-//	@GetMapping("/api/messages2")
-//	public ResponseEntity<Page<Message>> getAllMessages2(Pageable pageParam, @PathParam(value = "title") String title){	
-//		
-//		
-//		return messageService.getAllMessages2(pageParam, title);
-//	}
-	
 	//get selected message
 	@GetMapping("/api/messages/{message_id}")
 	public MessageDTO getMessage(@PathVariable Integer message_id) {
@@ -51,10 +44,9 @@ public class MessageController{
 	
 	//create message
 	@PostMapping("/api/messages")
-	public @ResponseBody ResponseEntity<MessageDTO> createMessage(@RequestBody MessageDTO messageModel, UriComponentsBuilder ucb) {
+	public @ResponseBody ResponseEntity<MessageDTO> createMessage(@RequestBody MessageCreateDTO messageModel, UriComponentsBuilder ucb) {
 		return messageService.createMessage(messageModel, ucb);
 	}
-	
 	
 	//get messages by title
 	@GetMapping("/api/messagesByTitle")
@@ -64,13 +56,13 @@ public class MessageController{
 
 	//update message
 	@PutMapping("/api/messages/{id}")
-	public MessageDTO updateMessage(@PathVariable Integer id, @RequestBody MessageDTO message) {
+	public MessageDTO updateMessage(@PathVariable Integer id, @RequestBody MessageCreateDTO message) {
 		return messageService.updateMessage(id, message);
 	}
 
 	//delete message
 	@DeleteMapping("/api/messages/{id}")
-	public ResponseEntity<Message> deleteMessage(@PathVariable Integer id){
+	public ResponseEntity<MessageDTO> deleteMessage(@PathVariable Integer id){
 		return messageService.deleteMessage(id);
 	}	
 	

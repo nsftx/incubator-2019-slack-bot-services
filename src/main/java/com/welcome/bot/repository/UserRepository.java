@@ -8,7 +8,6 @@ import com.welcome.bot.domain.User;
 
 
 public interface UserRepository extends PagingAndSortingRepository<User, Integer>{
-	//Pageable firstPageWithTwoElements = PageRequest.of(0, 2);
 	
 	Page<User> findAll(Pageable pageable);
 	

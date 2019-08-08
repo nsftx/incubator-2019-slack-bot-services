@@ -19,7 +19,7 @@ import com.welcome.bot.slack.api.utils.MessageSender;
 import com.welcome.bot.slack.api.utils.PayloadGenerator;
 
 @Service
-public class SlackClientService implements SlackClientApi, ApplicationListener<SlackEventTriggeredEvent> {
+public class SlackClientService implements SlackClientApi{
 
 	private ConnectionGenerator connectionGen = new ConnectionGenerator();
 	private PayloadGenerator payloadGen = new PayloadGenerator();
@@ -68,7 +68,7 @@ public class SlackClientService implements SlackClientApi, ApplicationListener<S
 			statusMessage.put("message", "Message sending failed");
 		}
 		
-		return null;
+		return statusMessage;
 	}
 
 	@Override
@@ -208,13 +208,13 @@ public class SlackClientService implements SlackClientApi, ApplicationListener<S
 	}
 
 	// Delete on final review --- this method and 2nd implementation are Easter Eggs
-	@Override
-	public void onApplicationEvent(SlackEventTriggeredEvent event) {
-		HashMap<String, String> eventData = event.getEventData();
-		String response = sendMessage(eventData.get("channel"), eventData.get("type"), eventData.get("user")).toString();
-		System.out.println("RESPONSE FROM SEND MESSAGE: " + response);
-		getChannelsList();
-	}
+//	@Override
+//	public void onApplicationEvent(SlackEventTriggeredEvent event) {
+//		HashMap<String, String> eventData = event.getEventData();
+//		String response = sendMessage(eventData.get("channel"), eventData.get("type"), eventData.get("user")).toString();
+//		System.out.println("RESPONSE FROM SEND MESSAGE: " + response);
+//		getChannelsList();
+//	}
 	
 	//	___
 	//	|P| - Parking spot reserved for mouse pointer
