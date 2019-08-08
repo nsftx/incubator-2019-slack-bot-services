@@ -1,0 +1,54 @@
+spring:
+    mail:
+      host: smtp.gmail.com
+      port: 587
+      username: nsofter123@gmail.com
+      password: nemaveze123
+      protocol: smtp
+      tls: true
+      properties.mail.smtp:
+           auth: true
+           starttls.enable: true
+           ssl.trust: smtp.gmail.com   
+           connectiontimeout: 5000
+           timeout: 5000
+           writetimeout: 5000
+          
+    datasource:
+        url: jdbc:mysql://localhost:3306/spring_social?serverTimezone=GMT-6
+        username: root
+        password: root
+
+    jpa:
+        show-sql: true
+        hibernate:
+            ddl-auto: create-drop
+            naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    security:
+      oauth2:
+        client:
+          registration:
+            google:
+              clientId: 470792821854-f8mflht9e484on0h7kb2s4tgssucp7ml.apps.googleusercontent.com
+              clientSecret: ukWNnUVzvoe0E6x4VZluErw4
+              redirectUriTemplate: "{baseUrl}/oauth2/callback/{registrationId}"
+              scope:
+                - email
+                - profile
+           
+app:
+  auth:
+    tokenSecret: 926D96C90030DD58429D2751AC1BDBBC
+    tokenExpirationMsec: 864000000
+  oauth2:
+    # After successfully authenticating with the OAuth2 Provider,
+    # we'll be generating an auth token for the user and sending the token to the
+    # redirectUri mentioned by the client in the /oauth2/authorize request.
+    # We're not using cookies because they won't work well in mobile clients.
+    authorizedRedirectUris:
+      - http://localhost:3000/oauth2/redirect
+      - myandroidapp://oauth2/redirect
+      - myiosapp://oauth2/redirect
