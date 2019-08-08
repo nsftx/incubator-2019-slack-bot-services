@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.welcome.bot.slack.api.model.messagepayloadmodel.MessagePayload;
-import com.welcome.bot.slack.api.model.messagepayloadmodel.PayloadAttachment;
-import com.welcome.bot.slack.api.model.messagepayloadmodel.PayloadBlock;
-import com.welcome.bot.slack.api.model.messagepayloadmodel.PayloadBlockText;
-import com.welcome.bot.slack.api.model.messagepayloadmodel.PayloadElement;
-import com.welcome.bot.slack.api.model.messagepayloadmodel.PayloadElementText;
+import com.welcome.bot.slack.api.model.messagepayload.MessagePayload;
+import com.welcome.bot.slack.api.model.messagepayload.PayloadAttachment;
+import com.welcome.bot.slack.api.model.messagepayload.PayloadBlock;
+import com.welcome.bot.slack.api.model.messagepayload.PayloadBlockText;
+import com.welcome.bot.slack.api.model.messagepayload.PayloadElement;
+import com.welcome.bot.slack.api.model.messagepayload.PayloadElementText;
 
 public class PayloadGenerator {
 
@@ -18,53 +18,58 @@ public class PayloadGenerator {
 	// Constructor
 	public PayloadGenerator() {}
 
-	public MessagePayload getStyledMessagePayload(String channel, String text) {
-		return generateStyledMessagePayload(channel, text);
+	public MessagePayload getMessagePayload(String channel, String text) {
+		return generateMessagePayload(channel, text);
 	}
 
-	public MessagePayload getStyledMessagePollPayload(String channel, String text, List<String> voteOptions) {
-		return generateStyledMessagePollPayload(channel, text, voteOptions);
+	public MessagePayload getMessagePollPayload(String channel, String text, List<String> voteOptions) {
+		return generateMessagePollPayload(channel, text, voteOptions);
 	}
 
-	public MessagePayload getStyledPrivatePayload(String channel, String text, String user) {
-		MessagePayload messagePayload = generateStyledMessagePayload(channel, text);
-		return generateStyledPrivatePayload(messagePayload, user);
+	public MessagePayload getPrivateMessagePayload(String channel, String text, String user) {
+		MessagePayload messagePayload = generateMessagePayload(channel, text);
+		return generatePrivateMessagePayload(messagePayload, user);
 	}
 
-	public MessagePayload getStyledSchedulePayload(String channel, String text, Date postAt) {
-		MessagePayload messagePayload = generateStyledMessagePayload(channel, text);
-		return generateStyledSchedulePayload(messagePayload, postAt);
+	public MessagePayload getSchedulePayload(String channel, String text, Date postAt) {
+		MessagePayload messagePayload = generateMessagePayload(channel, text);
+		return generateSchedulePayload(messagePayload, postAt);
+	}
+	
+	public List<MessagePayload> getScheduleIntervalPayload(String channel, String text, Date postAt, String repeatInterval){
+		return generateScheduleIntervalPayload(channel, text, postAt, repeatInterval);
 	}
 
-	public MessagePayload getStyledScheduleDeletePayload(String channel, String messageID) {
-		return generateStyledScheduleDeletePayload(channel,messageID);
+	public MessagePayload getScheduleDeletePayload(String channel, String messageID) {
+		return generateScheduleDeletePayload(channel,messageID);
 	}
 
-	public MessagePayload getStyledReminderPayload(String text, Date postAt, String user) {
-		return generateStyledReminderPayload(text, postAt, user);
-	}
-
-	public MessagePayload getStyledReminderDeletePayload(String reminderID) {
-		return generateStyledReminderDeletePayload(reminderID);
-	}
-
-	private MessagePayload generateStyledMessagePayload(String channel, String text) {
+	private MessagePayload generateMessagePayload(String channel, String text) {
 		MessagePayload payload = new MessagePayload();
 		PayloadAttachment attachment = new PayloadAttachment();
 		PayloadBlock block = new PayloadBlock();
+		PayloadBlock blockTwo = new PayloadBlock();
 		PayloadBlockText blockText = new PayloadBlockText();
 		List<PayloadBlock> blocks = new ArrayList<>();
 		
-		// for image testing
-		//text = "Hi There and welcome to NSoft universe :wave:\\n \\nGreat to see you here!{-[https://api.slack.com/img/blocks/bkb_template_images/beagle.png, image alt text]-} This is TEST, and looks like it works.";
+		 //TODO test - delete later (for image testing)
+		text = "Hi There and welcome to NSoft universe :wave:\n \nGreat to see you here!{-[https://api.slack.com/img/blocks/bkb_template_images/beagle.png, image alt text]-} This is TEST, and looks like it works.";
 
+		boolean sendSmallImage = false; // this argument will be passed into method, not defined here.
+		
 		String[] imageData = extractImageData(text);
 		if (imageData != null) {
-			PayloadBlock blockTwo = new PayloadBlock();
-			blockTwo.setType("image");
-			blockTwo.setImage_url(imageData[0]);
-			blockTwo.setAlt_text(imageData[1]);
-			blocks.add(blockTwo);
+			if(sendSmallImage) {
+				PayloadElement imageElement = new PayloadElement();
+				imageElement.setType("image");
+				imageElement.setImage_url(imageData[0]);
+				imageElement.setAlt_text(imageData[1]);
+				block.setAccesosory(imageElement);
+			} else {
+				blockTwo.setType("image");
+				blockTwo.setImage_url(imageData[0]);
+				blockTwo.setAlt_text(imageData[1]);
+			}
 		}
 
 		blockText.setType("mrkdwn");
@@ -75,6 +80,9 @@ public class PayloadGenerator {
 		block.setText(blockText);
 
 		blocks.add(block);
+		if(imageData != null && blockTwo != null) {
+			blocks.add(blockTwo);
+		}
 
 		attachment.setColor("#3AA3E3");
 		attachment.setBlocks(blocks);
@@ -92,7 +100,7 @@ public class PayloadGenerator {
 		return payload;
 	}
 
-	private MessagePayload generateStyledMessagePollPayload(String channel, String text, List<String> voteOptions) {
+	private MessagePayload generateMessagePollPayload(String channel, String text, List<String> voteOptions) {
 
 		MessagePayload payload = new MessagePayload();
 		PayloadAttachment attachment = new PayloadAttachment();
@@ -102,6 +110,9 @@ public class PayloadGenerator {
 		List<PayloadBlock> blocks = new ArrayList<>();
 		List<PayloadAttachment> attachments = new ArrayList<>();
 		
+		PayloadBlock voteOptionsBlock = new PayloadBlock();
+		List<PayloadElement> voteOptionElements = new ArrayList<>();
+		
 		voteMessageText.setType("mrkdwn");
 		voteMessageText.setText(text);
 		voteMessage.setType("section");
@@ -109,29 +120,26 @@ public class PayloadGenerator {
 		blocks.add(voteMessage);
 		
 		for(String voteOption : voteOptions) {
-			PayloadBlock voteOptionBlock = new PayloadBlock();
-			PayloadBlockText voteOptionText = new PayloadBlockText();
+			PayloadElement oneVoteOptionElement = new PayloadElement();
+			PayloadElementText oneVoteOptionElementText = new PayloadElementText();
 			
-			PayloadElement voteOptionBlockElement = new PayloadElement();
-			PayloadElementText voteOptionBlockElementText = new PayloadElementText();
+			oneVoteOptionElementText.setType("plain_text");
+			oneVoteOptionElementText.setText(voteOption);
 			
-			voteOptionBlockElementText.setType("plain_text");
-			voteOptionBlockElementText.setText("Vote");
-			voteOptionBlockElementText.setEmoji(true);
-
-			voteOptionBlockElement.setType("button");;
-			voteOptionBlockElement.setText(voteOptionBlockElementText);
-			voteOptionBlockElement.setValue(voteOption);
-
-			voteOptionText.setType("mrkdwn");
-			voteOptionText.setText(voteOption);
-
-			voteOptionBlock.setType("section");
-			voteOptionBlock.setText(voteOptionText);
-			voteOptionBlock.setAccesosory(voteOptionBlockElement);
+			oneVoteOptionElement.setType("button");
+			oneVoteOptionElement.setText(oneVoteOptionElementText);
+			oneVoteOptionElement.setValue(voteOption);
 			
-			blocks.add(voteOptionBlock);
+			voteOptionElements.add(oneVoteOptionElement);
 		}
+		
+		voteOptionsBlock.setType("actions");
+		voteOptionsBlock.setBlockId(text); // BLOCK ID to differentiate one voting block from another
+		voteOptionsBlock.setElement(voteOptionElements);
+		
+		blocks.add(voteOptionsBlock);
+		
+		
 		attachment.setColor("#3AA3E3");
 		attachment.setBlocks(blocks);
 		
@@ -147,17 +155,29 @@ public class PayloadGenerator {
 		return payload;
 	}
 
-	private MessagePayload generateStyledPrivatePayload(MessagePayload payload, String user) {
+	private MessagePayload generatePrivateMessagePayload(MessagePayload payload, String user) {
 		payload.setUser(user);
 		return payload;
 	}
 
-	private MessagePayload generateStyledSchedulePayload(MessagePayload payload, Date postAt) {
+	private MessagePayload generateSchedulePayload(MessagePayload payload, Date postAt) {
 		payload.setPostAt(dateUtil.convertToEpoch(postAt));
 		return payload;
 	}
+	
+	private List<MessagePayload> generateScheduleIntervalPayload(String channel, String text, Date postAt, String repeatInterval){
+		List<MessagePayload> intervalPayload = new ArrayList<>();
+		List<Date> intervalDates = dateUtil.generateRepeatTimes(postAt, repeatInterval);
+		for(Date date : intervalDates) {
+			MessagePayload messagePayload = generateMessagePayload(channel, text);
+			MessagePayload payload = new MessagePayload();
+			payload = generateSchedulePayload(messagePayload, date);
+			intervalPayload.add(payload);
+		}
+		return intervalPayload;	
+	}
 
-	private MessagePayload generateStyledScheduleDeletePayload(String channel, String messageID) {
+	private MessagePayload generateScheduleDeletePayload(String channel, String messageID) {
 		MessagePayload payload = new MessagePayload();
 
 		if(channel == null || channel.isEmpty()) {
@@ -167,25 +187,6 @@ public class PayloadGenerator {
 		payload.setChannel(channel);
 		payload.setScheduledMessageId(messageID);
 
-		return payload;
-	}
-
-	private MessagePayload generateStyledReminderPayload(String text, Date postAt, String user) {
-		MessagePayload payload = new MessagePayload();
-
-		payload.setText(text);
-		payload.setTime(dateUtil.convertToReminder(postAt));
-
-		if(user != null) {
-			payload.setUser(user);
-		}
-
-		return payload;
-	}
-
-	private MessagePayload generateStyledReminderDeletePayload(String messageID) {
-		MessagePayload payload = new MessagePayload();
-		payload.setReminder(messageID);
 		return payload;
 	}
 

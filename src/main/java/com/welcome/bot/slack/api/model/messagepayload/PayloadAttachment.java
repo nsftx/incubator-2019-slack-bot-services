@@ -1,4 +1,4 @@
-package com.welcome.bot.slack.api.model.messagepayloadmodel;
+package com.welcome.bot.slack.api.model.messagepayload;
 
 import java.util.List;
 

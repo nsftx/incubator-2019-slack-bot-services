@@ -1,4 +1,4 @@
-package com.welcome.bot.slack.api.model.messagepayloadmodel;
+package com.welcome.bot.slack.api.model.messagepayload;
 
 import java.util.List;
 
@@ -12,7 +12,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 	"text",
 	"elements",
 	"image_url",
-	"alt_text"
+	"alt_text",
+	"accessory",
+	"block_id"
 })
 public class PayloadBlock {
 	// Properties
@@ -28,7 +30,9 @@ public class PayloadBlock {
 	private String alt_text;
 	@JsonProperty("accessory")
 	private PayloadElement accesosory;
-
+	@JsonProperty("block_id")
+	private String block_id;
+	
 	// Constructor
 	public PayloadBlock() {}
 	
@@ -73,5 +77,12 @@ public class PayloadBlock {
 	}
 	public void setElement(List<PayloadElement> element) {
 		this.element = element;
+	}
+	
+	public String getBlockId() {
+		return block_id;
+	}
+	public void setBlockId(String block_id) {
+		this.block_id = block_id;
 	}
 }

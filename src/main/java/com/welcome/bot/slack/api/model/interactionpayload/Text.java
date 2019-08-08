@@ -1,4 +1,4 @@
-package com.welcome.bot.slack.api.model.messagepayloadmodel;
+package com.welcome.bot.slack.api.model.interactionpayload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,19 +7,18 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
 "type",
-"text"
+"text",
+"verbatim"
 })
-public class PayloadBlockText {
-	// Properties
+public class Text {
+
 	@JsonProperty("type")
-	private String type;
+	public String type;
 	@JsonProperty("text")
-	private String text;
+	public String text;
+	@JsonProperty("verbatim")
+	public Boolean verbatim;
 	
-	// Constructor
-	public PayloadBlockText() {}
-	
-	// Getters/Setters
 	public String getType() {
 		return type;
 	}
@@ -32,4 +31,11 @@ public class PayloadBlockText {
 	public void setText(String text) {
 		this.text = text;
 	}
+	public Boolean getVerbatim() {
+		return verbatim;
+	}
+	public void setVerbatim(Boolean verbatim) {
+		this.verbatim = verbatim;
+	}
+	
 }

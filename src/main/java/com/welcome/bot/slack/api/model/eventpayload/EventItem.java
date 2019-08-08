@@ -1,8 +1,10 @@
-package com.welcome.bot.slack.api.model.eventpayloadmodel;
+package com.welcome.bot.slack.api.model.eventpayload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -23,17 +25,20 @@ public class EventItem {
 	@JsonProperty("type")
 	private String type;
 	
+	@JsonProperty("event_ts")
+	private String eventTs;
+	
+	// ADDITIONAL FIELD FOR "CHANNEL CREATED" EVENT
+	public EventItemChannel channel;
+	
+	// ADDITIONAL FIELDS FOR "APP_MENTION" & "MEMBER_JOINED_CHANNEL" EVENTS
 	@JsonProperty("user")
 	private String user;
 	
 	@JsonProperty("team")
 	private String team;
 	
-	@JsonProperty("channel")
-	private String channel;
-	
-	@JsonProperty("event_ts")
-	private String eventTs;
+	private String channelId;
 	
 	// ADDITIONAL FIELDS FOR "APP_MENTION" EVENT
 	@JsonProperty("client_msg_id")
@@ -53,6 +58,34 @@ public class EventItem {
 	private String inviter;
 	
 	// GETTERS & SETTERS
+	public EventItemChannel getChannel() {
+		return channel;
+	}
+	
+	public String getChannelId() {
+		return channelId;
+	}
+	
+	@JsonSetter("channel")
+	public void setChannelInternal(JsonNode channelInternal) {
+		if(channelInternal != null) {
+			if(channelInternal.isTextual()) {
+				channelId = channelInternal.asText();
+			} else if (channelInternal.isObject()) {
+				String id = channelInternal.get("id").asText();
+				Boolean isChannel = channelInternal.get("is_channel").asBoolean();
+				String name = channelInternal.get("name").asText();
+				String nameNormalized = channelInternal.get("name_normalized").asText();
+				Integer created = channelInternal.get("created").intValue();
+				String creator = channelInternal.get("creator").asText();
+				Boolean isShared = channelInternal.get("is_shared").asBoolean();
+				Boolean isOrgShared = channelInternal.get("is_org_shared").asBoolean();
+				
+				channel = new EventItemChannel(id, isChannel, name, nameNormalized, created, creator, isShared, isOrgShared);
+			}
+		}
+	}
+	
 	public String getType() {
 		return type;
 	}
@@ -72,13 +105,6 @@ public class EventItem {
 	}
 	public void setTeam(String team) {
 		this.team = team;
-	}
-
-	public String getChannel() {
-		return channel;
-	}
-	public void setChannel(String channel) {
-		this.channel = channel;
 	}
 
 	public String getEventTs() {

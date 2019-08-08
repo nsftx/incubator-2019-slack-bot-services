@@ -12,6 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.welcome.bot.slack.api.model.channel.Channel;
+
 public class MessageSender {
 
 	public MessageSender() {}
@@ -25,7 +27,7 @@ public class MessageSender {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+
 		return status;
 	}
 
@@ -34,47 +36,54 @@ public class MessageSender {
 		JSONObject result = sendMessageReadResponse(slackConnection, payload);
 
 		try {
-			boolean isOk = result.getBoolean("ok");
-			if(isOk) {
-				messageID = result.getString("scheduled_message_id");
-			} else {
-				messageID = null;
+			messageID = result.getString("scheduled_message_id");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		if(messageID.isEmpty() || messageID == null) { 
+			return null;
+		}
+		
+		return messageID;
+	}
+
+	public List<String> sendRequestToGetSchedulesList(HttpURLConnection slackConnection){
+		List<String> schedulesList = new ArrayList<>();
+		JSONObject result = getChannelsOrSchedulesList(slackConnection);
+		JSONArray schedulesArray = new JSONArray();
+
+		try {
+			schedulesArray = result.getJSONArray("scheduled_messages");
+			for(int i=0;i<schedulesArray.length();i++) {
+				String scheduleID = schedulesArray.getJSONObject(i).getString("id");
+				schedulesList.add(scheduleID);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		return messageID;
+		return schedulesList;
 	}
 
-	public String sendReminderAndGetReminderId(HttpURLConnection slackConnection, String payload) {
-		String reminderID = "";
-		JSONObject result = sendMessageReadResponse(slackConnection, payload);
-
-		try {
-			reminderID = result.getJSONObject("reminder").getString("id");
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return reminderID;
-	}
-	
-	public List<String> sendRequestToGetChannelsList(HttpURLConnection slackConnection) {
-		List<String> channelList = new ArrayList<>();
-		JSONObject result = getChannelsList(slackConnection);
+	public List<Channel> sendRequestToGetChannelsList(HttpURLConnection slackConnection) {
+		List<Channel> channelList = new ArrayList<>();
+		JSONObject result = getChannelsOrSchedulesList(slackConnection);
 		JSONArray channelsArray = new JSONArray();
-		
+
 		try {
 			channelsArray = result.getJSONArray("channels");
 			for(int i=0;i<channelsArray.length();i++) {
 				String channelName = "#"+channelsArray.getJSONObject(i).getString("name");
-				//String channelID = channelsArray.getJSONObject(i).getString("id");
-				
-				channelList.add(channelName);
+				String channelID = channelsArray.getJSONObject(i).getString("id");
+				Channel c = new Channel();
+				c.setName(channelName);
+				c.setId(channelID);
+				channelList.add(c);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+
 		return channelList;
 	}
 
@@ -82,6 +91,8 @@ public class MessageSender {
 		JSONObject response = new JSONObject();
 
 		try {
+			connection.connect(); //TODO test - delete later
+			
 			OutputStream os = connection.getOutputStream();
 			byte[] input = dataPayload.getBytes();
 			os.write(input, 0, input.length);
@@ -95,7 +106,7 @@ public class MessageSender {
 			while ((responseLine = br.readLine()) != null) {
 				responseBuilder.append(responseLine.trim());
 			}
-			System.out.println("SLACK RESPONSE --- >>> " + responseBuilder.toString()); // TODO delete
+			System.out.println("SLACK RESPONSE --- >>> " + responseBuilder.toString()); //TODO test - delete later
 
 			response = new JSONObject(responseBuilder.toString());
 			
@@ -108,7 +119,7 @@ public class MessageSender {
 		return response;
 	}
 
-	private JSONObject getChannelsList(HttpURLConnection connection) {
+	private JSONObject getChannelsOrSchedulesList(HttpURLConnection connection) {
 		JSONObject response = new JSONObject();
 
 		try {

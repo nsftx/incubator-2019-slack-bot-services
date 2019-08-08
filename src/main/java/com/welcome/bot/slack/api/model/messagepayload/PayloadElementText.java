@@ -1,4 +1,4 @@
-package com.welcome.bot.slack.api.model.messagepayloadmodel;
+package com.welcome.bot.slack.api.model.messagepayload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,19 +8,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
 "type",
 "text",
-"value"
+"emoji"
 })
-public class PayloadElement {
+public class PayloadElementText {
 	// Properties
 	@JsonProperty("type")
 	private String type;
 	@JsonProperty("text")
-	private PayloadElementText text;
-	@JsonProperty("value")
-	private String value;
+	private String text;
+	@JsonProperty("emoji")
+	private Boolean emoji;
 	
 	// Constructor
-	public PayloadElement() {}
+	public PayloadElementText() {}
 	
 	// Getters/Setters
 	public String getType() {
@@ -29,18 +29,16 @@ public class PayloadElement {
 	public void setType(String type) {
 		this.type = type;
 	}
-	
-	public PayloadElementText getText() {
+	public String getText() {
 		return text;
 	}
-	public void setText(PayloadElementText text) {
+	public void setText(String text) {
 		this.text = text;
 	}
-	
-	public String getValue() {
-		return value;
+	public Boolean getEmoji() {
+		return emoji;
 	}
-	public void setValue(String value) {
-		this.value = value;
+	public void setEmoji(Boolean emoji) {
+		this.emoji = emoji;
 	}
 }

@@ -6,8 +6,8 @@ import java.net.URL;
 
 public class ConnectionGenerator {
 	
-	static final String TOKEN_BOT = "xoxb-692746321984-692302263812-Riy1b6aLQPXDq0HDCKxhJ4nR";
-	static final String TOKEN_USER = "xoxp-692746321984-692279219956-706545452161-66987e1ae0faf6b13d288838447df434";
+	static final String TOKEN_BOT = "xoxb-692746321984-692302263812-xcMVBuQg4dZvXw5mnobQGZOL";
+	static final String TOKEN_USER = "xoxp-692746321984-692279219956-705915627570-61300ce3bdc65dca4571a71a235da14e";
 
 	public ConnectionGenerator() {}
 	
@@ -31,19 +31,14 @@ public class ConnectionGenerator {
 		return generateConnection(url, TOKEN_BOT);
 	}
 	
-	public HttpURLConnection getReminderMsgConnection() throws IOException {
-		URL url = new URL("https://slack.com/api/reminders.add");
-		return generateConnection(url, TOKEN_USER);
-	}
-	
-	public HttpURLConnection getDeleteReminderMsgConnection() throws IOException {
-		URL url = new URL("https://slack.com/api/reminders.delete");
-		return generateConnection(url, TOKEN_USER);
-	}
-	
 	public HttpURLConnection getChannelsListConnection() throws IOException {
 		URL url = new URL("https://slack.com/api/conversations.list");
 		return generateGETConnection(url, TOKEN_BOT);
+	}
+	
+	public HttpURLConnection getSchedulesListConnection() throws IOException {
+		URL url = new URL("https://slack.com/api/chat.scheduledMessages.list");
+		return generateConnection(url, TOKEN_BOT);
 	}
 	
 	private HttpURLConnection generateConnection(URL url, String token) throws IOException {
