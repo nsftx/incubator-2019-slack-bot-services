@@ -3,7 +3,7 @@ package com.welcome.bot.payload;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
-public class SignUpRequest {
+public class RegistrationRequest {
 
     @NotBlank
     @Email

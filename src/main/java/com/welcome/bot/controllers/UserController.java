@@ -19,7 +19,7 @@ import com.welcome.bot.domain.UserSettings;
 import com.welcome.bot.exception.BadRequestException;
 import com.welcome.bot.exception.ResourceNotFoundException;
 import com.welcome.bot.payload.ApiResponse;
-import com.welcome.bot.payload.SignUpRequest;
+import com.welcome.bot.payload.RegistrationRequest;
 import com.welcome.bot.payload.TranslationSettings;
 import com.welcome.bot.repository.UserRepository;
 import com.welcome.bot.repository.UserSettingsRepository;
@@ -98,7 +98,7 @@ public class UserController {
     }
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
-    	  public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
+    	  public ResponseEntity<?> registerUser(@Valid @RequestBody RegistrationRequest signUpRequest) {
     	        if(userRepository.existsByEmail(signUpRequest.getEmail())) {
     	            throw new BadRequestException("Email address already in use.");
     	        }
