@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.welcome.bot.slack.api.model.interactionresponsepayload.InteractionResponsePayload;
 import com.welcome.bot.slack.api.model.messagepayload.MessagePayload;
 import com.welcome.bot.slack.api.model.messagepayload.PayloadAttachment;
 import com.welcome.bot.slack.api.model.messagepayload.PayloadBlock;
@@ -42,6 +43,10 @@ public class PayloadGenerator {
 
 	public MessagePayload getScheduleDeletePayload(String channel, String messageID) {
 		return generateScheduleDeletePayload(channel,messageID);
+	}
+	
+	public InteractionResponsePayload getInteractionResponsePayload(String channel, String text) {
+		return generateInteractionResponsePayload(channel, text);
 	}
 
 	private MessagePayload generateMessagePayload(String channel, String text) {
@@ -134,7 +139,7 @@ public class PayloadGenerator {
 		}
 		
 		voteOptionsBlock.setType("actions");
-		voteOptionsBlock.setBlockId(text); // BLOCK ID to differentiate one voting block from another
+		//voteOptionsBlock.setBlockId("s"); // BLOCK ID to differentiate one voting block from another
 		voteOptionsBlock.setElement(voteOptionElements);
 		
 		blocks.add(voteOptionsBlock);
@@ -190,6 +195,16 @@ public class PayloadGenerator {
 		return payload;
 	}
 
+	// for response to interaction
+	private InteractionResponsePayload generateInteractionResponsePayload(String channel, String text) {
+		InteractionResponsePayload payload = new InteractionResponsePayload();
+		
+		payload.setText(text);
+		payload.setResponse_type("ephemeral");
+		
+		return payload;
+	}
+	
 	private String[] extractImageData(String text) {
 		String[] imageData;
 		if(text.contains("{-[") && text.contains("]-}")) {

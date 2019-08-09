@@ -20,7 +20,7 @@ public class Action {
 	@JsonProperty("block_id")
 	public String blockId;
 	@JsonProperty("text")
-	public Text__ text;
+	public Text_ text;
 	@JsonProperty("type")
 	public String type;
 	@JsonProperty("value")
@@ -40,10 +40,10 @@ public class Action {
 	public void setBlockId(String blockId) {
 		this.blockId = blockId;
 	}
-	public Text__ getText() {
+	public Text_ getText() {
 		return text;
 	}
-	public void setText(Text__ text) {
+	public void setText(Text_ text) {
 		this.text = text;
 	}
 	public String getType() {

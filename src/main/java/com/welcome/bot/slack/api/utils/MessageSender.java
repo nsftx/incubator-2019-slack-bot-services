@@ -12,7 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.welcome.bot.slack.api.model.channel.Channel;
+import com.welcome.bot.slack.api.model.interactionpayload.Channel;
 
 public class MessageSender {
 

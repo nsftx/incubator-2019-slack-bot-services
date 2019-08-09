@@ -37,6 +37,9 @@ public class SlackEventService {
 		eventData.put("type", eventType);
 		eventData.put("user", user);
 		
+		// for tests of interaction
+		eventData.put("isInteraction", "false");
+		
 		SlackEventTriggeredEvent eventHandler = new SlackEventTriggeredEvent(this, eventData);
 		appEventPublisher.publishEvent(eventHandler);
 	}

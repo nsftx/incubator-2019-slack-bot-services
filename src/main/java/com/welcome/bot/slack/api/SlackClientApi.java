@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import com.welcome.bot.slack.api.model.channel.Channel;
+import com.welcome.bot.slack.api.model.interactionpayload.Channel;
 
 public interface SlackClientApi {
 	

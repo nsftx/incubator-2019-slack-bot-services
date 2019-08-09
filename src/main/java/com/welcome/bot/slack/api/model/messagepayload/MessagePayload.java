@@ -48,8 +48,7 @@ public class MessagePayload {
 	// Additional property - for SCHEDULE DELETE
 	@JsonProperty("scheduled_message_id")
 	public String scheduled_message_id;
-	
-	
+
 	// Constructor
 	public MessagePayload() {}
 	
