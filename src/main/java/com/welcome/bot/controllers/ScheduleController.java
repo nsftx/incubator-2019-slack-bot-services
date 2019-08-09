@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.welcome.bot.domain.Schedule;
+import com.welcome.bot.models.ScheduleContentDTO;
 import com.welcome.bot.models.ScheduleDTO;
 import com.welcome.bot.services.ScheduleService;
 
@@ -25,19 +26,19 @@ public class ScheduleController {
 	ScheduleService scheduleService;
 	
 	@PostMapping("/api/schedules")
-	public ResponseEntity<Schedule> createSchedule(@RequestBody ScheduleDTO scheduleModel){
+	public ScheduleContentDTO createSchedule(@RequestBody ScheduleDTO scheduleModel){
 		return scheduleService.createSchedule(scheduleModel);
 	}
 	@GetMapping("/api/schedules")
-	public Page<Schedule> getAllSchedules(Pageable pageable) {
+	public Page<ScheduleContentDTO> getAllSchedules(Pageable pageable) {
 		return scheduleService.getAllSchedules(pageable);
 	}
 	@GetMapping("/api/schedules/{scheduleId}")
-	public Schedule getSchedule(@PathVariable Integer scheduleId) {
+	public ScheduleContentDTO getSchedule(@PathVariable Integer scheduleId) {
 		return scheduleService.getSchedule(scheduleId);
 	}
 	@PutMapping("/api/schedules/{scheduleId}")
-	public Schedule updateSchedule(@PathVariable Integer scheduleId, @RequestBody ScheduleDTO scheduleModel) {
+	public ScheduleContentDTO updateSchedule(@PathVariable Integer scheduleId, @RequestBody ScheduleDTO scheduleModel) {
 		return scheduleService.updateSchedule(scheduleId, scheduleModel);
 	}
 	@DeleteMapping("/api/schedules/{scheduleId}")
