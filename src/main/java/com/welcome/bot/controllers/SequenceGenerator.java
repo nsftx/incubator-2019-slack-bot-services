@@ -6,13 +6,6 @@ import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Enumeration;
 
-/**
- * Distributed Sequence Generator.
- * Inspired by Twitter snowflake: https://github.com/twitter/snowflake/tree/snowflake-2010
- *
- * This class should be used as a Singleton.
- * Make sure that you create and reuse a Single instance of SequenceGenerator per machine in your distributed system cluster.
- */
 public class SequenceGenerator {
     private static final int TOTAL_BITS = 64;
     private static final int EPOCH_BITS = 42;
@@ -22,7 +15,6 @@ public class SequenceGenerator {
     private static final int maxMachineId = (int)(Math.pow(2, MACHINE_ID_BITS) - 1);
     private static final int maxSequence = (int)(Math.pow(2, SEQUENCE_BITS) - 1);
 
-    // Custom Epoch (January 1, 2015 Midnight UTC = 2015-01-01T00:00:00Z)
     private static final long CUSTOM_EPOCH = 1420070400000L;
 
     private final int machineId;
@@ -30,15 +22,12 @@ public class SequenceGenerator {
     private long lastTimestamp = -1L;
     private long sequence = 0L;
 
-    // Create Snowflake with a machineId
     public SequenceGenerator(int machineId) {
         if(machineId < 0 || machineId > maxMachineId) {
             throw new IllegalArgumentException(String.format("MachineId must be between %d and %d", 0, maxMachineId));
         }
         this.machineId = machineId;
     }
-
-    // Let Snowflake generate a machineId
     public SequenceGenerator() {
         this.machineId = createMachineId();
     }
@@ -55,11 +44,11 @@ public class SequenceGenerator {
             if (currentTimestamp == lastTimestamp) {
                 sequence = (sequence + 1) & maxSequence;
                 if(sequence == 0) {
-                    // Sequence Exhausted, wait till next millisecond.
+                 
                     currentTimestamp = waitNextMillis(currentTimestamp);
                 }
             } else {
-                // reset sequence for next millisecond
+              
                 sequence = 0;
             }
 
@@ -71,14 +60,11 @@ public class SequenceGenerator {
         id |= sequence;
         return id;
     }
-
-
-    // Get current timestamp in milliseconds, adjust for the custom epoch.
     private static long timestamp() {
         return Instant.now().toEpochMilli() - CUSTOM_EPOCH;
     }
 
-    // Block and wait till next millisecond
+  
     private long waitNextMillis(long currentTimestamp) {
         while (currentTimestamp == lastTimestamp) {
             currentTimestamp = timestamp();
