@@ -1,12 +1,13 @@
 package com.welcome.bot.controllers;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
+
+
 
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,21 +20,22 @@ import com.welcome.bot.exception.BadRequestException;
 import com.welcome.bot.exception.ResourceNotFoundException;
 import com.welcome.bot.payload.ApiResponse;
 import com.welcome.bot.payload.SignUpRequest;
+import com.welcome.bot.payload.TranslationSettings;
 import com.welcome.bot.repository.UserRepository;
 import com.welcome.bot.repository.UserSettingsRepository;
 import com.welcome.bot.security.CurrentUser;
 import com.welcome.bot.security.UserPrincipal;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+
+
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.data.domain.Pageable;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -55,13 +57,15 @@ public class UserController {
     
     @RequestMapping(value = "/translation", method = RequestMethod.GET)
     @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
-    public List<String> greeting() {
-    	List<String> data = new ArrayList<String>();
-    	data.add(messageSource.getMessage("settings", null, LocaleContextHolder.getLocale()));
-    	data.add(messageSource.getMessage("theme", null, LocaleContextHolder.getLocale()));
-    	data.add(messageSource.getMessage("select.color", null, LocaleContextHolder.getLocale()));
-    	data.add(messageSource.getMessage("select.language", null, LocaleContextHolder.getLocale()));
-    	data.add(messageSource.getMessage("language", null, LocaleContextHolder.getLocale()));
+    public TranslationSettings translate() {
+ 
+    	TranslationSettings data=new TranslationSettings();
+    	data.setTitle(messageSource.getMessage("settings", null, LocaleContextHolder.getLocale()));
+    	data.setTheme(messageSource.getMessage("theme", null, LocaleContextHolder.getLocale()));
+    	data.setSelectColor(messageSource.getMessage("select.color", null, LocaleContextHolder.getLocale()));
+    	data.setSelectLanguage(messageSource.getMessage("select.language", null, LocaleContextHolder.getLocale()));
+    	data.setLanguage(messageSource.getMessage("language", null, LocaleContextHolder.getLocale()));
+    	data.setSave(messageSource.getMessage("save", null, LocaleContextHolder.getLocale()));
      return data;
     }
     

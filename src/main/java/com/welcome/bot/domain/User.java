@@ -32,10 +32,13 @@ public class User {
     private String role;
 
    
-    public User(String email) {
+    protected User() {
     	this.userSettings=new UserSettings();
-    	this.email=email;
+    	//this.email=email;
     	this.role="USER";
+    }
+    public User(String email) {
+    	this.email=email;
     }
     public User(User user) {
         this.imageUrl = user.getImageUrl();

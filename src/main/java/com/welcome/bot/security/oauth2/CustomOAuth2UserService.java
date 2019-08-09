@@ -47,9 +47,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         Optional<User> userOptional = userRepository.findByEmail(oAuth2UserInfo.getEmail());
-        User user;
         if(userOptional.isPresent()) {
-            user = userOptional.get();
+        	 User user = userOptional.get();
             user = updateExistingUser(user, oAuth2UserInfo);
             return UserPrincipal.create(user, oAuth2User.getAttributes());
         } else {

@@ -19,10 +19,10 @@ public class UserSettings {
 	  @Id
 	  @GeneratedValue(strategy = GenerationType.IDENTITY)
 	    private Long id;
-	  @Column
+	  @Column(nullable = false)
 	  @Enumerated(EnumType.STRING)
 	    private Theme theme;
-	 @Column
+	 @Column(nullable = false)
 	 @Enumerated(EnumType.STRING)
 	 private Language language;
 	  public UserSettings() {
