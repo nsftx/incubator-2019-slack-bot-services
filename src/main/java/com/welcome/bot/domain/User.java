@@ -7,7 +7,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "users", uniqueConstraints = {
+@Table(name = "user", uniqueConstraints = {
         @UniqueConstraint(columnNames = "email")
 })
 public class User {
@@ -21,24 +21,21 @@ public class User {
     @Email
     @Column(nullable = false)
     private String email;
-
-    private String imageUrl;
     @Column
-    private Boolean emailVerified = false;
+    private String imageUrl;
+    
     @OneToOne
     @MapsId
     private UserSettings userSettings;
-    
-    private String password;
-    @Column(name="role")
- private String role;
-    @Enumerated(EnumType.STRING)
-    private AuthProvider provider;
-
-    private String providerId;
    
-    public User() {
+    @Column(name="role")
+    private String role;
+
+   
+    public User(String email) {
     	this.userSettings=new UserSettings();
+    	this.email=email;
+    	this.role="USER";
     }
     public User(User user) {
         this.imageUrl = user.getImageUrl();
@@ -46,7 +43,6 @@ public class User {
         this.role = user.getRole();
         this.name = user.getName();
         this.id = user.getId();
-        this.password = user.getPassword();
         this.userSettings=user.getUserSettings();
         
     }
@@ -81,38 +77,6 @@ public class User {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-    }
-
-    public Boolean getEmailVerified() {
-        return emailVerified;
-    }
-
-    public void setEmailVerified(Boolean emailVerified) {
-        this.emailVerified = emailVerified;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public AuthProvider getProvider() {
-        return provider;
-    }
-
-    public void setProvider(AuthProvider provider) {
-        this.provider = provider;
-    }
-
-    public String getProviderId() {
-        return providerId;
-    }
-
-    public void setProviderId(String providerId) {
-        this.providerId = providerId;
     }
     public UserSettings getUserSettings() {
         return userSettings;
