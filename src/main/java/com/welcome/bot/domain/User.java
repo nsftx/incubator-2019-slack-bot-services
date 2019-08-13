@@ -38,6 +38,7 @@ public class User {
     	this.userSettings=new UserSettings();
     	//this.email=email;
     	this.role="USER";
+            this.invite=new Invite();
     }
     public User(String email) {
     	this.email=email;
