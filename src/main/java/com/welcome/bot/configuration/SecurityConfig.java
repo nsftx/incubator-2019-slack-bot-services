@@ -2,7 +2,7 @@ package com.welcome.bot.configuration;
 
 import com.welcome.bot.security.*;
 
-
+import org.springframework.scheduling.annotation.EnableScheduling;
 import com.welcome.bot.security.oauth2.CustomOAuth2UserService;
 import com.welcome.bot.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.welcome.bot.security.oauth2.OAuth2AuthenticationFailureHandler;
@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@EnableScheduling
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
         securedEnabled = true,
