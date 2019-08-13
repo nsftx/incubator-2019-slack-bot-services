@@ -7,7 +7,7 @@ package com.welcome.bot.controllers;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import org.springframework.web.bind.annotation.PostMapping;
-
+import com.welcome.bot.services.InviteService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -113,13 +113,13 @@ public class UserController {
     	        User user = new User(signUpRequest.getEmail());
     	        user.setRole(signUpRequest.getRole());
     	        User result = userRepository.save(user);
-    	        SimpleMailMessage msg = new SimpleMailMessage();
-    	        msg.setTo(result.getEmail());
-    	        msg.setSubject("You've been addedd to NSoft Welcome Bot application");
-    	        msg.setText("Hello"+user.getEmail()+"\n You've been added to Nsoft Welcome Bot application. You can login to application here: http://nsoft.com/welcome-bot/login \n Please login with this email and google password.");
-
-    	        javaMailSender.send(msg);
+    	        if(inviteService.sendInvite(result.getEmail())) {
     	        
+    	        user.getInvite().setSent(true);
+    	        }
+    	        else {
+    	        	
+    	        }
     	        URI location = ServletUriComponentsBuilder
     	                .fromCurrentContextPath().path("/user/me")
     	                .buildAndExpand(result.getId()).toUri();
