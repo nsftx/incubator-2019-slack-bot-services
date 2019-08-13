@@ -10,9 +10,6 @@ import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-
-
-
 @Entity(name = "message")
 @JsonPropertyOrder({
 	"messageId", 
@@ -25,20 +22,16 @@ public class Message {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer messageId;
 
+	@Column(unique=true, nullable=false, length = 30) 
+	@Size(min = 5, max = 30)
 	private String title;
 	
-	//@Size(min = 20, max = 65000)
-	//@Column(updatable = true,name="text",nullable = false,columnDefinition = "varchar(15000)")
-	
-    @Column(length = 10485760)
+    @Column(nullable=false, length = 10485760)
     @Size(min = 20, max = 10485760)
 	private String text;
+    
 	private Date createdAt;
 	private Date updatedAt;
-	
-	
-	
-
 	
 	public Message(String title, String text) {
 		this.title = title;
@@ -95,8 +88,5 @@ public class Message {
 	public String toString() {
 		return "Message [messageId=" + messageId + ", title=" + title + ", text=" + text + ", createdAt=" + createdAt
 				+ ", updatedAt=" + updatedAt + "]";
-	}
-	
-
-	
+	}	
 }

@@ -12,8 +12,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import com.welcome.bot.domain.User;
-import com.welcome.bot.exception.BadRequestException;
 import com.welcome.bot.exception.OAuth2AuthenticationProcessingException;
+import com.welcome.bot.exception.base.BaseException;
 import com.welcome.bot.repository.UserRepository;
 import com.welcome.bot.security.UserPrincipal;
 import com.welcome.bot.security.oauth2.user.OAuth2UserInfo;
@@ -52,7 +52,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user = updateExistingUser(user, oAuth2UserInfo);
             return UserPrincipal.create(user, oAuth2User.getAttributes());
         } else {
-        	throw new BadRequestException("You aren't added to this application");
+        	throw new BaseException("You aren't added to this application");
             
         }
     }

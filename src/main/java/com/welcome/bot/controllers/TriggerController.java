@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.welcome.bot.domain.Trigger;
-import com.welcome.bot.models.TriggerContentDTO;
 import com.welcome.bot.models.TriggerDTO;
+import com.welcome.bot.models.TriggerCreateDTO;
 import com.welcome.bot.services.TriggerService;
 
 
@@ -29,13 +29,13 @@ public class TriggerController {
 	
 	//get trigger
 	@GetMapping("/api/triggers/{triggerId}")
-	public TriggerContentDTO getTrigger(@PathVariable Integer triggerId) {
+	public TriggerDTO getTrigger(@PathVariable Integer triggerId) {
 		return triggerService.getTrigger(triggerId);
 	}
 	
 	//get all triggers
 	@GetMapping("/api/triggers")
-	public Page<TriggerContentDTO> getAllTriggers(Pageable pageable){
+	public Page<TriggerDTO> getAllTriggers(Pageable pageable){
 		return triggerService.getAllTriggers(pageable);
 	}
 	
@@ -47,12 +47,12 @@ public class TriggerController {
 	
 	//create trigger
 	@PostMapping("/api/triggers")
-	public TriggerContentDTO createTrigger(@RequestBody TriggerDTO triggerModel) {
+	public TriggerDTO createTrigger(@RequestBody TriggerCreateDTO triggerModel) {
 		return triggerService.createTrigger(triggerModel);		
 	}
 	
 	@PutMapping("/api/triggers/{triggerId}")
-	public TriggerContentDTO updateTrigger(@PathVariable Integer triggerId, @RequestBody TriggerDTO triggerModel) {
+	public TriggerDTO updateTrigger(@PathVariable Integer triggerId, @RequestBody TriggerCreateDTO triggerModel) {
 		return triggerService.updateTrigger(triggerId, triggerModel);
 	}
 	

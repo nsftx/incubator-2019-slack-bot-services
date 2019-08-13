@@ -20,7 +20,7 @@ import com.welcome.bot.slack.api.utils.MessageSender;
 import com.welcome.bot.slack.api.utils.PayloadGenerator;
 
 @Service
-public class SlackClientService implements SlackClientApi, ApplicationListener<SlackEventTriggeredEvent> {
+public class SlackClientService implements SlackClientApi{
 
 	private ConnectionGenerator connectionGen = new ConnectionGenerator();
 	private PayloadGenerator payloadGen = new PayloadGenerator();
@@ -368,19 +368,20 @@ public class SlackClientService implements SlackClientApi, ApplicationListener<S
 		
 	}
 	// Delete on final review --- this method and 2nd implementation are Easter Eggs
-	@Override
-	public void onApplicationEvent(SlackEventTriggeredEvent event) {
-		HashMap<String, String> eventData = event.getEventData();
-		
-		String source = eventData.get("isInteraction");
-		
-		if(source.equals("true")) {
-			String text = eventData.get("text");
-			String url = eventData.get("responseURL");
-			testInteraction("#general",text,url);
-		} else if (source.equals("false")) {
-			sendMessagePoll(eventData.get("channel"), eventData.get("type"), new ArrayList<>()).toString();
-		}
+
+//	@Override
+//	public void onApplicationEvent(SlackEventTriggeredEvent event) {
+//		HashMap<String, String> eventData = event.getEventData();
+//		
+//		String source = eventData.get("isInteraction");
+//		
+//		if(source.equals("true")) {
+//			String text = eventData.get("text");
+//			String url = eventData.get("responseURL");
+//			testInteraction("#general",text,url);
+//		} else if (source.equals("false")) {
+//			sendMessagePoll(eventData.get("channel"), eventData.get("type"), new ArrayList<>()).toString();
+//		}
 		
 		
 		//TODO test - delete later
@@ -389,6 +390,5 @@ public class SlackClientService implements SlackClientApi, ApplicationListener<S
 //		String response = createSchedule(eventData.get("channel"), eventData.get("type"), new Date(), "wk");
 //		System.out.println("RESPONSE FROM SEND MESSAGE (EVENT): " + response);
 //		getChannelsList();
-	}
-
+	
 }

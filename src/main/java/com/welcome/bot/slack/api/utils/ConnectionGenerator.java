@@ -6,8 +6,10 @@ import java.net.URL;
 
 public class ConnectionGenerator {
 	
+
 	static final String TOKEN_BOT = "#";
 	static final String TOKEN_USER = "#";
+
 
 	public ConnectionGenerator() {}
 	

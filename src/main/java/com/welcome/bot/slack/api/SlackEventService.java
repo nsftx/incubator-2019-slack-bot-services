@@ -34,7 +34,7 @@ public class SlackEventService {
 	private void passEvent(String channel, String eventType, String user) {
 		HashMap<String, String> eventData = new HashMap<String,String>();
 		eventData.put("channel", channel);
-		eventData.put("type", eventType);
+		eventData.put("triggerType", eventType);
 		eventData.put("user", user);
 		
 		// for tests of interaction

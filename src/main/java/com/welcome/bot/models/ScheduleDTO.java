@@ -2,22 +2,26 @@ package com.welcome.bot.models;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ScheduleDTO {
 	
+	private Integer scheduleId;
 	private boolean active;
 	private boolean repeat;
+	private String channel;
 	private Date runAt;
-	private Integer messageId;
+	private Date createdAt;
 	
-	public ScheduleDTO(boolean active, boolean repeat, Date runAt, Integer messageId) {
-		this.active = active;
-		this.repeat = repeat;
-		this.runAt = runAt;
-		this.messageId = messageId;
+	@JsonProperty("message")
+	private MessageDTO messageDto;
+
+	public Integer getScheduleId() {
+		return scheduleId;
 	}
-	
-	protected ScheduleDTO() {
-		
+
+	public void setScheduleId(Integer scheduleId) {
+		this.scheduleId = scheduleId;
 	}
 
 	public boolean isActive() {
@@ -36,6 +40,14 @@ public class ScheduleDTO {
 		this.repeat = repeat;
 	}
 
+	public String getChannel() {
+		return channel;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
+
 	public Date getRunAt() {
 		return runAt;
 	}
@@ -44,11 +56,20 @@ public class ScheduleDTO {
 		this.runAt = runAt;
 	}
 
-	public Integer getMessageId() {
-		return messageId;
+	public Date getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setMessageId(Integer messageId) {
-		this.messageId = messageId;
-	}		
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public MessageDTO getMessageDto() {
+		return messageDto;
+	}
+
+	public void setMessageDto(MessageDTO messageDto) {
+		this.messageDto = messageDto;
+	}
+
 }
