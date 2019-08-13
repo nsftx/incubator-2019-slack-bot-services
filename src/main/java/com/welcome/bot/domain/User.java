@@ -27,7 +27,9 @@ public class User {
     @OneToOne
     @MapsId
     private UserSettings userSettings;
-   
+    @OneToOne
+    @MapsId
+    private Invite invite;
     @Column(name="role")
     private String role;
 
@@ -57,7 +59,13 @@ public class User {
     public void setId(Long id) {
         this.id = id;
     }
+    public Invite getInvite() {
+        return invite;
+    }
 
+    public void setInvite(Invite invite) {
+        this.invite = invite;
+    }
     public String getName() {
         return name;
     }
