@@ -2,17 +2,24 @@ package com.welcome.bot.services;
 
 
 
+
+
 import static org.hamcrest.CoreMatchers.nullValue;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
+import javax.management.RuntimeErrorException;
+
+import org.json.JSONException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.ejb.access.EjbAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,6 +30,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.welcome.bot.domain.Message;
 import com.welcome.bot.domain.Schedule;
 import com.welcome.bot.domain.Trigger;
+import com.welcome.bot.exception.base.BaseException;
 import com.welcome.bot.exception.message.MessageNotFoundException;
 import com.welcome.bot.exception.schedule.ScheduleNotFoundException;
 import com.welcome.bot.exception.schedule.ScheduleValidationException;
@@ -33,6 +41,7 @@ import com.welcome.bot.models.ScheduleCreateDTO;
 import com.welcome.bot.repository.MessageRepository;
 import com.welcome.bot.repository.ScheduleRepository;
 import com.welcome.bot.slack.api.SlackClientApi;
+import com.welcome.bot.slack.api.model.interactionpayload.Channel;
 
 import ch.qos.logback.classic.turbo.TurboFilter;
 
@@ -65,12 +74,24 @@ public class ScheduleService {
 				.orElseThrow(() -> new MessageNotFoundException(scheduleModel.getMessageId()));
 		
 		//throw exception if not validate
-		validateDate(scheduleModel);
+		try {
+			validateDate(scheduleModel);
+		} catch (ScheduleValidationException e) {
+			throw e;
+		}
+
+		String intervalType = null;
+		if(scheduleModel.isRepeat()) {
+			intervalType = getIntervalType(scheduleModel);
+		}
 		
+		String channel = getChannelById(scheduleModel.getChannelId());
+
 		Schedule schedule = new Schedule(scheduleModel.isActive(),
 										scheduleModel.isRepeat(),
+										intervalType,
 										scheduleModel.getRunAt(), 
-										scheduleModel.getChannel(), 
+										channel, 
 										message);
 		
 		//if schedule is active we send it to slack
@@ -116,7 +137,7 @@ public class ScheduleService {
 		schedule.setActive(scheduleModel.isActive());
 		schedule.setRunAt(scheduleModel.getRunAt());
 		schedule.setRepeat(scheduleModel.isRepeat());
-		schedule.setChannel(scheduleModel.getChannel());
+		schedule.setChannel(scheduleModel.getChannelId());
 		
 		
 		if(schedule.getActive()) {
@@ -169,8 +190,9 @@ public class ScheduleService {
 	
 	//delete all triggers by list you send as parameter
 	public void deleteAllSchedulesByList(List<Schedule> scheduleList) {
-		if(!scheduleList.isEmpty()) {
-			scheduleRepository.deleteAll(scheduleList);	
+		for (Schedule schedule : scheduleList) {
+			schedule.setDeleted(true);
+			scheduleRepository.save(schedule);
 		}
 	}
 	
@@ -190,14 +212,17 @@ public class ScheduleService {
 		}
 	}
 	
-	
 	//SLACK API methods
 	
 	//sending schedule to slack
 	public void sendScheduleToSlackApi(Schedule schedule) {
 		String slackMessageId = "";
 		//slackMessageId = slackClientApi.createSchedule("#general", schedule.getMessage().getText(), schedule.getRunAt(), schedule.getRepeat());
-		System.out.println(schedule.getRunAt());
+		try {
+			slackMessageId = slackClientApi.createSchedule(schedule.getChannel(), schedule.getMessage().getText(), schedule.getRunAt(), schedule.getIntervalType());
+		} catch (Exception e) {
+			throw e;
+		}
 		
 		if(slackMessageId != null && !slackMessageId.isEmpty()) {
 			schedule.setSlackScheduleId(slackMessageId);
@@ -214,9 +239,7 @@ public class ScheduleService {
 		return status;
 	}
 
-	public List<String> getChannelsList() {
-		return null;//slackClientApi.getChannelsList();
-	}
+
 	
 	public List<Schedule> getAllByChannel(String channel){
 		List<Schedule> scheduleList = scheduleRepository.findAllByChannel(channel);
@@ -228,6 +251,53 @@ public class ScheduleService {
 			schedule.setActive(active);
 			scheduleRepository.save(schedule);
 		}
+	}
+
+	public List<HashMap<String, String>> getRepeatIntervals() {
+		HashMap<String, String> daily = new HashMap<>();
+		HashMap<String, String> weekly = new HashMap<>();
+		HashMap<String, String> monthly = new HashMap<>();
+		
+		daily.put("id", "1");
+		daily.put("type", "DAILY");
+	
+		weekly.put("id", "2");
+		weekly.put("type", "WEEKLY");
+		
+		monthly.put("id", "3");
+		monthly.put("type", "MONTHLY");
+		
+		List<HashMap<String, String>> list = new ArrayList<>();
+		list.add(daily);
+		list.add(weekly);
+		list.add(monthly);
+		
+		return list;
+	}
+	
+	public String getIntervalType(ScheduleCreateDTO scheduleModel) throws NullPointerException{
+		String intervalType = null;
+		List<HashMap<String, String>> list = getRepeatIntervals();
+		for (HashMap<String, String> hashMap : list) {
+			if(hashMap.get("id").compareTo(scheduleModel.getIntervalId()) == 0) {
+				intervalType = hashMap.get("type");
+			}
+		}
+		if(intervalType == null) {
+			throw new NullPointerException();
+		}else {
+			return intervalType;	
+		}
+	}
+	
+	private String getChannelById(String channelId) {
+		List<Channel> list = slackClientApi.getChannelsList();
+		for (Channel channel : list) {
+			if(channel.getId().equals(channelId)) {
+				return channel.getName();
+			}
+		}
+		return null;
 	}
 }
 

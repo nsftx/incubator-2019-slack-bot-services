@@ -2,8 +2,8 @@ package com.welcome.bot.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.welcome.bot.domain.AuditSchedule;
+import com.welcome.bot.domain.AuditLog;
 
-public interface AuditScheduleRepository extends JpaRepository<AuditSchedule, Integer>{
+public interface AuditScheduleRepository extends JpaRepository<AuditLog, Integer>{
 	
 }
