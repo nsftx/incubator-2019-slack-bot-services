@@ -27,7 +27,7 @@ public boolean sendInvite(String email) {
 	        SimpleMailMessage msg = new SimpleMailMessage();
 	        msg.setTo(email);
 	        msg.setSubject("You've been addedd to NSoft Welcome Bot application");
-	        msg.setText("Hello"+email+"\n You've been added to Nsoft Welcome Bot application. You can login to application here: http://nsoft.com/welcome-bot/login \n Please login with this email and google password.");
+	        msg.setText("Hello"+email+"\n You've been added to Nsoft Welcome Bot application. You can login to application here: http://welcome-bot.tk \n Please login with your google email and google password.");
 	        
 	        javaMailSender.send(msg);
 	        return true;
