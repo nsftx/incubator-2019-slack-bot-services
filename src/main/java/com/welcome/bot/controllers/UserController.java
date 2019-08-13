@@ -18,6 +18,7 @@ import com.welcome.bot.domain.User;
 import com.welcome.bot.domain.UserSettings;
 import com.welcome.bot.exception.ResourceNotFoundException;
 import com.welcome.bot.exception.base.BaseException;
+import com.welcome.bot.models.UserDTO;
 import com.welcome.bot.payload.ApiResponse;
 import com.welcome.bot.payload.RegistrationRequest;
 import com.welcome.bot.payload.TranslationSettings;
@@ -25,6 +26,7 @@ import com.welcome.bot.repository.UserRepository;
 import com.welcome.bot.repository.UserSettingsRepository;
 import com.welcome.bot.security.CurrentUser;
 import com.welcome.bot.security.UserPrincipal;
+import com.welcome.bot.services.UserService;
 
 import java.net.URI;
 
@@ -32,10 +34,11 @@ import java.net.URI;
 
 import javax.validation.Valid;
 
+import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -54,6 +57,8 @@ public class UserController {
     private UserSettingsRepository userSettingsRepository;
     @Autowired
     MessageSource messageSource;
+    @Autowired
+    UserService userService;
     
     @RequestMapping(value = "/translation", method = RequestMethod.GET)
     @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
@@ -81,6 +86,7 @@ public class UserController {
     	userRepository.delete(user);
     		
     }
+   
    
    
     @PostMapping("/userSettings")
@@ -122,7 +128,10 @@ public class UserController {
     	                .body(new ApiResponse(true, "User registered successfully@"));
     	    }
 
-   
+    @GetMapping("/getAllUsers")
+    public Page<UserDTO> getAllUsers(Pageable pageable) {
+    	return userService.getAllUsers(pageable);
+    }
     
     
 }
