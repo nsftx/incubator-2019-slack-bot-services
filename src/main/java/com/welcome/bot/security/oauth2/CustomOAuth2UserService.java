@@ -52,7 +52,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user = updateExistingUser(user, oAuth2UserInfo);
             return UserPrincipal.create(user, oAuth2User.getAttributes());
         } else {
-        	throw new BaseException("You aren't added to this application");
+        	//throw new BaseException("You aren't added to this application");
             
         }
     }
