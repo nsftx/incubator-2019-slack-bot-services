@@ -128,10 +128,10 @@ public class ScheduleService {
 			System.out.println("Schedule is updated from slack api");
 		}
 		
-		if(schedule.getMessage().getMessageId() != scheduleModel.getMessageId()) {
-			Message message = messageRepository.findById(scheduleModel.getMessageId()).orElseThrow();
-			schedule.setMessage(message);
-		}
+		//if(schedule.getMessage().getMessageId() != scheduleModel.getMessageId()) {
+			//Message message = messageRepository.findById(scheduleModel.getMessageId()).orElseThrow();
+			//schedule.setMessage(message);
+		//}
 		
 		scheduleRepository.save(schedule);
 		ScheduleDTO scheduleContentDTO = convertToDto(schedule);
