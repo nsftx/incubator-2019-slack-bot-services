@@ -33,7 +33,7 @@ public class Invite {
 	        this.sent = sent;
 	    }
 	 public Invite() {
-		  this.sent=false;
+		  this.sent=0;
 	    }
 	 public Invite(Invite invite) {
 		  this.id=invite.getId();
