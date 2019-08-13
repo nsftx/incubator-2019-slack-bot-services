@@ -112,7 +112,7 @@ public class UserController {
     	        User result = userRepository.save(user);
     	        if(inviteService.sendInvite(result.getEmail())) {
     	        
-    	        user.getInvite().setSent(true);
+    	        user.getInvite().setSent(1);
     	        }
     	        else {
     	        	
