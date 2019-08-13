@@ -1,15 +1,26 @@
 package com.welcome.bot.models;
 
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class TriggerDTO {
 
+	private Integer triggerId;
 	private String channel;
 	private String triggerType;
 	private boolean active;
-	private Integer messageId;
+	private Date createdAt;
 	
-	
-	public TriggerDTO() {
-		
+	@JsonProperty("message")
+	private MessageDTO messageDto;
+
+	public Integer getTriggerId() {
+		return triggerId;
+	}
+
+	public void setTriggerId(Integer triggerId) {
+		this.triggerId = triggerId;
 	}
 
 	public String getChannel() {
@@ -36,12 +47,22 @@ public class TriggerDTO {
 		this.active = active;
 	}
 
-	public Integer getMessageId() {
-		return messageId;
+	public Date getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setMessageId(Integer messageId) {
-		this.messageId = messageId;
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
 	}
+
+	public MessageDTO getMessageDto() {
+		return messageDto;
+	}
+
+	public void setMessageDto(MessageDTO messageDto) {
+		this.messageDto = messageDto;
+	}
+	
+	
 
 }

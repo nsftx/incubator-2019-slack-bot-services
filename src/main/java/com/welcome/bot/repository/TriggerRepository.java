@@ -15,4 +15,8 @@ public interface TriggerRepository extends PagingAndSortingRepository<Trigger, I
 	public List<Trigger> findAllByMessage(Message message);
 	
 	public Page<Trigger> findAll(Pageable pageParam);
+	
+	public List<Trigger> findAllByTriggerTypeAndChannel(String triggerType, String channel);
+	
+	public List<Trigger> findAllByChannel(String channel);
 }

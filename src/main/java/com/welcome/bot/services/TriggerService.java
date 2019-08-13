@@ -6,49 +6,56 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.welcome.bot.domain.Message;
 import com.welcome.bot.domain.Trigger;
+import com.welcome.bot.exception.message.MessageNotFoundException;
+import com.welcome.bot.exception.trigger.TriggerNotFoundException;
 import com.welcome.bot.models.MessageDTO;
-import com.welcome.bot.models.TriggerContentDTO;
 import com.welcome.bot.models.TriggerDTO;
+import com.welcome.bot.models.TriggerCreateDTO;
 import com.welcome.bot.repository.MessageRepository;
 import com.welcome.bot.repository.TriggerRepository;
 
 @Service
 public class TriggerService {
 
-	@Autowired
 	TriggerRepository triggerRepository;
 	
-	@Autowired
 	MessageRepository messageRepository;
 	
-	@Autowired
 	ModelMapper modelMapper;
 	
+	@Autowired
+	public TriggerService(final TriggerRepository triggerRepository,
+			final MessageRepository messageRepository,
+			final ModelMapper modelMapper) {
+		
+		this.triggerRepository = triggerRepository;
+		this.messageRepository = messageRepository;
+		this.modelMapper = modelMapper;
+	}
+
 	//get trigger
-	public TriggerContentDTO getTrigger(@PathVariable Integer triggerId) {
+	public TriggerDTO getTrigger(Integer triggerId) {
 		
 		Trigger trigger = triggerRepository.findById(triggerId)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trigger data not found"));		
+				.orElseThrow(() -> new TriggerNotFoundException(triggerId));		
 		
-		TriggerContentDTO triggerContentDTO = convertToContentDto(trigger);
+		TriggerDTO triggerContentDTO = convertToContentDto(trigger);
 		
 		return triggerContentDTO;
 	}
 	
 	//get all triggers
-	public Page<TriggerContentDTO> getAllTriggers(Pageable pageable){
+	public Page<TriggerDTO> getAllTriggers(Pageable pageable){
 		
 		Page<Trigger> triggerPage = triggerRepository.findAll(pageable);
 		
@@ -56,34 +63,33 @@ public class TriggerService {
 		List<Trigger> triggerList = triggerPage.getContent();
 		
 		//mapping to DTO 
-		List<TriggerContentDTO> triggerContentDTOlist = new ArrayList<>();
-		for(Integer i = 0; i < triggerPage.getTotalElements(); i++) {
-			Trigger trigger = triggerList.get(i);
-			TriggerContentDTO triggerContentDTO = convertToContentDto(trigger);
+		List<TriggerDTO> triggerContentDTOlist = new ArrayList<>();
+		for (Trigger trigger : triggerList) {
+			TriggerDTO triggerContentDTO = convertToContentDto(trigger);
 			triggerContentDTOlist.add(triggerContentDTO);
 		}
 		
 		//creating page with DTO
-		Page<TriggerContentDTO> triggerContentDTOPage = new PageImpl<TriggerContentDTO>(triggerContentDTOlist, pageable, triggerPage.getTotalElements());
+		Page<TriggerDTO> triggerContentDTOPage = new PageImpl<TriggerDTO>(triggerContentDTOlist, pageable, triggerPage.getTotalElements());
 		
 		//return that page
 		return triggerContentDTOPage;
-
 	}
 
-	public List<Trigger> getTriggerByMessage(@PathVariable Integer messageId){
+	//get trigger by message id
+	public List<Trigger> getTriggerByMessage(Integer messageId){
 		Message message = messageRepository.findById(messageId)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trigger not found"));
+				.orElseThrow(() -> new MessageNotFoundException(messageId));
 		List<Trigger> lista = triggerRepository.findAllByMessage(message);
 		return lista;
 	}
 	
 	
 	//create trigger
-	public TriggerContentDTO createTrigger(@RequestBody TriggerDTO triggerModel) {
+	public TriggerDTO createTrigger(TriggerCreateDTO triggerModel) {
 		Message message = messageRepository.findById(triggerModel.getMessageId())
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message not found"));
-		
+				.orElseThrow(() -> new MessageNotFoundException(triggerModel.getMessageId()));
+			
 		Trigger trigger = new Trigger(triggerModel.getChannel(), 
 									triggerModel.getTriggerType(),
 									triggerModel.isActive(), 
@@ -91,39 +97,82 @@ public class TriggerService {
 		
 		triggerRepository.save(trigger); 		
 		
-		TriggerContentDTO triggerContentDTO = convertToContentDto(trigger);
+		TriggerDTO triggerContentDTO = convertToContentDto(trigger);
 		return triggerContentDTO;
 	}
 	
-	public TriggerContentDTO updateTrigger(@PathVariable Integer triggerId, @RequestBody TriggerDTO triggerModel) {
-		Trigger trigger = triggerRepository.findById(triggerId).orElseThrow();
+	//update trigger
+	public TriggerDTO updateTrigger(Integer triggerId, TriggerCreateDTO triggerModel) {
+		Trigger trigger = triggerRepository.findById(triggerId)
+				.orElseThrow(() -> new TriggerNotFoundException(triggerId));
+		
+		//update attributes
 		trigger.setActive(triggerModel.isActive());
 		trigger.setChannel(triggerModel.getChannel());
-		trigger.setTriggerType(triggerModel.getTriggerType());		
+		trigger.setTriggerType(triggerModel.getTriggerType());
+		trigger.setUpdatedAt();
 
 		//if message is not updated there are no needs to access database
 		if(trigger.getMessage().getMessageId() != triggerModel.getMessageId()) {
-			Message message = messageRepository.findById(triggerModel.getMessageId()).orElseThrow();
+			Message message = messageRepository.findById(triggerModel.getMessageId())
+					.orElseThrow(() -> new MessageNotFoundException(triggerModel.getMessageId()));
 			trigger.setMessage(message);
 		}
 		
-		//add trigger content to DTO class
-		// add message content to message DTO
-		TriggerContentDTO triggerContentDTO = convertToContentDto(trigger);
+		triggerRepository.save(trigger);
+	
+		TriggerDTO triggerContentDTO = convertToContentDto(trigger);
 
-		//return trigger content dto
 		return triggerContentDTO;
 	}
 	
-	public ResponseEntity<Trigger> deleteTrigger(@PathVariable Integer triggerId) {
-		triggerRepository.deleteById(triggerId);
+	//delete trigger 
+	public ResponseEntity<Trigger> deleteTrigger(Integer triggerId) {
+		try {
+			triggerRepository.deleteById(triggerId);
+		}
+		catch (EmptyResultDataAccessException e) {
+			throw new TriggerNotFoundException(triggerId);
+		}
+		
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 	}
 	
-	private TriggerContentDTO convertToContentDto(Trigger trigger) {
-		TriggerContentDTO triggerContentDTO = modelMapper.map(trigger, TriggerContentDTO.class);
+	//delete all triggers by list you send as parameter
+	public void deleteAllTriggersByList(List<Trigger> triggerList) {
+		if(!triggerList.isEmpty()) {
+			triggerRepository.deleteAll(triggerList);	
+		}
+	}
+	
+	//converts to trigger dto
+	private TriggerDTO convertToContentDto(Trigger trigger) {
+		TriggerDTO triggerContentDTO = modelMapper.map(trigger, TriggerDTO.class);
 		triggerContentDTO.setMessageDto(modelMapper.map(trigger.getMessage(), MessageDTO.class));
 	    return triggerContentDTO;
+	}
+
+	//get all trigger by channel
+	public List<Trigger> getAllByChannel(String channel) {
+		List<Trigger> triggerList = triggerRepository.findAllByChannel(channel);
+		return triggerList;
+	}
+
+	//update active attribute of list of triggers by boolean parameter you send
+	public void updateActiveStatus(List<Trigger> triggerList, boolean active) {
+		for (Trigger trigger : triggerList) {
+			trigger.setActive(active);
+			triggerRepository.save(trigger);
+		}
+	}
+
+	//deletes all triggers by message you send as parameter
+	public void deleteAllTriggersByMessage(Message message) {
+		List<Trigger> triggersList = triggerRepository.findAllByMessage(message);
+		
+		if(!triggersList.isEmpty()) {
+			deleteAllTriggersByList(triggersList);
+		}	
 	}
 	
 }

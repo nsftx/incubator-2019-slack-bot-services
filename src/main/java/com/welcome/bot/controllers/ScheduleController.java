@@ -15,9 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.welcome.bot.domain.Schedule;
-import com.welcome.bot.models.ScheduleContentDTO;
 import com.welcome.bot.models.ScheduleDTO;
+import com.welcome.bot.models.ScheduleCreateDTO;
 import com.welcome.bot.services.ScheduleService;
+
 
 @RestController
 public class ScheduleController {
@@ -26,23 +27,25 @@ public class ScheduleController {
 	ScheduleService scheduleService;
 	
 	@PostMapping("/api/schedules")
-	public ScheduleContentDTO createSchedule(@RequestBody ScheduleDTO scheduleModel){
+	public ScheduleDTO createSchedule(@RequestBody ScheduleCreateDTO scheduleModel){
 		return scheduleService.createSchedule(scheduleModel);
 	}
 	@GetMapping("/api/schedules")
-	public Page<ScheduleContentDTO> getAllSchedules(Pageable pageable) {
+	public Page<ScheduleDTO> getAllSchedules(Pageable pageable) {
 		return scheduleService.getAllSchedules(pageable);
 	}
 	@GetMapping("/api/schedules/{scheduleId}")
-	public ScheduleContentDTO getSchedule(@PathVariable Integer scheduleId) {
+	public ScheduleDTO getSchedule(@PathVariable Integer scheduleId) {
 		return scheduleService.getSchedule(scheduleId);
 	}
 	@PutMapping("/api/schedules/{scheduleId}")
-	public ScheduleContentDTO updateSchedule(@PathVariable Integer scheduleId, @RequestBody ScheduleDTO scheduleModel) {
+	public ScheduleDTO updateSchedule(@PathVariable Integer scheduleId, @RequestBody ScheduleCreateDTO scheduleModel) {
 		return scheduleService.updateSchedule(scheduleId, scheduleModel);
 	}
 	@DeleteMapping("/api/schedules/{scheduleId}")
 	public ResponseEntity<Schedule> deleteSchedule(@PathVariable Integer scheduleId) {
 		return scheduleService.deleteSchedule(scheduleId);
 	}
+	
+
 }

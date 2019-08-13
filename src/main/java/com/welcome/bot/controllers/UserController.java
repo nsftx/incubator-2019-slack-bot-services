@@ -16,8 +16,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.welcome.bot.domain.User;
 import com.welcome.bot.domain.UserSettings;
-import com.welcome.bot.exception.BadRequestException;
 import com.welcome.bot.exception.ResourceNotFoundException;
+import com.welcome.bot.exception.base.BaseException;
 import com.welcome.bot.payload.ApiResponse;
 import com.welcome.bot.payload.RegistrationRequest;
 import com.welcome.bot.payload.TranslationSettings;
@@ -100,7 +100,7 @@ public class UserController {
     @PostMapping("/create")
     	  public ResponseEntity<?> registerUser(@Valid @RequestBody RegistrationRequest signUpRequest) {
     	        if(userRepository.existsByEmail(signUpRequest.getEmail())) {
-    	            throw new BadRequestException("Email address already in use.");
+    	            throw new BaseException("Email address already in use.");
     	        }
 
     	       
