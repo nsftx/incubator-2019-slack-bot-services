@@ -50,6 +50,7 @@ public class User {
         this.name = user.getName();
         this.id = user.getId();
         this.userSettings=user.getUserSettings();
+            this.invite=user.getInvite();
         
     }
 
