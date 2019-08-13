@@ -41,10 +41,10 @@ public boolean sendInvite(String email) {
 public void scheduleFixedDelayTask() {
 	List<User> users=userRepository.findAll();
     for(User user:users) {
-    	if(!(user.getInvite().getSent())){
+    	if((user.getInvite().getSent())==0){
     		if(sendInvite(user.getEmail())) {
     			Invite invite2=inviteRepository.findById(user.getInvite().getId()).orElseThrow(() -> new ResourceNotFoundException("Invite", "id", user.getInvite().getId()));
-    	    	invite2.setSent(true);
+    	    	invite2.setSent(1);
     	    	Invite result=inviteRepository.save(invite2);
     		}
     	}
