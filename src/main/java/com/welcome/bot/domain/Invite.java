@@ -17,7 +17,7 @@ public class Invite {
 	  @GeneratedValue(strategy = GenerationType.IDENTITY)
 	    private Long id;
 	 @Column(nullable= false)
-	 private Boolean sent;
+	 private int sent;
 	 public Long getId() {
 	        return id;
 	    }
@@ -25,11 +25,11 @@ public class Invite {
 	    public void setId(Long id) {
 	        this.id = id;
 	    }
-	 public Boolean getSent() {
+	 public int getSent() {
 	        return sent;
 	    }
 
-	    public void setSent(Boolean sent) {
+	    public void setSent(int sent) {
 	        this.sent = sent;
 	    }
 	 public Invite() {
