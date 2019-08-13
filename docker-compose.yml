@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  mariadb:
+      image: mariadb:10.4
+      privileged: true
+      container_name: wb-mariadb
+      restart: on-failure
+      environment:
+        MYSQL_ROOT_PASSWORD: jV75eRt9
+        MYSQL_DATABASE: welcome-bot
+      ports:
+        - "3306:3306"
+      networks:
+        - backend
+      volumes:
+        - /databases:/var/lib/mysql
+
+  welcome-bot:
+      container_name: wb-welcomebot
+      restart: on-failure
+      build: .
+      working_dir: /home/welcomebot
+      ports:
+        - "9090:8080"
+      depends_on:
+        - mariadb
+      networks:
+        - backend
+
+networks:
+  backend:
+      driver: bridge
