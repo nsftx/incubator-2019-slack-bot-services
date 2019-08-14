@@ -28,18 +28,18 @@ public class SlackApiEventListener implements ApplicationListener<SlackEventTrig
 	@Override
 	public void onApplicationEvent(SlackEventTriggeredEvent event) {
 
-		HashMap<String, String> eventData = event.getEventData();
-
-		switch (eventData.get("triggerType")) {
-		case "app_mention":
-			slackService.triggerApp(eventData);
-			break;
-		case "channel_deleted":
-			slackService.logChannelActivities(eventData);
-			break;
-		default:
-			break;
-		}		
+//		HashMap<String, String> eventData = event.getEventData();
+//
+//		switch (eventData.get("triggerType")) {
+//		case "app_mention":
+//			slackService.triggerApp(eventData);
+//			break;
+//		case "channel_deleted":
+//			slackService.logChannelActivities(eventData);
+//			break;
+//		default:
+//			break;
+//		}		
 
 	}
 	

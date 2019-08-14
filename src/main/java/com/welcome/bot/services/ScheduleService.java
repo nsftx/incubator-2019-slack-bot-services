@@ -150,7 +150,7 @@ public class ScheduleService {
 		if(lastState == false && active == true) {
 			deleteScheduleInSlackApi(schedule);
 			sendScheduleToSlackApi(schedule);	
-		
+		}
 		schedule.setActive(active);	
 		scheduleRepository.save(schedule);
 		
