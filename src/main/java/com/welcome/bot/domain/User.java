@@ -15,13 +15,16 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+   @Column(length = 10485760)
+    @Size(min = 20, max = 10485760)
     private String name;
 
     @Email
     @Column(nullable = false)
     private String email;
-    @Column
+   
+    @Column(length = 10485760)
+    @Size(min = 20, max = 10485760)
     private String imageUrl;
     
     @OneToOne
