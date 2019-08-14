@@ -18,21 +18,21 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class EventItemChannel {
 
 	@JsonProperty("id")
-	public String id;
+	private String id;
 	@JsonProperty("is_channel")
-	public Boolean isChannel;
+	private Boolean isChannel;
 	@JsonProperty("name")
-	public String name;
+	private String name;
 	@JsonProperty("name_normalized")
-	public String nameNormalized;
+	private String nameNormalized;
 	@JsonProperty("created")
-	public Integer created;
+	private Integer created;
 	@JsonProperty("creator")
-	public String creator;
+	private String creator;
 	@JsonProperty("is_shared")
-	public Boolean isShared;
+	private Boolean isShared;
 	@JsonProperty("is_org_shared")
-	public Boolean isOrgShared;
+	private Boolean isOrgShared;
 	
 	public EventItemChannel(String id, Boolean isChannel, String name, String nameNormalized, Integer created, String creator, Boolean isShared, Boolean isOrgShared) {
 		this.id = id;
@@ -43,6 +43,14 @@ public class EventItemChannel {
 		this.creator = creator;
 		this.isShared = isShared;
 		this.isOrgShared = isOrgShared; 
+	}
+	
+	public EventItemChannel(String id, Boolean isChannel, String name, String nameNormalized, Integer created) {
+		this.id = id;
+		this.isChannel = isChannel;
+		this.name = name;
+		this.nameNormalized = nameNormalized;
+		this.created = created;
 	}
 	
 	public String getId() {

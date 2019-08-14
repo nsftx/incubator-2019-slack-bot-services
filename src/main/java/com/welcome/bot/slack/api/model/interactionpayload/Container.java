@@ -16,17 +16,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class Container {
 
 	@JsonProperty("attachment_id")
-	public Integer attachmentId;
+	private Integer attachmentId;
 	@JsonProperty("channel_id")
-	public String channelId;
+	private String channelId;
 	@JsonProperty("is_ephemeral")
-	public Boolean isEphemeral;
+	private Boolean isEphemeral;
 	@JsonProperty("message_ts")
-	public String messageTs;
+	private String messageTs;
 	@JsonProperty("type")
-	public String type;
+	private String type;
 	@JsonProperty("is_app_unfurl")
-	public Boolean isAppUnfurl;
+	private Boolean isAppUnfurl;
 	
 	public Integer getAttachmentId() {
 		return attachmentId;
@@ -34,35 +34,39 @@ public class Container {
 	public void setAttachmentId(Integer attachmentId) {
 		this.attachmentId = attachmentId;
 	}
+	
 	public String getChannelId() {
 		return channelId;
 	}
 	public void setChannelId(String channelId) {
 		this.channelId = channelId;
 	}
+	
 	public Boolean getIsEphemeral() {
 		return isEphemeral;
 	}
 	public void setIsEphemeral(Boolean isEphemeral) {
 		this.isEphemeral = isEphemeral;
 	}
+	
 	public String getMessageTs() {
 		return messageTs;
 	}
 	public void setMessageTs(String messageTs) {
 		this.messageTs = messageTs;
 	}
+	
 	public String getType() {
 		return type;
 	}
 	public void setType(String type) {
 		this.type = type;
 	}
+	
 	public Boolean getIsAppUnfurl() {
 		return isAppUnfurl;
 	}
 	public void setIsAppUnfurl(Boolean isAppUnfurl) {
 		this.isAppUnfurl = isAppUnfurl;
 	}
-	
 }

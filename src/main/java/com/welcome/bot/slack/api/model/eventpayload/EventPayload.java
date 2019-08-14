@@ -21,37 +21,25 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 public class EventPayload {
 	
-	// COMMON FIELDS
 	@JsonProperty("token")
 	private String token;
-	
 	@JsonProperty("type")
 	private String type;
-
-	// ADDITIONAL FIELDS FOR EVENT_SUBSCRIPTIONS
 	@JsonProperty("team_id")
 	private String teamId = "";
-	
 	@JsonProperty("api_app_id")
 	private String apiAppId = "";
-	
 	@JsonProperty("event")
 	private EventItem eventItem = null;
-	
 	@JsonProperty("event_id")
 	private String eventId = "";
-	
 	@JsonProperty("event_time")
 	private Integer eventTime = 0;
-	
 	@JsonProperty("authed_users")
 	private List<String> authedUsers = null;
-	
-	// ADDITIONAL FIELDS FOR URL_VERIFICATION
 	@JsonProperty("challenge")
 	private String challenge = "";
 
-	// GETTERS & SETTERS
 	public String getToken() {
 		return token;
 	}

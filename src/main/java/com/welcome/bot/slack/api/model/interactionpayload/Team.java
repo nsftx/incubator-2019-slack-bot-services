@@ -12,9 +12,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class Team {
 
 	@JsonProperty("id")
-	public String id;
+	private String id;
 	@JsonProperty("domain")
-	public String domain;
+	private String domain;
 	
 	public String getId() {
 		return id;
@@ -22,11 +22,11 @@ public class Team {
 	public void setId(String id) {
 		this.id = id;
 	}
+	
 	public String getDomain() {
 		return domain;
 	}
 	public void setDomain(String domain) {
 		this.domain = domain;
 	}
-	
 }

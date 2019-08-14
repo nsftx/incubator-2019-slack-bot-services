@@ -1,20 +1,20 @@
 package com.welcome.bot.slack.api;
 
-import java.util.HashMap;
-
 import org.springframework.context.ApplicationEvent;
+
+import com.welcome.bot.slack.api.model.publishevent.PublishEventMessage;
 
 @SuppressWarnings("serial")
 public class SlackEventTriggeredEvent extends ApplicationEvent {
 
-	private HashMap<String,String> eventData = new HashMap<String,String>();
+	private PublishEventMessage eventData = new PublishEventMessage();
 	
-	public SlackEventTriggeredEvent(Object source, HashMap<String,String> eventData) {
+	public SlackEventTriggeredEvent(Object source, PublishEventMessage eventData) {
 		super(source);
 		this.eventData = eventData;
 	}
 	
-	public HashMap<String,String> getEventData(){
+	public PublishEventMessage getEventData() {
 		return eventData;
 	}
 }

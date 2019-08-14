@@ -15,49 +15,38 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 "time",
 "reminder",
 "scheduled_message_id",
+"ts",
 "attachments"
 })
 public class MessagePayload {
 
-	// Properties
 	@JsonProperty("channel")
-	public String channel;
-	
+	private String channel;
 	@JsonProperty("attachments")
-	public List<PayloadAttachment> attachments = null;
-	
-	// Additional property - for SCHEDULES
+	private List<PayloadAttachment> attachments = null;
 	@JsonProperty("post_at")
-	public String post_at;
-	
-	// Additional property - for EPHEMERAL POST & REMINDER
+	private String post_at;
 	@JsonProperty("user")
-	public String user;
-	
-	// Additional property - for REMINDER
+	private String user;
 	@JsonProperty("text")
-	public String text;
-	
+	private String text;
 	@JsonProperty("time")
-	public String time;
-	
-	// Additional property - for REMINDER DELETE
-	@JsonProperty("reminder")
-	public String reminder;
-	
-	// Additional property - for SCHEDULE DELETE
+	private String time;
 	@JsonProperty("scheduled_message_id")
+<<<<<<< Updated upstream
 	public String scheduled_message_id;
+=======
+	private String scheduled_message_id;
+	@JsonProperty("ts")
+	private String ts;
+>>>>>>> Stashed changes
 
 	// Constructor
 	public MessagePayload() {}
 	
-	
-	// Getters/Setters
 	public String getChannel() {
 		return channel;
 	}
-
 	public void setChannel(String channel) {
 		this.channel = channel;
 	}
@@ -65,12 +54,10 @@ public class MessagePayload {
 	public List<PayloadAttachment> getAttachments() {
 		return attachments;
 	}
-
 	public void setAttachments(List<PayloadAttachment> attachments) {
 		this.attachments = attachments;
 	}
 	
-	// Additional getters/setters for post_at (for SCHEDULES)
 	public String getPostAt() {
 		return post_at;
 	}
@@ -78,7 +65,6 @@ public class MessagePayload {
 		this.post_at = post_at;
 	}
 	
-	// Additional getters/setters for user (for EPHEMERAL POST & REMINDER)
 	public String getUser() {
 		return user;
 	}
@@ -86,7 +72,6 @@ public class MessagePayload {
 		this.user = user;
 	}
 
-	// Additional getters/setters for text & time (for REMINDER)
 	public String getText() {
 		return text;
 	}
@@ -101,19 +86,17 @@ public class MessagePayload {
 		this.time = time;
 	}
 
-	// Additional getter/setter for reminder (for REMINDER DELETE)
-	public String getReminder() {
-		return reminder;
-	}
-	public void setReminder(String reminder) {
-		this.reminder = reminder;
-	}
-
-	// Additional getter/setter for schedule (for SCHEDULE DELETE)
 	public String getScheduledMessageId() {
 		return scheduled_message_id;
 	}
 	public void setScheduledMessageId(String scheduled_message_id) {
 		this.scheduled_message_id = scheduled_message_id;
+	}
+	
+	public String getTs() {
+		return ts;
+	}
+	public void setTs(String ts) {
+		this.ts = ts;
 	}
 }

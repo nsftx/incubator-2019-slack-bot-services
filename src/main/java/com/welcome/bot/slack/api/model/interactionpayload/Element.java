@@ -14,13 +14,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class Element {
 
 	@JsonProperty("type")
-	public String type;
+	private String type;
 	@JsonProperty("action_id")
-	public String actionId;
+	private String actionId;
 	@JsonProperty("text")
-	public Text_ text;
+	private Text_ text;
 	@JsonProperty("value")
-	public String value;
+	private String value;
 	
 	public String getType() {
 		return type;
@@ -28,23 +28,25 @@ public class Element {
 	public void setType(String type) {
 		this.type = type;
 	}
+	
 	public String getActionId() {
 		return actionId;
 	}
 	public void setActionId(String actionId) {
 		this.actionId = actionId;
 	}
+	
 	public Text_ getText() {
 		return text;
 	}
 	public void setText(Text_ text) {
 		this.text = text;
 	}
+	
 	public String getValue() {
 		return value;
 	}
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
 }

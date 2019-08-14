@@ -16,12 +16,6 @@ public class DateOperator {
 	
 	public List<Date> generateRepeatTimes(Date date, String interval){
 		List<Date> repeatDates = new ArrayList<>();
-		
-		/*
-		 * INTERVALS = DAILY; WEEKLY; MONTHLY;
-		 * MAX TIME IN FUTURE = 90 DAYS (3 MONTHS)
-		 */
-	
 		Calendar c = Calendar.getInstance();
 		c.setTime(date);
 				
@@ -39,8 +33,6 @@ public class DateOperator {
 				repeatDates.add(c.getTime());
 			}
 		}
-		System.out.println("ALL DATES ARE ==>> " + repeatDates); //TODO test - delete later
-		
 		return repeatDates;
 	}
 }

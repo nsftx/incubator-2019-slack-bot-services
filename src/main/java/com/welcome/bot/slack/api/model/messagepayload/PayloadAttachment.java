@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 })
 public class PayloadAttachment {
 
-	// Properties
 	@JsonProperty("color")
 	private String color;
 	@JsonProperty("blocks")
@@ -22,7 +21,6 @@ public class PayloadAttachment {
 	// Constructor
 	public PayloadAttachment() {}
 	
-	// Getters/Setters
 	public String getColor() {
 		return color;
 	}

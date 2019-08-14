@@ -2,6 +2,7 @@ package com.welcome.bot.slack.api.utils;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import com.welcome.bot.slack.api.model.interactionresponsepayload.InteractionResponsePayload;
@@ -14,26 +15,35 @@ import com.welcome.bot.slack.api.model.messagepayload.PayloadElementText;
 
 public class PayloadGenerator {
 
-	DateOperator dateUtil = new DateOperator();
+	DateOperator dateOperator = new DateOperator();
 
 	// Constructor
 	public PayloadGenerator() {}
 
 	public MessagePayload getMessagePayload(String channel, String text) {
-		return generateMessagePayload(channel, text);
+		return generateMessagePayload(channel, text, false);
+	}
+	
+	public MessagePayload getMessagePayload(String channel, String text, boolean isSmallImage) {
+		return generateMessagePayload(channel, text, isSmallImage);
 	}
 
-	public MessagePayload getMessagePollPayload(String channel, String text, List<String> voteOptions) {
-		return generateMessagePollPayload(channel, text, voteOptions);
+	public MessagePayload getMessagePollPayload(String channel, String text, HashMap<Integer,String> choices, String pollID) {
+		return generateMessagePollPayload(channel, text, choices, pollID);
 	}
 
 	public MessagePayload getPrivateMessagePayload(String channel, String text, String user) {
-		MessagePayload messagePayload = generateMessagePayload(channel, text);
+		MessagePayload messagePayload = generateMessagePayload(channel, text, false);
+		return generatePrivateMessagePayload(messagePayload, user);
+	}
+	
+	public MessagePayload getPrivateMessagePayload(String channel, String text, String user, boolean isSmallImage) {
+		MessagePayload messagePayload = generateMessagePayload(channel, text, isSmallImage);
 		return generatePrivateMessagePayload(messagePayload, user);
 	}
 
 	public MessagePayload getSchedulePayload(String channel, String text, Date postAt) {
-		MessagePayload messagePayload = generateMessagePayload(channel, text);
+		MessagePayload messagePayload = generateMessagePayload(channel, text, false);
 		return generateSchedulePayload(messagePayload, postAt);
 	}
 	
@@ -45,11 +55,23 @@ public class PayloadGenerator {
 		return generateScheduleDeletePayload(channel,messageID);
 	}
 	
+<<<<<<< Updated upstream
 	public InteractionResponsePayload getInteractionResponsePayload(String channel, String text) {
 		return generateInteractionResponsePayload(channel, text);
 	}
 
 	private MessagePayload generateMessagePayload(String channel, String text) {
+=======
+	public MessagePayload getMessageUpdatePayload(String channel, String newText, String messageTimestamp) {
+		return generateMessageUpdatePayload(channel, newText, messageTimestamp);
+	}
+	
+	public MessagePayload getMessageDeletePayload(String channel, String messageTimestamp) {
+		return generateMessageDeletePayload(channel, messageTimestamp);
+	}
+	
+	private MessagePayload generateMessagePayload(String channel, String text, boolean isSmallImage) {
+>>>>>>> Stashed changes
 		MessagePayload payload = new MessagePayload();
 		PayloadAttachment attachment = new PayloadAttachment();
 		PayloadBlock block = new PayloadBlock();
@@ -57,27 +79,41 @@ public class PayloadGenerator {
 		PayloadBlockText blockText = new PayloadBlockText();
 		List<PayloadBlock> blocks = new ArrayList<>();
 		
-		 //TODO test - delete later (for image testing)
-		text = "Hi There and welcome to NSoft universe :wave:\n \nGreat to see you here!{-[https://api.slack.com/img/blocks/bkb_template_images/beagle.png, image alt text]-} This is TEST, and looks like it works.";
-
-		boolean sendSmallImage = false; // this argument will be passed into method, not defined here.
+		boolean imageExists = false;
 		
-		String[] imageData = extractImageData(text);
-		if (imageData != null) {
-			if(sendSmallImage) {
-				PayloadElement imageElement = new PayloadElement();
-				imageElement.setType("image");
-				imageElement.setImage_url(imageData[0]);
-				imageElement.setAlt_text(imageData[1]);
-				block.setAccesosory(imageElement);
-			} else {
-				blockTwo.setType("image");
-				blockTwo.setImage_url(imageData[0]);
-				blockTwo.setAlt_text(imageData[1]);
+		// TODO - TEST/DELETE
+//		text = "Hi There and welcome to NSoft [url]http://www.google.com|TEST[/url] universe :wave:\n \nGreat to see "
+//				+ "you here![img]https://api.slack.com/img/blocks/bkb_template_images/beagle.png|image alt text[/img] This "
+//				+ "is TEST, and looks like it works.";
+		
+		if(text.contains("[img]") && text.contains("[/img]")) {
+			imageExists = true;
+			String[] imageData = extractImageData(text);
+			text = extractTextWithoutImage(text);
+			if (imageData != null) {
+				if(isSmallImage) {
+					PayloadElement imageElement = new PayloadElement();
+					imageElement.setType("image");
+					imageElement.setImage_url(imageData[0]);
+					imageElement.setAlt_text(imageData[1]);
+					block.setAccesosory(imageElement);
+				} else {
+					blockTwo.setType("image");
+					blockTwo.setImage_url(imageData[0]);
+					blockTwo.setAlt_text(imageData[1]);
+				}
 			}
+		}
+		
+		if(text.contains("[url]") && text.contains("[/url]")) {
+			text = convertLink(text);
 		}
 
 		blockText.setType("mrkdwn");
+<<<<<<< Updated upstream
+=======
+		blockText.setText(text);
+>>>>>>> Stashed changes
 
 		blockText.setText(text);
 		//blockText.setText("Hi There and welcome to NSoft universe :wave:\n \nGreat to see you here! This is TEST, and looks like it works. For more information about benefits, flexible work hours, documentation, etc... use available Slack commands.\n\nThat's all for start. Bye :wave:");
@@ -86,7 +122,7 @@ public class PayloadGenerator {
 		block.setText(blockText);
 
 		blocks.add(block);
-		if(imageData != null && blockTwo != null) {
+		if(imageExists && blockTwo != null) {
 			blocks.add(blockTwo);
 		}
 
@@ -106,45 +142,56 @@ public class PayloadGenerator {
 		return payload;
 	}
 
-	private MessagePayload generateMessagePollPayload(String channel, String text, List<String> voteOptions) {
+	private MessagePayload generateMessagePollPayload(String channel, String text, HashMap<Integer,String> choices, String pollID) {
 
 		MessagePayload payload = new MessagePayload();
 		PayloadAttachment attachment = new PayloadAttachment();
-		PayloadBlock voteMessage = new PayloadBlock();
-		PayloadBlockText voteMessageText = new PayloadBlockText();
+		PayloadBlock pollMessage = new PayloadBlock();
+		PayloadBlockText pollMessageText = new PayloadBlockText();
 		
 		List<PayloadBlock> blocks = new ArrayList<>();
 		List<PayloadAttachment> attachments = new ArrayList<>();
 		
-		PayloadBlock voteOptionsBlock = new PayloadBlock();
-		List<PayloadElement> voteOptionElements = new ArrayList<>();
+		PayloadBlock choicesBlock = new PayloadBlock();
+		List<PayloadElement> choiceElements = new ArrayList<>();
 		
-		voteMessageText.setType("mrkdwn");
-		voteMessageText.setText(text);
-		voteMessage.setType("section");
-		voteMessage.setText(voteMessageText);
-		blocks.add(voteMessage);
+		pollMessageText.setType("mrkdwn");
+		pollMessageText.setText(text);
+		pollMessage.setType("section");
+		pollMessage.setText(pollMessageText);
+		blocks.add(pollMessage);
 		
-		for(String voteOption : voteOptions) {
-			PayloadElement oneVoteOptionElement = new PayloadElement();
-			PayloadElementText oneVoteOptionElementText = new PayloadElementText();
+		for(int i=1;i<=choices.size();i++) {
+			String id = String.valueOf(i);
+			String choice = choices.get(i);
 			
-			oneVoteOptionElementText.setType("plain_text");
-			oneVoteOptionElementText.setText(voteOption);
+			PayloadElement oneChoiceElement = new PayloadElement();
+			PayloadElementText oneChoiceElementText = new PayloadElementText();
 			
-			oneVoteOptionElement.setType("button");
-			oneVoteOptionElement.setText(oneVoteOptionElementText);
-			oneVoteOptionElement.setValue(voteOption);
+			oneChoiceElementText.setType("plain_text");
+			oneChoiceElementText.setText(choice);
 			
-			voteOptionElements.add(oneVoteOptionElement);
+			oneChoiceElement.setType("button");
+			oneChoiceElement.setText(oneChoiceElementText);
+			oneChoiceElement.setValue(choice);
+			oneChoiceElement.setAction_id(id);
+			
+			choiceElements.add(oneChoiceElement);
 		}
 		
+<<<<<<< Updated upstream
 		voteOptionsBlock.setType("actions");
 		//voteOptionsBlock.setBlockId("s"); // BLOCK ID to differentiate one voting block from another
 		voteOptionsBlock.setElement(voteOptionElements);
 		
 		blocks.add(voteOptionsBlock);
+=======
+		choicesBlock.setType("actions");
+		choicesBlock.setBlock_id(pollID);
+		choicesBlock.setElement(choiceElements);
+>>>>>>> Stashed changes
 		
+		blocks.add(choicesBlock);
 		
 		attachment.setColor("#3AA3E3");
 		attachment.setBlocks(blocks);
@@ -167,15 +214,15 @@ public class PayloadGenerator {
 	}
 
 	private MessagePayload generateSchedulePayload(MessagePayload payload, Date postAt) {
-		payload.setPostAt(dateUtil.convertToEpoch(postAt));
+		payload.setPostAt(dateOperator.convertToEpoch(postAt));
 		return payload;
 	}
 	
 	private List<MessagePayload> generateScheduleIntervalPayload(String channel, String text, Date postAt, String repeatInterval){
 		List<MessagePayload> intervalPayload = new ArrayList<>();
-		List<Date> intervalDates = dateUtil.generateRepeatTimes(postAt, repeatInterval);
+		List<Date> intervalDates = dateOperator.generateRepeatTimes(postAt, repeatInterval);
 		for(Date date : intervalDates) {
-			MessagePayload messagePayload = generateMessagePayload(channel, text);
+			MessagePayload messagePayload = generateMessagePayload(channel, text, false);
 			MessagePayload payload = new MessagePayload();
 			payload = generateSchedulePayload(messagePayload, date);
 			intervalPayload.add(payload);
@@ -195,6 +242,7 @@ public class PayloadGenerator {
 
 		return payload;
 	}
+<<<<<<< Updated upstream
 
 	// for response to interaction
 	private InteractionResponsePayload generateInteractionResponsePayload(String channel, String text) {
@@ -203,26 +251,70 @@ public class PayloadGenerator {
 		payload.setText(text);
 		payload.setResponse_type("ephemeral");
 		
+=======
+	
+	private MessagePayload generateMessageUpdatePayload(String channel, String newText, String messageTimestamp) {
+		MessagePayload payload = new MessagePayload();
+		payload.setChannel(channel);
+		payload.setText(newText);
+		payload.setTs(messageTimestamp);
+		List<PayloadAttachment> attachments = new ArrayList<>();
+		attachments.add(null);
+		payload.setAttachments(attachments);
+		return payload;
+	}
+	
+	private MessagePayload generateMessageDeletePayload(String channel, String messageTimestamp) {
+		MessagePayload payload = new MessagePayload();
+		payload.setChannel(channel);
+		payload.setTs(messageTimestamp);
+>>>>>>> Stashed changes
 		return payload;
 	}
 	
 	private String[] extractImageData(String text) {
 		String[] imageData;
-		if(text.contains("{-[") && text.contains("]-}")) {
-			String extractImage = text.substring(text.indexOf("{-[")+3, text.indexOf("]-}"));
-			String[] extractedData = extractImage.split(",");
-			boolean isUrlOk = checkImageUrl(extractedData[0]);
+		if(text.contains("[img]") && text.contains("[/img]")) {
+			String extractImage = text.substring(text.indexOf("[img]")+5, text.indexOf("[/img]"));
+			String[] extractedImageData = extractImage.split("\\|");
+			boolean isUrlOk = checkUrl(extractedImageData[0]);
 			if(isUrlOk) {
-				if(extractedData.length == 2) {
-					imageData = extractedData;
+				if(extractedImageData.length == 2) {
+					imageData = extractedImageData;
 					return imageData;
 				}
 			}	
 		}
 		return null;
 	}
+	
+	private String extractTextWithoutImage(String text) {
+		String extractedText;
+		String extractedTextPartOne = text.substring(0, text.indexOf("[img]"));
+		String extractedTextPartTwo = text.substring(text.indexOf("[/img]")+6);
+		extractedText = extractedTextPartOne + " " + extractedTextPartTwo;
+		return extractedText;
+	}
 
-	private boolean checkImageUrl(String imageUrl) {
+	private String convertLink(String text) {
+		if(text.contains("[url]") && text.contains("[/url]")) {
+			String extractLink = text.substring(text.indexOf("[url]")+5, text.indexOf("[/url]"));
+			String[] extractedLinkData = extractLink.split("\\|");
+			boolean isUrlOk = checkUrl(extractedLinkData[0]);
+			if(isUrlOk) {
+				if(extractedLinkData.length == 2) {
+					String link = "<"+extractedLinkData[0]+"|"+extractedLinkData[1]+">";
+					String extractedTextPartOne = text.substring(0, text.indexOf("[url]"));
+					String extractedTextPartTwo = text.substring(text.indexOf("[/url]")+6);
+					String convertedText = extractedTextPartOne + " " + link + " " + extractedTextPartTwo;
+					return convertedText;
+				}
+			}
+		}
+		return null;
+	}
+	
+	private boolean checkUrl(String imageUrl) {
 		if(imageUrl.startsWith("www.") || imageUrl.startsWith("http://") || imageUrl.startsWith("http://www.") || imageUrl.startsWith("https://") || imageUrl.startsWith("https://www.")) {
 			return true;
 		}

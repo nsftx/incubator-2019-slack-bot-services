@@ -17,55 +17,43 @@ import com.fasterxml.jackson.databind.JsonNode;
 "channel",
 "event_ts",
 "channel_type",
+"is_moved",
+"actor_id",
 "inviter"
 })
 public class EventItem {
 
-	// COMMON FIELDS FOR ALL EVENTS
 	@JsonProperty("type")
 	private String type;
-	
 	@JsonProperty("event_ts")
 	private String eventTs;
-	
-	// ADDITIONAL FIELD FOR "CHANNEL CREATED" EVENT
-	public EventItemChannel channel;
-	
-	// ADDITIONAL FIELDS FOR "APP_MENTION" & "MEMBER_JOINED_CHANNEL" EVENTS
+	private EventItemChannel channel;
 	@JsonProperty("user")
 	private String user;
-	
 	@JsonProperty("team")
 	private String team;
-	
 	private String channelId;
-	
-	// ADDITIONAL FIELDS FOR "APP_MENTION" EVENT
 	@JsonProperty("client_msg_id")
 	private String clientMsgId;
-	
 	@JsonProperty("text")
 	private String text;
-	
 	@JsonProperty("ts")
 	private String ts;
-
-	// ADDITIONAL FIELDS FOR "MEMBER_JOINED_CHANNEL" EVENT
 	@JsonProperty("channel_type")
 	private String channelType;
-	
 	@JsonProperty("inviter")
 	private String inviter;
-	
-	// GETTERS & SETTERS
+	@JsonProperty("is_moved")
+	public Integer isMoved;
+	@JsonProperty("actor_id")
+	public String actorId;
+
 	public EventItemChannel getChannel() {
 		return channel;
 	}
-	
 	public String getChannelId() {
 		return channelId;
 	}
-	
 	@JsonSetter("channel")
 	public void setChannelInternal(JsonNode channelInternal) {
 		if(channelInternal != null) {
@@ -77,11 +65,15 @@ public class EventItem {
 				String name = channelInternal.get("name").asText();
 				String nameNormalized = channelInternal.get("name_normalized").asText();
 				Integer created = channelInternal.get("created").intValue();
-				String creator = channelInternal.get("creator").asText();
-				Boolean isShared = channelInternal.get("is_shared").asBoolean();
-				Boolean isOrgShared = channelInternal.get("is_org_shared").asBoolean();
-				
-				channel = new EventItemChannel(id, isChannel, name, nameNormalized, created, creator, isShared, isOrgShared);
+				if(!type.equals("channel_rename")) {
+					String creator = channelInternal.get("creator").asText();
+					Boolean isShared = channelInternal.get("is_shared").asBoolean();
+					Boolean isOrgShared = channelInternal.get("is_org_shared").asBoolean();
+					
+					channel = new EventItemChannel(id, isChannel, name, nameNormalized, created, creator, isShared, isOrgShared);
+				} else {
+					channel = new EventItemChannel(id, isChannel, name, nameNormalized, created);
+				}
 			}
 		}
 	}
@@ -147,5 +139,19 @@ public class EventItem {
 	}
 	public void setInviter(String inviter) {
 		this.inviter = inviter;
+	}
+	
+	public Integer getIsMoved() {
+		return isMoved;
+	}
+	public void setIsMoved(Integer isMoved) {
+		this.isMoved = isMoved;
+	}
+	
+	public String getActorId() {
+		return actorId;
+	}
+	public void setActorId(String actorId) {
+		this.actorId = actorId;
 	}
 }

@@ -13,11 +13,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class Text {
 
 	@JsonProperty("type")
-	public String type;
+	private String type;
 	@JsonProperty("text")
-	public String text;
+	private String text;
 	@JsonProperty("verbatim")
-	public Boolean verbatim;
+	private Boolean verbatim;
 	
 	public String getType() {
 		return type;
@@ -25,17 +25,18 @@ public class Text {
 	public void setType(String type) {
 		this.type = type;
 	}
+	
 	public String getText() {
 		return text;
 	}
 	public void setText(String text) {
 		this.text = text;
 	}
+	
 	public Boolean getVerbatim() {
 		return verbatim;
 	}
 	public void setVerbatim(Boolean verbatim) {
 		this.verbatim = verbatim;
 	}
-	
 }

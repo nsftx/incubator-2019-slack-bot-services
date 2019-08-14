@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 "emoji"
 })
 public class PayloadElementText {
-	// Properties
+	
 	@JsonProperty("type")
 	private String type;
 	@JsonProperty("text")
@@ -22,19 +22,20 @@ public class PayloadElementText {
 	// Constructor
 	public PayloadElementText() {}
 	
-	// Getters/Setters
 	public String getType() {
 		return type;
 	}
 	public void setType(String type) {
 		this.type = type;
 	}
+	
 	public String getText() {
 		return text;
 	}
 	public void setText(String text) {
 		this.text = text;
 	}
+	
 	public Boolean getEmoji() {
 		return emoji;
 	}

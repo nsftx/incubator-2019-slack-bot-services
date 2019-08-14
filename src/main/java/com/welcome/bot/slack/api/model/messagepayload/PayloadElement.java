@@ -9,19 +9,20 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 "type",
 "text",
 "value",
+"action_id",
 "image_url",
 "alt_text"
 })
 public class PayloadElement {
-	// Properties
+	
 	@JsonProperty("type")
 	private String type;
 	@JsonProperty("text")
 	private PayloadElementText text;
 	@JsonProperty("value")
 	private String value;
-	
-	// "image_url" & "alt_text" properties are used for sending images inside messages in 2nd way
+	@JsonProperty("action_id")
+	private String action_id;
 	@JsonProperty("image_url")
 	private String image_url;
 	@JsonProperty("alt_text")
@@ -30,7 +31,6 @@ public class PayloadElement {
 	// Constructor
 	public PayloadElement() {}
 	
-	// Getters/Setters
 	public String getType() {
 		return type;
 	}
@@ -50,6 +50,13 @@ public class PayloadElement {
 	}
 	public void setValue(String value) {
 		this.value = value;
+	}
+	
+	public String getAction_id() {
+		return action_id;
+	}
+	public void setAction_id(String action_id) {
+		this.action_id = action_id;
 	}
 	
 	public String getImage_url() {

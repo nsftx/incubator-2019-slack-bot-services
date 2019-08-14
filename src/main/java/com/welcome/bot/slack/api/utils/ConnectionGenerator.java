@@ -6,10 +6,15 @@ import java.net.URL;
 
 public class ConnectionGenerator {
 	
+<<<<<<< Updated upstream
 
 	static final String TOKEN_BOT = "#";
 	static final String TOKEN_USER = "#";
 
+=======
+	static final String TOKEN_BOT = "xoxb-692746321984-692302263812-tZIr890TPcT4NVQMlVQA5UqR";
+	static final String TOKEN_USER = "xoxp-692746321984-692279219956-720926400772-f8536c16a720c9039868f797408ca2ef";
+>>>>>>> Stashed changes
 
 	public ConnectionGenerator() {}
 	
@@ -43,9 +48,19 @@ public class ConnectionGenerator {
 		return generatePOSTConnection(url, TOKEN_BOT);
 	}
 	
+<<<<<<< Updated upstream
 	// for response to interaction
 	public HttpURLConnection getInteractionResponseConnection(String responseURL) throws IOException {
 		URL url = new URL(responseURL);
+=======
+	public HttpURLConnection getMessageUpdateConnection() throws IOException {
+		URL url = new URL("https://slack.com/api/chat.update");
+		return generatePOSTConnection(url, TOKEN_BOT);
+	}
+	
+	public HttpURLConnection getMessageDeleteConnection() throws IOException {
+		URL url = new URL("https://slack.com/api/chat.delete");
+>>>>>>> Stashed changes
 		return generatePOSTConnection(url, TOKEN_BOT);
 	}
 	

@@ -16,13 +16,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class Attachment {
 
 	@JsonProperty("id")
-	public Integer id;
+	private Integer id;
 	@JsonProperty("blocks")
-	public List<Block> blocks = null;
+	private List<Block> blocks = null;
 	@JsonProperty("color")
-	public String color;
+	private String color;
 	@JsonProperty("fallback")
-	public String fallback;
+	private String fallback;
 	
 	public Integer getId() {
 		return id;
@@ -30,23 +30,25 @@ public class Attachment {
 	public void setId(Integer id) {
 		this.id = id;
 	}
+	
 	public List<Block> getBlocks() {
 		return blocks;
 	}
 	public void setBlocks(List<Block> blocks) {
 		this.blocks = blocks;
 	}
+	
 	public String getColor() {
 		return color;
 	}
 	public void setColor(String color) {
 		this.color = color;
 	}
+	
 	public String getFallback() {
 		return fallback;
 	}
 	public void setFallback(String fallback) {
 		this.fallback = fallback;
 	}
-	
 }

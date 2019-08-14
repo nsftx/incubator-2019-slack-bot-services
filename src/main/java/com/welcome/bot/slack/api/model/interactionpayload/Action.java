@@ -16,17 +16,21 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class Action {
 
 	@JsonProperty("action_id")
-	public String actionId;
+	private String actionId;
 	@JsonProperty("block_id")
-	public String blockId;
+	private String blockId;
 	@JsonProperty("text")
+<<<<<<< Updated upstream
 	public Text_ text;
+=======
+	private Text_ text;
+>>>>>>> Stashed changes
 	@JsonProperty("type")
-	public String type;
+	private String type;
 	@JsonProperty("value")
-	public String value;
+	private String value;
 	@JsonProperty("action_ts")
-	public String actionTs;
+	private String actionTs;
 	
 	public String getActionId() {
 		return actionId;
@@ -34,30 +38,38 @@ public class Action {
 	public void setActionId(String actionId) {
 		this.actionId = actionId;
 	}
+	
 	public String getBlockId() {
 		return blockId;
 	}
 	public void setBlockId(String blockId) {
 		this.blockId = blockId;
 	}
+<<<<<<< Updated upstream
+=======
+	
+>>>>>>> Stashed changes
 	public Text_ getText() {
 		return text;
 	}
 	public void setText(Text_ text) {
 		this.text = text;
 	}
+	
 	public String getType() {
 		return type;
 	}
 	public void setType(String type) {
 		this.type = type;
 	}
+	
 	public String getValue() {
 		return value;
 	}
 	public void setValue(String value) {
 		this.value = value;
 	}
+	
 	public String getActionTs() {
 		return actionTs;
 	}

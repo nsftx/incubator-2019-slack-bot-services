@@ -26,9 +26,15 @@ public class SlackController {
 	@ResponseStatus(HttpStatus.OK)
 	public @ResponseBody String eventHandler(@RequestBody EventPayload event) {
 		// check here for event type, if not url_verif. return null immediately
-		if (eventTimeStamp == null) {
-			eventTimeStamp = event.getEventItem().getEventTs();
+//		if (eventTimeStamp == null) {
+//			eventTimeStamp = event.getEventItem().getEventTs();
+//			return slackEventService.handleEvent(event);
+//		}
+//
+//		if(!event.getEventItem().getEventTs().equals(eventTimeStamp)) {
+//			eventTimeStamp = event.getEventItem().getEventTs();
 			return slackEventService.handleEvent(event);
+<<<<<<< Updated upstream
 		}
 
 		if(!event.getEventItem().getEventTs().equals(eventTimeStamp)) {
@@ -37,6 +43,11 @@ public class SlackController {
 		} else {
 			return null;
 		}
+=======
+//		} else {
+//			return null;
+//		}
+>>>>>>> Stashed changes
 	}
 
 	@PostMapping("/api/slimp/incoming-command-about")
@@ -71,10 +82,15 @@ public class SlackController {
 
 	@PostMapping("/api/slimp/incoming-action-interaction")
 	@ResponseStatus(HttpStatus.OK)
+<<<<<<< Updated upstream
 	public @ResponseBody String interactionHandler(@RequestBody String interactionRequestPayload) {
 
 		slackInteractionService.handleInteraction(interactionRequestPayload);
 
 		return null; // set to void
+=======
+	public void interactionHandler(@RequestBody String interactionRequestPayload) {
+		slackInteractionService.handleInteraction(interactionRequestPayload);
+>>>>>>> Stashed changes
 	}
 }

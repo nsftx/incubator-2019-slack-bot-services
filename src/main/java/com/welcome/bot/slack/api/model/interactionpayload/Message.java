@@ -19,19 +19,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class Message {
 
 	@JsonProperty("type")
-	public String type;
+	private String type;
 	@JsonProperty("subtype")
-	public String subtype;
+	private String subtype;
 	@JsonProperty("text")
-	public String text;
+	private String text;
 	@JsonProperty("ts")
-	public String ts;
+	private String ts;
 	@JsonProperty("username")
-	public String username;
+	private String username;
 	@JsonProperty("bot_id")
-	public String botId;
+	private String botId;
 	@JsonProperty("attachments")
-	public List<Attachment> attachments = null;
+	private List<Attachment> attachments = null;
 	
 	public String getType() {
 		return type;
@@ -39,41 +39,46 @@ public class Message {
 	public void setType(String type) {
 		this.type = type;
 	}
+	
 	public String getSubtype() {
 		return subtype;
 	}
 	public void setSubtype(String subtype) {
 		this.subtype = subtype;
 	}
+	
 	public String getText() {
 		return text;
 	}
 	public void setText(String text) {
 		this.text = text;
 	}
+	
 	public String getTs() {
 		return ts;
 	}
 	public void setTs(String ts) {
 		this.ts = ts;
 	}
+	
 	public String getUsername() {
 		return username;
 	}
 	public void setUsername(String username) {
 		this.username = username;
 	}
+	
 	public String getBotId() {
 		return botId;
 	}
 	public void setBotId(String botId) {
 		this.botId = botId;
 	}
+	
 	public List<Attachment> getAttachments() {
 		return attachments;
 	}
 	public void setAttachments(List<Attachment> attachments) {
 		this.attachments = attachments;
 	}
-	
 }

@@ -14,13 +14,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class User {
 
 	@JsonProperty("id")
-	public String id;
+	private String id;
 	@JsonProperty("username")
-	public String username;
+	private String username;
 	@JsonProperty("name")
-	public String name;
+	private String name;
 	@JsonProperty("team_id")
-	public String teamId;
+	private String teamId;
 	
 	public String getId() {
 		return id;
@@ -28,23 +28,25 @@ public class User {
 	public void setId(String id) {
 		this.id = id;
 	}
+	
 	public String getUsername() {
 		return username;
 	}
 	public void setUsername(String username) {
 		this.username = username;
 	}
+	
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
+	
 	public String getTeamId() {
 		return teamId;
 	}
 	public void setTeamId(String teamId) {
 		this.teamId = teamId;
 	}
-	
 }

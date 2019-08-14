@@ -1,12 +1,11 @@
 package com.welcome.bot.slack.api;
 
-import java.util.HashMap;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import com.welcome.bot.slack.api.model.eventpayload.EventPayload;
+import com.welcome.bot.slack.api.model.publishevent.PublishEventMessage;
 
 @Component
 public class SlackEventService {
@@ -16,13 +15,45 @@ public class SlackEventService {
 	
 	public String handleEvent(EventPayload event) {
 		if(event.getType().equals("event_callback")) {
-			String eventType = event.getEventItem().getType();
 			String user = event.getEventItem().getUser();
+			// ALWAYS CHECK FOR EVENT_TYPE ... DIFFERENT PAYLOADS ARRIVE ON DIFFERENT EVENTS -> -> -> channel-STRING || channel-OBJECT - TODO - TEST/DELETE
 			String channel = event.getEventItem().getChannelId();
 			
-			// ALWAYS CHECK FOR EVENT_TYPE ... DIFFERENT PAYLOADS ARRIVE ON DIFFERENT EVENTS -> -> -> channel-STRING || channel-OBJECT
-			System.out.println("EVENT TYPE IS  : " + eventType);
-			
+			EventType eventType = null;
+			switch(event.getEventItem().getType()) {
+			case "app_mention":
+				System.out.println("app_mention");
+				eventType = EventType.app_mention;
+				break;
+			case "member_joined_channel":
+				System.out.println("member_joined_channel");
+				eventType = EventType.member_joined_channel;
+				break;
+			case "member_left_channel":
+				System.out.println("member_left_channel");
+				eventType = EventType.member_left_channel;
+				break;
+			case "channel_created":
+				System.out.println("channel_created");
+				eventType = EventType.channel_created;
+				break;
+			case "channel_deleted":
+				System.out.println("channel_deleted");
+				eventType = EventType.channel_deleted;
+				break;
+			case "channel_rename":
+				System.out.println("channel_rename");
+				eventType = EventType.channel_rename;
+				break;
+			case "channel_archive":
+				System.out.println("channel_archive");
+				eventType = EventType.channel_archive;
+				break;
+			case "channel_unarchive":
+				System.out.println("channel_unarchive");
+				eventType = EventType.channel_unarchive;
+				break;
+			}
 			passEvent(channel, eventType, user);
 		}
 		else if(event.getType().equals("url_verification")) {
@@ -31,11 +62,19 @@ public class SlackEventService {
 		return null;
 	}
 	
+<<<<<<< Updated upstream
 	private void passEvent(String channel, String eventType, String user) {
 		HashMap<String, String> eventData = new HashMap<String,String>();
 		eventData.put("channel", channel);
 		eventData.put("triggerType", eventType);
 		eventData.put("user", user);
+=======
+	private void passEvent(String channel, EventType eventType, String user) {
+		PublishEventMessage eventData = new PublishEventMessage();
+		eventData.setChannel(channel);
+		eventData.setEventType(eventType);
+		eventData.setUser(user);
+>>>>>>> Stashed changes
 		
 		// for tests of interaction
 		eventData.put("isInteraction", "false");
