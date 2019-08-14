@@ -49,7 +49,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Optional<User> userOptional = userRepository.findByEmail(oAuth2UserInfo.getEmail());
         if(userOptional.isPresent()) {
         	 User user = userOptional.get();
-            //user = updateExistingUser(user, oAuth2UserInfo);
+            user = updateExistingUser(user, oAuth2UserInfo);
             return UserPrincipal.create(user, oAuth2User.getAttributes());
         } else {
         	throw new BaseException("You aren't added to this application");
@@ -58,8 +58,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
     
     private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {
-        //existingUser.setName(oAuth2UserInfo.getName());
-        //existingUser.setImageUrl(oAuth2UserInfo.getImageUrl());
+        existingUser.setName(oAuth2UserInfo.getName());
+        existingUser.setImageUrl(oAuth2UserInfo.getImageUrl());
         return userRepository.save(existingUser);
     }
 
