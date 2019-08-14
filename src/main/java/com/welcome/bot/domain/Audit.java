@@ -6,8 +6,19 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 @Entity
-public class AuditLog {
+@JsonPropertyOrder({
+"auditId",
+"channel",
+"channelInfo",
+"entityId",
+"entity",
+"entityInfo",
+"notification"
+})
+public class Audit {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer auditId;
@@ -21,7 +32,7 @@ public class AuditLog {
 	private String notification;
 	
 
-	public AuditLog(String channel, String channelInfo, Integer entityId, String entity, String entityInfo) {
+	public Audit(String channel, String channelInfo, Integer entityId, String entity, String entityInfo) {
 		this.channel = channel;
 		this.channelInfo = channelInfo;
 		this.entityId = entityId;
@@ -31,7 +42,7 @@ public class AuditLog {
 				"because channel " + channel + " is " + channelInfo;
 	}
 
-	protected AuditLog() {
+	protected Audit() {
 	
 	}
 

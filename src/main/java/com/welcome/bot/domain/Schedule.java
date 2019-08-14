@@ -11,15 +11,24 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.swing.text.StyledEditorKit.BoldAction;
 
-import org.h2.tools.DeleteDbFiles;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-@Entity(name="schedule_tbl")
-@JsonPropertyOrder({"scheduleId", "active", "repeat", "runAt"})
+@Entity
+@JsonPropertyOrder({
+"scheduleId",
+"active",
+"repeat",
+"deleted",
+"intervalType",
+"slackScheduleId",
+"createdAt",
+"updatedAt",
+"runAt",
+"message"
+})
 public class Schedule {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,8 +45,6 @@ public class Schedule {
 	private String slackScheduleId;
 	private Date createdAt;
 	private Date updatedAt;
-	
-	
 	
 	@ManyToOne
 	@JoinColumn(name = "message_id")

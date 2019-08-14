@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 @Entity(name = "trigger_tbl")
-@EntityListeners(AuditingEntityListener.class)
 @JsonPropertyOrder({
 	"triggerId", 
 	"channel",
