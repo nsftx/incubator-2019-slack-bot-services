@@ -5,6 +5,7 @@ import com.welcome.bot.models.AuthProvider;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "user", uniqueConstraints = {
