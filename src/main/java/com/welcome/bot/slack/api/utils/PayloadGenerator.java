@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import com.welcome.bot.slack.api.model.interactionresponsepayload.InteractionResponsePayload;
 import com.welcome.bot.slack.api.model.messagepayload.MessagePayload;
 import com.welcome.bot.slack.api.model.messagepayload.PayloadAttachment;
 import com.welcome.bot.slack.api.model.messagepayload.PayloadBlock;
@@ -55,13 +54,6 @@ public class PayloadGenerator {
 		return generateScheduleDeletePayload(channel,messageID);
 	}
 	
-<<<<<<< Updated upstream
-	public InteractionResponsePayload getInteractionResponsePayload(String channel, String text) {
-		return generateInteractionResponsePayload(channel, text);
-	}
-
-	private MessagePayload generateMessagePayload(String channel, String text) {
-=======
 	public MessagePayload getMessageUpdatePayload(String channel, String newText, String messageTimestamp) {
 		return generateMessageUpdatePayload(channel, newText, messageTimestamp);
 	}
@@ -69,9 +61,8 @@ public class PayloadGenerator {
 	public MessagePayload getMessageDeletePayload(String channel, String messageTimestamp) {
 		return generateMessageDeletePayload(channel, messageTimestamp);
 	}
-	
+
 	private MessagePayload generateMessagePayload(String channel, String text, boolean isSmallImage) {
->>>>>>> Stashed changes
 		MessagePayload payload = new MessagePayload();
 		PayloadAttachment attachment = new PayloadAttachment();
 		PayloadBlock block = new PayloadBlock();
@@ -110,11 +101,6 @@ public class PayloadGenerator {
 		}
 
 		blockText.setType("mrkdwn");
-<<<<<<< Updated upstream
-=======
-		blockText.setText(text);
->>>>>>> Stashed changes
-
 		blockText.setText(text);
 		//blockText.setText("Hi There and welcome to NSoft universe :wave:\n \nGreat to see you here! This is TEST, and looks like it works. For more information about benefits, flexible work hours, documentation, etc... use available Slack commands.\n\nThat's all for start. Bye :wave:");
 		
@@ -179,17 +165,9 @@ public class PayloadGenerator {
 			choiceElements.add(oneChoiceElement);
 		}
 		
-<<<<<<< Updated upstream
-		voteOptionsBlock.setType("actions");
-		//voteOptionsBlock.setBlockId("s"); // BLOCK ID to differentiate one voting block from another
-		voteOptionsBlock.setElement(voteOptionElements);
-		
-		blocks.add(voteOptionsBlock);
-=======
 		choicesBlock.setType("actions");
 		choicesBlock.setBlock_id(pollID);
 		choicesBlock.setElement(choiceElements);
->>>>>>> Stashed changes
 		
 		blocks.add(choicesBlock);
 		
@@ -242,16 +220,6 @@ public class PayloadGenerator {
 
 		return payload;
 	}
-<<<<<<< Updated upstream
-
-	// for response to interaction
-	private InteractionResponsePayload generateInteractionResponsePayload(String channel, String text) {
-		InteractionResponsePayload payload = new InteractionResponsePayload();
-		
-		payload.setText(text);
-		payload.setResponse_type("ephemeral");
-		
-=======
 	
 	private MessagePayload generateMessageUpdatePayload(String channel, String newText, String messageTimestamp) {
 		MessagePayload payload = new MessagePayload();
@@ -268,7 +236,6 @@ public class PayloadGenerator {
 		MessagePayload payload = new MessagePayload();
 		payload.setChannel(channel);
 		payload.setTs(messageTimestamp);
->>>>>>> Stashed changes
 		return payload;
 	}
 	

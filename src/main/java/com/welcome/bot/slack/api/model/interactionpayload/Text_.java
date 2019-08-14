@@ -39,8 +39,4 @@ public class Text_ {
 	public void setEmoji(Boolean emoji) {
 		this.emoji = emoji;
 	}
-<<<<<<< Updated upstream
 }
-=======
-}
->>>>>>> Stashed changes

@@ -33,13 +33,9 @@ public class MessagePayload {
 	@JsonProperty("time")
 	private String time;
 	@JsonProperty("scheduled_message_id")
-<<<<<<< Updated upstream
-	public String scheduled_message_id;
-=======
 	private String scheduled_message_id;
 	@JsonProperty("ts")
 	private String ts;
->>>>>>> Stashed changes
 
 	// Constructor
 	public MessagePayload() {}

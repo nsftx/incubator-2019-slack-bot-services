@@ -34,20 +34,9 @@ public class SlackController {
 //		if(!event.getEventItem().getEventTs().equals(eventTimeStamp)) {
 //			eventTimeStamp = event.getEventItem().getEventTs();
 			return slackEventService.handleEvent(event);
-<<<<<<< Updated upstream
-		}
-
-		if(!event.getEventItem().getEventTs().equals(eventTimeStamp)) {
-			eventTimeStamp = event.getEventItem().getEventTs();
-			return slackEventService.handleEvent(event);
-		} else {
-			return null;
-		}
-=======
 //		} else {
 //			return null;
 //		}
->>>>>>> Stashed changes
 	}
 
 	@PostMapping("/api/slimp/incoming-command-about")
@@ -82,15 +71,7 @@ public class SlackController {
 
 	@PostMapping("/api/slimp/incoming-action-interaction")
 	@ResponseStatus(HttpStatus.OK)
-<<<<<<< Updated upstream
-	public @ResponseBody String interactionHandler(@RequestBody String interactionRequestPayload) {
-
-		slackInteractionService.handleInteraction(interactionRequestPayload);
-
-		return null; // set to void
-=======
 	public void interactionHandler(@RequestBody String interactionRequestPayload) {
 		slackInteractionService.handleInteraction(interactionRequestPayload);
->>>>>>> Stashed changes
 	}
 }

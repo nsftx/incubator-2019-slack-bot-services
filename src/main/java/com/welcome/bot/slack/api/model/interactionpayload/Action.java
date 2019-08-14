@@ -20,11 +20,7 @@ public class Action {
 	@JsonProperty("block_id")
 	private String blockId;
 	@JsonProperty("text")
-<<<<<<< Updated upstream
-	public Text_ text;
-=======
 	private Text_ text;
->>>>>>> Stashed changes
 	@JsonProperty("type")
 	private String type;
 	@JsonProperty("value")
@@ -45,10 +41,7 @@ public class Action {
 	public void setBlockId(String blockId) {
 		this.blockId = blockId;
 	}
-<<<<<<< Updated upstream
-=======
 	
->>>>>>> Stashed changes
 	public Text_ getText() {
 		return text;
 	}

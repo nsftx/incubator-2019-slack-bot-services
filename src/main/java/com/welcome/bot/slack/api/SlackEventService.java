@@ -61,23 +61,12 @@ public class SlackEventService {
 		}
 		return null;
 	}
-	
-<<<<<<< Updated upstream
-	private void passEvent(String channel, String eventType, String user) {
-		HashMap<String, String> eventData = new HashMap<String,String>();
-		eventData.put("channel", channel);
-		eventData.put("triggerType", eventType);
-		eventData.put("user", user);
-=======
+
 	private void passEvent(String channel, EventType eventType, String user) {
 		PublishEventMessage eventData = new PublishEventMessage();
 		eventData.setChannel(channel);
 		eventData.setEventType(eventType);
 		eventData.setUser(user);
->>>>>>> Stashed changes
-		
-		// for tests of interaction
-		eventData.put("isInteraction", "false");
 		
 		SlackEventTriggeredEvent eventHandler = new SlackEventTriggeredEvent(this, eventData);
 		appEventPublisher.publishEvent(eventHandler);

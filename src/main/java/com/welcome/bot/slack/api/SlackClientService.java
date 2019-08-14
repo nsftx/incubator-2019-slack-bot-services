@@ -13,14 +13,10 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-<<<<<<< Updated upstream
-import com.welcome.bot.slack.api.model.interactionpayload.Channel;
-import com.welcome.bot.slack.api.model.interactionresponsepayload.InteractionResponsePayload;
-=======
+
 import com.welcome.bot.slack.api.customexceptionhandler.InvalidArgumentException;
 import com.welcome.bot.slack.api.customexceptionhandler.MessageSendingException;
 import com.welcome.bot.slack.api.model.interactionpayload.Channel;
->>>>>>> Stashed changes
 import com.welcome.bot.slack.api.model.messagepayload.MessagePayload;
 import com.welcome.bot.slack.api.model.publishevent.PublishEventMessage;
 import com.welcome.bot.slack.api.model.publishevent.PublishInteractionMessage;
@@ -29,21 +25,11 @@ import com.welcome.bot.slack.api.utils.MessageSender;
 import com.welcome.bot.slack.api.utils.PayloadGenerator;
 
 @Service
-<<<<<<< Updated upstream
-public class SlackClientService implements SlackClientApi{
-
-	private ConnectionGenerator connectionGen = new ConnectionGenerator();
-	private PayloadGenerator payloadGen = new PayloadGenerator();
-	private MessageSender sender = new MessageSender();
-	private HttpURLConnection slackConnection = null;
-	private ObjectMapper jsonMapper = new ObjectMapper();
-=======
 public class SlackClientService implements SlackClientApi {
 	private ConnectionGenerator connectionGen;
 	private PayloadGenerator payloadGen;
 	private MessageSender sender;
 	private ObjectMapper jsonMapper;
->>>>>>> Stashed changes
 
 	//Constructor
 	@Autowired
@@ -380,51 +366,6 @@ public class SlackClientService implements SlackClientApi {
 //		createSchedule(channel, "repeating schedule", new Date(), "weekly");
 	}
 	
-<<<<<<< Updated upstream
-	// interaction response
-	public void testInteraction(String channel, String text, String responseURL) {
-		InteractionResponsePayload payload = new InteractionResponsePayload();
-		String payloadJSON = "";
-
-		payload = payloadGen.getInteractionResponsePayload(channel, text);
-		try {
-			payloadJSON = jsonMapper.writeValueAsString(payload);
-			slackConnection = connectionGen.getInteractionResponseConnection(responseURL);
-		} catch (JsonProcessingException e1) {
-			e1.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		System.out.println("TEST OF JSON RESPONSE : " + payloadJSON);
-		sender.sendMessageAndGetStatus(slackConnection, payloadJSON);
-		
-	}
-	// Delete on final review --- this method and 2nd implementation are Easter Eggs
-
-//	@Override
-//	public void onApplicationEvent(SlackEventTriggeredEvent event) {
-//		HashMap<String, String> eventData = event.getEventData();
-//		
-//		String source = eventData.get("isInteraction");
-//		
-//		if(source.equals("true")) {
-//			String text = eventData.get("text");
-//			String url = eventData.get("responseURL");
-//			testInteraction("#general",text,url);
-//		} else if (source.equals("false")) {
-//			sendMessagePoll(eventData.get("channel"), eventData.get("type"), new ArrayList<>()).toString();
-//		}
-		
-		
-		//TODO test - delete later
-//		String response = sendMessage(eventData.get("channel"), eventData.get("type")).toString();
-//		String response = sendMessagePoll(eventData.get("channel"), eventData.get("type"), new ArrayList<>()).toString();
-//		String response = createSchedule(eventData.get("channel"), eventData.get("type"), new Date(), "wk");
-//		System.out.println("RESPONSE FROM SEND MESSAGE (EVENT): " + response);
-//		getChannelsList();
-	
-}
-=======
 	//TODO - TEST/DELETE
 	@EventListener
 	public void handleInteraction(SlackInteractionTriggeredEvent interaction) {
@@ -445,4 +386,3 @@ public class SlackClientService implements SlackClientApi {
 		updateMessage(channel, combinedResponse, timestamp);
 	}
 }
->>>>>>> Stashed changes
