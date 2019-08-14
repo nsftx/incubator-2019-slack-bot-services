@@ -15,43 +15,30 @@ public class PollResult {
 	private Integer poolResultId;
 	
 	@ManyToOne
-	@JoinColumn(name = "pool_id")
-	private Poll poll;
+	private Choice choice;
 	
-	private String choice;
-	private String choiceId;
-	
-	public PollResult(Integer poolResultId, Poll poll, String choice, String choiceId) {
-		this.poll = poll;
+	public PollResult(Choice choice) {
 		this.choice = choice;
-		this.choiceId = choiceId;
+	}
+	public PollResult() {
+
 	}
 	
 	public Integer getPoolResultId() {
 		return poolResultId;
 	}
-	public Poll getPoll() {
-		return poll;
-	}
-	public String getChoice() {
+	public Choice getChoice() {
 		return choice;
-	}
-	public String getChoiceId() {
-		return choiceId;
 	}
 	public void setPoolResultId(Integer poolResultId) {
 		this.poolResultId = poolResultId;
 	}
-	public void setPoll(Poll poll) {
-		this.poll = poll;
-	}
-	public void setChoice(String choice) {
+	public void setChoice(Choice choice) {
 		this.choice = choice;
 	}
-	public void setChoiceId(String choiceId) {
-		this.choiceId = choiceId;
-	}
 	
+	
+
 	
 	
 }
