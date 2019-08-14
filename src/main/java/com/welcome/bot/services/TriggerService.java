@@ -140,8 +140,8 @@ public class TriggerService {
 	
 	//delete all triggers by list you send as parameter
 	public void deleteAllTriggersByList(List<Trigger> triggerList) {
-		if(!triggerList.isEmpty()) {
-			triggerRepository.deleteAll(triggerList);	
+		for (Trigger trigger : triggerList) {
+			trigger.setDeleted(true);
 		}
 	}
 	

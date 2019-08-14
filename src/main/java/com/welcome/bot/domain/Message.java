@@ -12,11 +12,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @Entity(name = "message")
 @JsonPropertyOrder({
-	"messageId", 
-	"title",
-	"text",
-	"createdAt,"
-	+ " updatedAt"})
+"messageId", 
+"title",
+"text",
+"createdAt,",
+"updatedAt"
+})
 public class Message {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

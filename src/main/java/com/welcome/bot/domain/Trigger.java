@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 @Entity(name = "trigger_tbl")
-@EntityListeners(AuditingEntityListener.class)
 @JsonPropertyOrder({
 	"triggerId", 
 	"channel",
@@ -40,6 +39,7 @@ public class Trigger {
 	@Column(nullable=false)
 	private String triggerType;
 
+	private boolean deleted;
 	private boolean active;
 	private Date createdAt;
 	private Date updatedAt;
@@ -61,6 +61,7 @@ public class Trigger {
 		this.active = active;
 		this.message = message;
 		this.createdAt = new Date();
+		this.deleted = false;
 	}
 	
 	protected Trigger() {
@@ -71,57 +72,65 @@ public class Trigger {
 		return triggerId;
 	}
 
-	public void setTriggerId(Integer triggerId) {
-		this.triggerId = triggerId;
-	}
-
 	public String getChannel() {
 		return channel;
-	}
-
-	public void setChannel(String channel) {
-		this.channel = channel;
 	}
 
 	public String getTriggerType() {
 		return triggerType;
 	}
 
-	public void setTriggerType(String triggerType) {
-		this.triggerType = triggerType;
+	public boolean isDeleted() {
+		return deleted;
 	}
 
 	public boolean isActive() {
 		return active;
 	}
 
-	public void setActive(boolean active) {
-		this.active = active;
-	}
-
 	public Date getCreatedAt() {
 		return createdAt;
-	}
-
-	public void setCreatedAt() {
-		this.createdAt = new Date();
 	}
 
 	public Date getUpdatedAt() {
 		return updatedAt;
 	}
 
-	public void setUpdatedAt() {
-		this.updatedAt = new Date();
-	}
-
 	public Message getMessage() {
 		return message;
+	}
+
+	public void setTriggerId(Integer triggerId) {
+		this.triggerId = triggerId;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
+
+	public void setTriggerType(String triggerType) {
+		this.triggerType = triggerType;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public void setCreatedAt() {
+		this.createdAt = new Date();
+	}
+
+	public void setUpdatedAt() {
+		this.updatedAt = new Date();
 	}
 
 	public void setMessage(Message message) {
 		this.message = message;
 	}
 
-
+	
 }

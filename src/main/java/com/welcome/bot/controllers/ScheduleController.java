@@ -12,12 +12,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.welcome.bot.domain.Schedule;
 import com.welcome.bot.models.ScheduleDTO;
 import com.welcome.bot.models.ScheduleCreateDTO;
 import com.welcome.bot.services.ScheduleService;
+
+import net.minidev.json.JSONArray;
 
 
 @RestController
@@ -39,13 +42,16 @@ public class ScheduleController {
 		return scheduleService.getSchedule(scheduleId);
 	}
 	@PutMapping("/api/schedules/{scheduleId}")
-	public ScheduleDTO updateSchedule(@PathVariable Integer scheduleId, @RequestBody ScheduleCreateDTO scheduleModel) {
-		return scheduleService.updateSchedule(scheduleId, scheduleModel);
+	public ScheduleDTO updateSchedule(@PathVariable Integer scheduleId, @RequestParam(name="active") boolean active) {
+		return scheduleService.updateSchedule(scheduleId, active);
 	}
 	@DeleteMapping("/api/schedules/{scheduleId}")
 	public ResponseEntity<Schedule> deleteSchedule(@PathVariable Integer scheduleId) {
 		return scheduleService.deleteSchedule(scheduleId);
 	}
-	
+	@GetMapping("/api/schedule-intervals")
+	public JSONArray getRepeatIntervals() {
+		return scheduleService.getRepeatIntervals();
+	}
 
 }

@@ -27,8 +27,7 @@ import com.welcome.bot.models.MessageDTO;
 import com.welcome.bot.repository.MessageRepository;
 
 @Service
-public class MessageService {
-	
+public class MessageService {	
 
 	private MessageRepository messageRepository;
 
