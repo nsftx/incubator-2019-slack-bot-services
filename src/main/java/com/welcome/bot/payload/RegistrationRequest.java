@@ -1,15 +1,13 @@
 package com.welcome.bot.payload;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+
 
 public class RegistrationRequest {
 
-    @NotBlank
-    @Email
+  
     private String email;
 
-    @NotBlank
+    
     private String role;
 
   
