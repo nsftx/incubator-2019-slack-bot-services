@@ -21,7 +21,8 @@ public class User {
     private String name;
 
     @Email
-    @Column(nullable = false)
+    @Column(nullable = false,length = 10485760)
+    @Size(min = 2, max = 10485760)
     private String email;
    
     @Column(length = 10485760)
@@ -34,7 +35,8 @@ public class User {
     @OneToOne
     @MapsId
     private Invite invite;
-    @Column(name="role")
+    @Column(name="role",length = 10485760)
+    @Size(min = 2, max = 10485760)
     private String role;
 
    
