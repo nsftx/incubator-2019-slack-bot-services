@@ -1,5 +1,6 @@
 package com.welcome.bot.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import com.welcome.bot.models.AuthProvider;
 
 import javax.persistence.*;
@@ -21,20 +22,24 @@ public class User {
     private String name;
 
     @Email
-    @Column(nullable = false,length = 10485760)
-    @Size(min = 2, max = 10485760)
+    @Column(nullable = false,length = 200)
+    @Size(min = 2, max = 200)
     private String email;
    
     @Column(length = 10485760)
     @Size(min = 20, max = 10485760)
     private String imageUrl;
-    
     @OneToOne
-    @MapsId
+    @JoinColumn(name = "user_settings_id")
     private UserSettings userSettings;
     @OneToOne
-    @MapsId
+    @JoinColumn(name = "invite_id")
     private Invite invite;
+   
+    
+   
+    
+    
     @Column(name="role",length = 10485760)
     @Size(min = 2, max = 10485760)
     private String role;
@@ -42,21 +47,23 @@ public class User {
    
     protected User() {
     	this.userSettings=new UserSettings();
-    	//this.email=email;
     	this.role="USER";
             this.invite=new Invite();
     }
     public User(String email) {
     	this.email=email;
+    	this.invite=new Invite();
+    	this.userSettings=new UserSettings();
+    	this.invite=new Invite();
     }
     public User(User user) {
+    	 this.invite=user.getInvite();
         this.imageUrl = user.getImageUrl();
         this.email = user.getEmail();
         this.role = user.getRole();
         this.name = user.getName();
         this.id = user.getId();
-        this.userSettings=user.getUserSettings();
-            this.invite=user.getInvite();
+        
         
     }
 
@@ -73,6 +80,13 @@ public class User {
 
     public void setInvite(Invite invite) {
         this.invite = invite;
+    }
+    public UserSettings getUserSettings() {
+        return userSettings;
+    }
+
+    public void setUserSettings(UserSettings userSettings) {
+        this.userSettings= userSettings;
     }
     public String getName() {
         return name;
@@ -97,13 +111,7 @@ public class User {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
-    public UserSettings getUserSettings() {
-        return userSettings;
-    }
-
-    public void setUserSettings(UserSettings userSettings) {
-        this.userSettings=userSettings;
-    }
+    
     public void setRole(String role) {
     	this.role=role;
     }
