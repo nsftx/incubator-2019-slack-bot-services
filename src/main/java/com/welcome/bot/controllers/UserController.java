@@ -69,7 +69,7 @@ public class UserController {
     @Autowired
     UserService userService;
     
-    @RequestMapping(value = "/translation", method = RequestMethod.GET)
+    @GetMapping("/translation")
     @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
     public TranslationSettings translate() {
  
