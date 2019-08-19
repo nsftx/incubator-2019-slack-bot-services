@@ -3,13 +3,13 @@ package com.welcome.bot.slack.api.model.publishevent;
 import java.util.UUID;
 
 public class PublishInteractionMessage {
-	
+
 	private String channel;
 	private String choiceSelected;
 	private String choiceID;
 	private UUID pollID;
 	private String user;
-	
+
 	// TODO - TEST/DELETE
 	private String text;
 	private String timestamp;

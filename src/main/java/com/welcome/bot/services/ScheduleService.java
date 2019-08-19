@@ -33,6 +33,10 @@ import com.welcome.bot.repository.UserRepository;
 import com.welcome.bot.security.CurrentUser;
 import com.welcome.bot.security.UserPrincipal;
 import com.welcome.bot.slack.api.SlackClientApi;
+
+import com.welcome.bot.slack.api.customexceptionhandler.SlackApiException;
+import com.welcome.bot.slack.api.model.interactionpayload.Channel;
+
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
@@ -103,7 +107,11 @@ public class ScheduleService {
 
 		//if schedule is active we send it to slack
 		if(schedule.getActive()) {
-			sendScheduleToSlackApi(schedule);	
+			try {
+				sendScheduleToSlackApi(schedule);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
 		}
 		
 		scheduleRepository.save(schedule);
@@ -149,10 +157,14 @@ public class ScheduleService {
 		
 		boolean lastState = schedule.getActive();
 		
-		if(lastState == true && active == false) {
-			slackClientApi.deleteSchedule(schedule.getSlackScheduleId(), schedule.getChannel());
-		}else if(lastState == false && active == true){
-			sendScheduleToSlackApi(schedule);
+
+		if(lastState == false && active == true) {
+			deleteScheduleInSlackApi(schedule);
+			try {
+				sendScheduleToSlackApi(schedule);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
 		}
 		schedule.setActive(active);	
 		scheduleRepository.save(schedule);
@@ -201,14 +213,14 @@ public class ScheduleService {
 		}
 	}
 	
-	public boolean deleteScheduleInSlackApi(Schedule schedule) {
-		String slackMessageId = schedule.getSlackScheduleId();
-		boolean status = false;
-		if(slackMessageId != null && !slackMessageId.isEmpty()) {
-			status = slackClientApi.deleteSchedule(schedule.getSlackScheduleId(), schedule.getChannel());		
-		}
-		return status;
-	}
+//	public boolean deleteScheduleInSlackApi(Schedule schedule) {
+//		String slackMessageId = schedule.getSlackScheduleId();
+//		boolean status = false;
+//		if(slackMessageId != null && !slackMessageId.isEmpty()) {
+//			status = slackClientApi.deleteSchedule(schedule.getSlackScheduleId(), schedule.getChannel());		
+//		}
+//		return status;
+//	}
 	
 	//convert entity to model
 	private ScheduleDTO convertToDto(Schedule schedule) {
@@ -251,7 +263,7 @@ public class ScheduleService {
 	
 	
 	//sending schedule to slack
-	public void sendScheduleToSlackApi(Schedule schedule) {
+	public void sendScheduleToSlackApi(Schedule schedule) throws Exception {
 		String slackMessageId = "";
 		System.out.println(schedule.getChannel());
 		
@@ -271,6 +283,22 @@ public class ScheduleService {
 			schedule.setSlackScheduleId(slackMessageId);
 		}
 	}
+
+	
+	//deletes scheduels in slack api
+	public boolean deleteScheduleInSlackApi(Schedule schedule) {
+		String slackMessageId = schedule.getSlackScheduleId();
+		boolean status = false;
+		if(slackMessageId != null && !slackMessageId.isEmpty()) {
+			try {
+				slackClientApi.deleteSchedule(schedule.getSlackScheduleId(), schedule.getChannel());
+			} catch (SlackApiException e) {
+				e.printStackTrace();
+			}		
+		}
+		return status;
+	}
+
 
 
 

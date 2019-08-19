@@ -16,17 +16,17 @@ import com.welcome.bot.slack.api.model.publishevent.PublishInteractionMessage;
 
 @Service
 public class SlackInteractionService {
-	
+
 	@Autowired
-    private ApplicationEventPublisher appEventPublisher;
-	
+	private ApplicationEventPublisher appEventPublisher;
+
 	private ObjectMapper jsonMapper;
-	
+
 	@Autowired
 	public SlackInteractionService(ObjectMapper jsonMapper) {
 		this.jsonMapper = jsonMapper;
 	}
-	
+
 	public void handleInteraction(String interactionRequestPayload) {
 		String slackPayload = interactionRequestPayload.split("=")[1];
 		InteractionPayload payload = new InteractionPayload();
@@ -40,20 +40,20 @@ public class SlackInteractionService {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		PublishInteractionMessage interactionData = new PublishInteractionMessage();
 		interactionData.setChannel(payload.getChannel().getId());
 		interactionData.setChoiceSelected(payload.getActions().get(0).getText().getText());
 		interactionData.setChoiceID(payload.getActions().get(0).getActionId());
 		interactionData.setUser(payload.getUser().getId());
 		interactionData.setPollID(UUID.fromString(payload.getActions().get(0).getBlockId()));
-		
+
 		interactionData.setTimestamp(payload.getContainer().getMessageTs());
 		interactionData.setText("Thank You for voting. We will inform all participants on results when poll ends.");
-		
+
 		passInteraction(interactionData);
 	}
-	
+
 	private void passInteraction(PublishInteractionMessage interactionData) {
 		SlackInteractionTriggeredEvent interactionHandler = new SlackInteractionTriggeredEvent(this, interactionData);
 		appEventPublisher.publishEvent(interactionHandler);

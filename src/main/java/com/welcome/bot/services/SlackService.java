@@ -13,6 +13,7 @@ import com.welcome.bot.domain.Schedule;
 import com.welcome.bot.domain.Trigger;
 import com.welcome.bot.repository.TriggerRepository;
 import com.welcome.bot.slack.api.SlackClientApi;
+import com.welcome.bot.slack.api.customexceptionhandler.SlackApiException;
 import com.welcome.bot.slack.api.model.interactionpayload.Channel;
 import com.welcome.bot.slack.api.model.publishevent.PublishEventMessage;
 
@@ -57,13 +58,11 @@ public class SlackService {
 		
 		List<Trigger> list = triggerRepository.findAllByTriggerTypeAndChannel(eventType, channel);
 		for (Trigger trigger : list) {
-			slackClientApi.sendMessage(trigger.getChannelId(), trigger.getMessage().getText());
-		}
-	}
-	public void triggerApp(String eventType, String channel, String user) {
-		List<Trigger> list = triggerRepository.findAllByTriggerTypeAndChannelAndActive(eventType, channel, true);
-		for (Trigger trigger : list) {
-			slackClientApi.sendMessage(trigger.getChannelId(), trigger.getMessage().getText(), user);
+			try {
+				slackClientApi.sendMessage(trigger.getChannel(), trigger.getMessage().getText());
+			} catch (SlackApiException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	

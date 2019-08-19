@@ -6,15 +6,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-"type",
-"text",
-"value",
-"action_id",
-"image_url",
-"alt_text"
+	"type",
+	"text",
+	"value",
+	"action_id",
+	"image_url",
+	"alt_text"
 })
 public class PayloadElement {
-	
+
 	@JsonProperty("type")
 	private String type;
 	@JsonProperty("text")
@@ -27,38 +27,38 @@ public class PayloadElement {
 	private String image_url;
 	@JsonProperty("alt_text")
 	private String alt_text;
-	
+
 	// Constructor
 	public PayloadElement() {}
-	
+
 	public String getType() {
 		return type;
 	}
 	public void setType(String type) {
 		this.type = type;
 	}
-	
+
 	public PayloadElementText getText() {
 		return text;
 	}
 	public void setText(PayloadElementText text) {
 		this.text = text;
 	}
-	
+
 	public String getValue() {
 		return value;
 	}
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
+
 	public String getAction_id() {
 		return action_id;
 	}
 	public void setAction_id(String action_id) {
 		this.action_id = action_id;
 	}
-	
+
 	public String getImage_url() {
 		return image_url;
 	}

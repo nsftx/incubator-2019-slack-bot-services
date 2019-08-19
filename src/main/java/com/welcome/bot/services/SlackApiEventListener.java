@@ -90,7 +90,7 @@ public class SlackApiEventListener {
 			break;
 		case "member_joined_channel":
 		case "member_left_channel":
-			slackService.triggerApp(eventType, channel, user);
+			//slackService.triggerApp(eventType, channel, user);
 			break;
 		case "channel_deleted":
 			slackService.logChannelActivities(eventData);
