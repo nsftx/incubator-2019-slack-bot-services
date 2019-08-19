@@ -17,11 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.welcome.bot.domain.Schedule;
 import com.welcome.bot.models.ScheduleDTO;
+import com.welcome.bot.security.CurrentUser;
+import com.welcome.bot.security.UserPrincipal;
 import com.welcome.bot.models.ScheduleCreateDTO;
 import com.welcome.bot.services.ScheduleService;
 
 import net.minidev.json.JSONArray;
-
 
 @RestController
 public class ScheduleController {
@@ -30,19 +31,19 @@ public class ScheduleController {
 	ScheduleService scheduleService;
 	
 	@PostMapping("/api/schedules")
-	public ScheduleDTO createSchedule(@RequestBody ScheduleCreateDTO scheduleModel){
-		return scheduleService.createSchedule(scheduleModel);
+	public ScheduleDTO createSchedule(@RequestBody ScheduleCreateDTO scheduleModel, @CurrentUser UserPrincipal userPrincipal){
+		return scheduleService.createSchedule(scheduleModel, userPrincipal);
 	}
 	@GetMapping("/api/schedules")
-	public Page<ScheduleDTO> getAllSchedules(Pageable pageable) {
-		return scheduleService.getAllSchedules(pageable);
+	public Page<ScheduleDTO> getAllSchedules(Pageable pageable, @CurrentUser UserPrincipal userPrincipal) {
+		return scheduleService.getAllSchedules(pageable, userPrincipal);
 	}
 	@GetMapping("/api/schedules/{scheduleId}")
 	public ScheduleDTO getSchedule(@PathVariable Integer scheduleId) {
 		return scheduleService.getSchedule(scheduleId);
 	}
 	@PutMapping("/api/schedules/{scheduleId}")
-	public ScheduleDTO updateSchedule(@PathVariable Integer scheduleId, @RequestParam(name="active") boolean active) {
+	public ScheduleDTO updateSchedule(@PathVariable Integer scheduleId, @RequestParam(name = "active") boolean active) {
 		return scheduleService.updateSchedule(scheduleId, active);
 	}
 	@DeleteMapping("/api/schedules/{scheduleId}")
@@ -53,5 +54,4 @@ public class ScheduleController {
 	public JSONArray getRepeatIntervals() {
 		return scheduleService.getRepeatIntervals();
 	}
-
 }

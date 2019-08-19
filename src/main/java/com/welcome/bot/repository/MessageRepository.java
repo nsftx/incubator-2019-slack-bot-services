@@ -8,9 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.welcome.bot.domain.Message;
-
-
-
+import com.welcome.bot.domain.User;
 
 public interface MessageRepository extends JpaRepository<Message, Integer>{
 
@@ -21,6 +19,12 @@ public interface MessageRepository extends JpaRepository<Message, Integer>{
 	
     Page<Message> findAll(Pageable pageParam);
     
+    Page<Message> findAllByUser(Pageable pageParam, User user);
+    
+    Page<Message> findAllByUserAndDeleted(Pageable pageParam, User user, boolean deleted);
+    
     Page<Message> findAllByTitle(String title, Pageable pageParam);
+    
+    Page<Message> findAllByDeleted(Pageable pageParam, boolean deleted);
     
 }

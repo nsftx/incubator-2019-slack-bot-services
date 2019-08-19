@@ -17,8 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.welcome.bot.domain.Message;
+import com.welcome.bot.domain.User;
+import com.welcome.bot.exception.ResourceNotFoundException;
 import com.welcome.bot.models.MessageCreateDTO;
 import com.welcome.bot.models.MessageDTO;
+import com.welcome.bot.repository.UserRepository;
+import com.welcome.bot.security.CurrentUser;
+import com.welcome.bot.security.UserPrincipal;
 import com.welcome.bot.services.MessageService;
 
 
@@ -30,12 +35,15 @@ public class MessageController{
 	@Autowired
 	MessageService messageService;
 
+	@Autowired
+	UserRepository userRepository;
+
+	
 	//get all messages
     
 	@GetMapping("/api/messages")
-	@PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
-	public Page<MessageDTO> getAllMessages(Pageable pageParam){	
-		return messageService.getAllMessages(pageParam);
+	public Page<MessageDTO> getAllMessages(Pageable pageParam, @CurrentUser UserPrincipal userPrincipal){	
+		return messageService.getAllMessages(pageParam, userPrincipal);	
 	}
 	
 	//get selected message
@@ -46,8 +54,8 @@ public class MessageController{
 	
 	//create message
 	@PostMapping("/api/messages")
-	public @ResponseBody ResponseEntity<MessageDTO> createMessage(@RequestBody MessageCreateDTO messageModel, UriComponentsBuilder ucb) {
-		return messageService.createMessage(messageModel, ucb);
+	public @ResponseBody MessageDTO createMessage(@RequestBody MessageCreateDTO messageModel, @CurrentUser UserPrincipal userPrincipal) {
+		return messageService.createMessage(messageModel, userPrincipal);
 	}
 	
 	//get messages by title
