@@ -56,7 +56,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-	@Autowired
+    @Autowired
     private InviteService inviteService;
     @Autowired
     private UserRepository userRepository;
@@ -80,21 +80,21 @@ public class UserController {
     	data.setSelectLanguage(messageSource.getMessage("select.language", null, LocaleContextHolder.getLocale()));
     	data.setLanguage(messageSource.getMessage("language", null, LocaleContextHolder.getLocale()));
     	data.setSave(messageSource.getMessage("save", null, LocaleContextHolder.getLocale()));
-         data.setChannel(messageSource.getMessage("channel",null,LocaleContextHolder.getLocale()));
-		data.setMessages(messageSource.getMessage("messages",null,LocaleContextHolder.getLocale()));
-		data.setMessage(messageSource.getMessage("message",null,LocaleContextHolder.getLocale()));
-		data.setSchedules(messageSource.getMessage("schedules",null,LocaleContextHolder.getLocale()));
-		data.setUsers(messageSource.getMessage("users",null,LocaleContextHolder.getLocale()));
-		data.setActiveAt(messageSource.getMessage("activeAt",null,LocaleContextHolder.getLocale()));
-		data.setTriggers(messageSource.getMessage("triggers",null,LocaleContextHolder.getLocale()));
-		data.setTrigger(messageSource.getMessage("trigger",null,LocaleContextHolder.getLocale()));
-		data.setName(messageSource.getMessage("name",null,LocaleContextHolder.getLocale()));
-		data.setRole(messageSource.getMessage("role",null,LocaleContextHolder.getLocale()));
-		data.setNextRun(messageSource.getMessage("nextRun",null,LocaleContextHolder.getLocale()));
-		data.setTitle(messageSource.getMessage("title",null,LocaleContextHolder.getLocale()));
-		data.setText(messageSource.getMessage("text",null,LocaleContextHolder.getLocale()));
-		data.setActive(messageSource.getMessage("active",null,LocaleContextHolder.getLocale()));
-		data.setRepeat(messageSource.getMessage("active",null,LocaleContextHolder.getLocale()));
+        data.setChannel(messageSource.getMessage("channel",null,LocaleContextHolder.getLocale()));
+	data.setMessages(messageSource.getMessage("messages",null,LocaleContextHolder.getLocale()));
+	data.setMessage(messageSource.getMessage("message",null,LocaleContextHolder.getLocale()));
+	data.setSchedules(messageSource.getMessage("schedules",null,LocaleContextHolder.getLocale()));
+	data.setUsers(messageSource.getMessage("users",null,LocaleContextHolder.getLocale()));
+	data.setActiveAt(messageSource.getMessage("activeAt",null,LocaleContextHolder.getLocale()));
+	data.setTriggers(messageSource.getMessage("triggers",null,LocaleContextHolder.getLocale()));
+	data.setTrigger(messageSource.getMessage("trigger",null,LocaleContextHolder.getLocale()));
+	data.setName(messageSource.getMessage("name",null,LocaleContextHolder.getLocale()));
+	data.setRole(messageSource.getMessage("role",null,LocaleContextHolder.getLocale()));
+	data.setNextRun(messageSource.getMessage("nextRun",null,LocaleContextHolder.getLocale()));
+	data.setTitle(messageSource.getMessage("title",null,LocaleContextHolder.getLocale()));
+	data.setText(messageSource.getMessage("text",null,LocaleContextHolder.getLocale()));
+	data.setActive(messageSource.getMessage("active",null,LocaleContextHolder.getLocale()));
+	data.setRepeat(messageSource.getMessage("active",null,LocaleContextHolder.getLocale()));
 
      return data;
     }
