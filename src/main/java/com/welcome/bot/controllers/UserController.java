@@ -63,11 +63,11 @@ public class UserController {
     @Autowired
     private UserSettingsRepository userSettingsRepository;
     @Autowired
-    MessageSource messageSource;
+    private MessageSource messageSource;
     @Autowired
-    InviteRepository inviteRepository;
+     private InviteRepository inviteRepository;
     @Autowired
-    UserService userService;
+    private UserService userService;
     
     @GetMapping("/translation")
     @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
