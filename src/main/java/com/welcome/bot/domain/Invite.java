@@ -34,6 +34,9 @@ import com.welcome.bot.models.Theme;
 		        
 		        
 		    }
+		public boolean isDelivered() {
+			  return this.sent;
+		  }
 		  public Long getId() {
 		        return id;
 		    }
