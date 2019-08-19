@@ -56,18 +56,32 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    @Autowired
-    private InviteService inviteService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserSettingsRepository userSettingsRepository;
-    @Autowired
-    private MessageSource messageSource;
-    @Autowired
-     private InviteRepository inviteRepository;
-    @Autowired
-    private UserService userService;
+	 private final InviteService inviteService;
+	 private final UserRepository userRepository;
+         private final UserSettingsRepository userSettingsRepository;
+         private final MessageSource messageSource;
+         private final InviteRepository inviteRepository;
+         private final UserService userService;
+	
+	 public InviteService(final InviteService inviteService) {
+         this.inviteService = inviteService;
+        }
+	 public UserRepository(final UserRepository userRepository) {
+         this.userRepository = userRepository;
+         }
+	 public UserSettingsRepository(final UserSettingsRepository userSettingsRepository) {
+         this.userSettingsRepository = userSettingsRepository;
+         }
+	 public InviteRepository(final InviteRepository inviteRepository) {
+         this.inviteRepository = inviteRepository;
+         }
+	 public MessageSource(final MessageSource messageSource) {
+         this.messageSource= messageSource;
+         }
+	public UserService(final UserService userService) {
+         this.userService= userService;
+         }
+   
     
     @GetMapping("/translation")
     @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
