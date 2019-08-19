@@ -11,6 +11,7 @@ import com.welcome.bot.domain.Choice;
 import com.welcome.bot.domain.Poll;
 import com.welcome.bot.domain.Schedule;
 import com.welcome.bot.domain.Trigger;
+import com.welcome.bot.exception.base.BaseException;
 import com.welcome.bot.repository.TriggerRepository;
 import com.welcome.bot.slack.api.SlackClientApi;
 import com.welcome.bot.slack.api.customexceptionhandler.SlackApiException;
@@ -117,7 +118,12 @@ public class SlackService {
 		for (Choice choice : choiceList) {
 			choicesValuesToNumbersMap.put(choice.getChoiceId(), choice.getChoiceValue());
 		}
-		slackClientApi.sendMessagePoll(channelId, poll.getTitle(), choicesValuesToNumbersMap, poll.getPollUuid());
+		try {
+			slackClientApi.sendMessagePoll(channelId, poll.getTitle(), choicesValuesToNumbersMap, poll.getPollUuid());
+		}catch (Exception e) {
+			throw new BaseException("Couldn't send poll to slack");
+		}
+		
 	}
 }	
 
