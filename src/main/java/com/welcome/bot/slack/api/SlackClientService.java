@@ -347,42 +347,42 @@ public class SlackClientService implements SlackClientApi {
 	}
 
 	//TODO - TEST/DELETE
-	@EventListener
-	public void handleEvent(SlackEventTriggeredEvent event) {
-		PublishEventMessage eventData = event.getEventData();
-		
-		String channel = eventData.getChannel();
-		UUID id = UUID.randomUUID();
-		HashMap<Integer,String> choices = new HashMap<Integer,String>();
-		choices.put(1, "Puppet");
-		choices.put(2, "Iron Man");
-		choices.put(3, "Deadpool");
-		choices.put(4, "Puppet (yes, puppet again)");
-		
-		String response = sendMessagePoll(channel, "poll message", choices, id);
-		System.out.println("IN HANDLE EVENT, RESPONSE (TIMESTAMP) IS: " + response);
-		
+//	@EventListener
+//	public void handleEvent(SlackEventTriggeredEvent event) {
+//		PublishEventMessage eventData = event.getEventData();
+//		
+//		String channel = eventData.getChannel();
+//		UUID id = UUID.randomUUID();
+//		HashMap<Integer,String> choices = new HashMap<Integer,String>();
+//		choices.put(1, "Puppet");
+//		choices.put(2, "Iron Man");
+//		choices.put(3, "Deadpool");
+//		choices.put(4, "Puppet (yes, puppet again)");
+//		
+//		String response = sendMessagePoll(channel, "poll message", choices, id);
+//		System.out.println("IN HANDLE EVENT, RESPONSE (TIMESTAMP) IS: " + response);
+//		
 //		sendMessage(channel, "public message");
 //		createSchedule(channel, "repeating schedule", new Date(), "weekly");
-	}
+//	}
 	
 	//TODO - TEST/DELETE
-	@EventListener
-	public void handleInteraction(SlackInteractionTriggeredEvent interaction) {
-		PublishInteractionMessage interactionData = interaction.getInteractionData();
-		
-		String channel = interactionData.getChannel();
-		String text = interactionData.getText();
-		String user = interactionData.getUser();
-		String choice = interactionData.getChoiceSelected();
-		String choiceID = interactionData.getChoiceID();
-		String pollID = interactionData.getPollID().toString();
-		
-		String timestamp = interactionData.getTimestamp();
-		System.out.println("IN HANDLE INTERACTION, INTERACTION TS (TIMESTAMP) IS : " + timestamp);
-		
-		String combinedResponse = "RESULT:\nText: " + text + "\nUser: " + user + "\nChoice Selected: " + choice + "\nChoice ID: " + choiceID + "\nBlock ID: " + pollID;
-		//sendMessage(channel, combinedResponse, user);
-		updateMessage(channel, combinedResponse, timestamp);
-	}
+//	@EventListener
+//	public void handleInteraction(SlackInteractionTriggeredEvent interaction) {
+//		PublishInteractionMessage interactionData = interaction.getInteractionData();
+//		
+//		String channel = interactionData.getChannel();
+//		String text = interactionData.getText();
+//		String user = interactionData.getUser();
+//		String choice = interactionData.getChoiceSelected();
+//		String choiceID = interactionData.getChoiceID();
+//		String pollID = interactionData.getPollID().toString();
+//		
+//		String timestamp = interactionData.getTimestamp();
+//		System.out.println("IN HANDLE INTERACTION, INTERACTION TS (TIMESTAMP) IS : " + timestamp);
+//		
+//		String combinedResponse = "RESULT:\nText: " + text + "\nUser: " + user + "\nChoice Selected: " + choice + "\nChoice ID: " + choiceID + "\nBlock ID: " + pollID;
+//		//sendMessage(channel, combinedResponse, user);
+//		updateMessage(channel, combinedResponse, timestamp);
+//	}
 }

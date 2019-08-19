@@ -23,6 +23,7 @@ import com.welcome.bot.exception.base.BaseException;
 import com.welcome.bot.payload.ApiResponse;
 import com.welcome.bot.payload.RegistrationRequest;
 import com.welcome.bot.payload.TranslationSettings;
+import com.welcome.bot.repository.InviteRepository;
 import com.welcome.bot.repository.UserRepository;
 import com.welcome.bot.repository.UserSettingsRepository;
 import com.welcome.bot.security.CurrentUser;
@@ -53,6 +54,8 @@ public class UserController {
     private InviteService inviteService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private InviteRepository inviteRepository;
     @Autowired
     private UserSettingsRepository userSettingsRepository;
     @Autowired
@@ -109,6 +112,8 @@ public class UserController {
     	       
     	        User user = new User(signUpRequest.getEmail());
     	        user.setRole(signUpRequest.getRole());
+    	        inviteRepository.save(user.getInvite());
+    	        userSettingsRepository.save(user.getUserSettings());
     	        User result = userRepository.save(user);
     	        if(inviteService.sendInvite(result.getEmail())) {
     	        
