@@ -52,7 +52,6 @@ public class User {
     }
     public User(String email) {
     	this.email=email;
-    	this.invite=new Invite();
     	this.userSettings=new UserSettings();
     	this.invite=new Invite();
     }
