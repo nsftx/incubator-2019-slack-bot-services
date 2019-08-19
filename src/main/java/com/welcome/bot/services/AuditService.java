@@ -39,31 +39,24 @@ public class AuditService {
 		return auditDtoPage;	
 	}
 	
-	public void createScheduleLog(List<Schedule> scheduleList, String channel) {
-		String entityInfo = "deleted";
-		String channelInfo = "deleted";
-		String entity = "Schedule";
-		
+	public void createScheduleLog(List<Schedule> scheduleList) {
+		String channelName = scheduleList.get(0).getChannel();
+		String cause = "because " + channelName + "is deleted";
+	
 		for (Schedule schedule : scheduleList) {
-			Integer entityId = schedule.getScheduleId();
-			Audit audit = new Audit(channel, channelInfo, entityId, entity, entityInfo);	 
+			String consequence = "Schedule with id: " + schedule.getScheduleId() + "and text: " + schedule.getMessage().getText() + "is deleted";
+			Audit audit = new Audit(cause, consequence);	 
 			auditRepository.save(audit);
 		}
 	}
 	
-	public void createTriggerLog(List<Trigger> triggerList, String channel) {
-		String entityInfo = "deleted";
-		String channelInfo = "deleted";
-		String entity = "Trigger";
-		
+	public void createTriggerLog(List<Trigger> triggerList) {
+		String channelName = triggerList.get(0).getChannel();
+		String cause = "because " + channelName + "is deleted";
 		for (Trigger trigger : triggerList) {
-			Integer entityId = trigger.getTriggerId();
-			Audit audit = new Audit(channel, channelInfo, entityId, entity, entityInfo);	 
+			String consequence = "Trigger with id: " + trigger.getTriggerId() + "and text: " + trigger.getMessage().getText() + "is deleted";
+			Audit audit = new Audit(cause, consequence);	 
 			auditRepository.save(audit);
 		}
 	}
-
-
-
-
 }
