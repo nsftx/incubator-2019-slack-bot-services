@@ -112,6 +112,7 @@ public class UserController {
     		
     }
     @GetMapping("/getAllUsers")
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<UserDTO> getAllUsers(Pageable pageable) {
     	return userService.getAllUsers(pageable);
     }
