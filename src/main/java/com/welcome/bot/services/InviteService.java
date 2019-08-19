@@ -17,7 +17,6 @@ import com.welcome.bot.exception.ResourceNotFoundException;
 import com.welcome.bot.repository.InviteRepository;
 import com.welcome.bot.repository.UserRepository;
 @Service
-@Transactional
 public class InviteService {
 	 @Autowired
 	    InviteRepository inviteRepository;
