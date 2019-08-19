@@ -12,7 +12,7 @@ import com.welcome.bot.domain.Invite;
 @Repository
 public interface InviteRepository extends JpaRepository<Invite, Long> {
 
-    Optional<Invite> findById(String id);
+    Optional<Invite> findById(Long id);
 
 
 }
