@@ -6,10 +6,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-"type",
-"action_id",
-"text",
-"value"
+	"type",
+	"action_id",
+	"text",
+	"value"
 })
 public class Element {
 
@@ -18,31 +18,31 @@ public class Element {
 	@JsonProperty("action_id")
 	private String actionId;
 	@JsonProperty("text")
-	private Text_ text;
+	private Text text;
 	@JsonProperty("value")
 	private String value;
-	
+
 	public String getType() {
 		return type;
 	}
 	public void setType(String type) {
 		this.type = type;
 	}
-	
+
 	public String getActionId() {
 		return actionId;
 	}
 	public void setActionId(String actionId) {
 		this.actionId = actionId;
 	}
-	
-	public Text_ getText() {
+
+	public Text getText() {
 		return text;
 	}
-	public void setText(Text_ text) {
+	public void setText(Text text) {
 		this.text = text;
 	}
-	
+
 	public String getValue() {
 		return value;
 	}

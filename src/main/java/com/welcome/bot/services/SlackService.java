@@ -10,6 +10,7 @@ import com.welcome.bot.domain.Schedule;
 import com.welcome.bot.domain.Trigger;
 import com.welcome.bot.repository.TriggerRepository;
 import com.welcome.bot.slack.api.SlackClientApi;
+import com.welcome.bot.slack.api.customexceptionhandler.SlackApiException;
 import com.welcome.bot.slack.api.model.interactionpayload.Channel;
 
 @Service
@@ -45,7 +46,11 @@ public class SlackService {
 	public void triggerApp(HashMap<String, String> eventData) {
 		List<Trigger> list = triggerRepository.findAllByTriggerTypeAndChannel(eventData.get("triggerType"), eventData.get("channel"));
 		for (Trigger trigger : list) {
-			slackClientApi.sendMessage(trigger.getChannel(), trigger.getMessage().getText());
+			try {
+				slackClientApi.sendMessage(trigger.getChannel(), trigger.getMessage().getText());
+			} catch (SlackApiException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	

@@ -6,19 +6,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-"type",
-"text"
+	"type",
+	"text"
 })
 public class PayloadBlockText {
-	
+
 	@JsonProperty("type")
 	private String type;
 	@JsonProperty("text")
 	private String text;
-	
+
 	// Constructor
 	public PayloadBlockText() {}
-	
+
 	public String getType() {
 		return type;
 	}

@@ -8,10 +8,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-"id",
-"blocks",
-"color",
-"fallback"
+	"id",
+	"blocks",
+	"color",
+	"fallback"
 })
 public class Attachment {
 
@@ -23,28 +23,28 @@ public class Attachment {
 	private String color;
 	@JsonProperty("fallback")
 	private String fallback;
-	
+
 	public Integer getId() {
 		return id;
 	}
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	
+
 	public List<Block> getBlocks() {
 		return blocks;
 	}
 	public void setBlocks(List<Block> blocks) {
 		this.blocks = blocks;
 	}
-	
+
 	public String getColor() {
 		return color;
 	}
 	public void setColor(String color) {
 		this.color = color;
 	}
-	
+
 	public String getFallback() {
 		return fallback;
 	}

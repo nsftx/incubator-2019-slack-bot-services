@@ -8,19 +8,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-"token",
-"team_id",
-"api_app_id",
-"event",
-"challenge",
-"type",
-"event_id",
-"event_time",
-"authed_users"
+	"token",
+	"team_id",
+	"api_app_id",
+	"event",
+	"challenge",
+	"type",
+	"event_id",
+	"event_time",
+	"authed_users"
 })
 
 public class EventPayload {
-	
+
 	@JsonProperty("token")
 	private String token;
 	@JsonProperty("type")
