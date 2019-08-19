@@ -20,6 +20,9 @@ import com.welcome.bot.repository.UserRepository;
 public class UserService{
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	ModelMapper modelMapper;
 
 	public User AddUser( User user) {
 		userRepository.save(user);
@@ -35,8 +38,7 @@ public class UserService{
 		User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("No data!"));
 		return user;
 	}
-	@Autowired
-	ModelMapper modelMapper;
+	
 
 	public User UpdateUser(Integer id, User user) {
 		userRepository.save(user);
