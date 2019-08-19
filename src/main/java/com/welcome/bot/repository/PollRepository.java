@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import com.welcome.bot.domain.Poll;
 
 @Repository
-public interface PollRepository extends PagingAndSortingRepository<Poll, UUID>{
-	
+public interface PollRepository extends PagingAndSortingRepository<Poll, Integer>{
+	Poll findByPollUuid(UUID pollUuid);
 }

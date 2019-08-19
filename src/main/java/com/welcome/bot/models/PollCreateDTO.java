@@ -7,7 +7,8 @@ import com.welcome.bot.domain.Choice;
 public class PollCreateDTO {
 	String title;
 	String channel;
-	List<ChoiceCreateDTO> answerList;
+	boolean active;
+	List<ChoiceCreateDTO> choiceList;
 	
 	public String getTitle() {
 		return title;
@@ -15,8 +16,11 @@ public class PollCreateDTO {
 	public String getChannel() {
 		return channel;
 	}
-	public List<ChoiceCreateDTO> getAnswerList() {
-		return answerList;
+	public boolean isActive() {
+		return active;
+	}
+	public List<ChoiceCreateDTO> getChoiceList() {
+		return choiceList;
 	}
 	public void setTitle(String title) {
 		this.title = title;
@@ -24,17 +28,15 @@ public class PollCreateDTO {
 	public void setChannel(String channel) {
 		this.channel = channel;
 	}
-	public void setAnswerList(List<ChoiceCreateDTO> answerList) {
-		this.answerList = answerList;
+	public void setActive(boolean active) {
+		this.active = active;
 	}
-	@Override
-	public String toString() {
-		return "PollCreateDTO [title=" + title + ", channel=" + channel + ", answerList=" + answerList + "]";
+	public void setChoiceList(List<ChoiceCreateDTO> choiceList) {
+		this.choiceList = choiceList;
 	}
 	
 
-	
-	
+
 
 	
 }
