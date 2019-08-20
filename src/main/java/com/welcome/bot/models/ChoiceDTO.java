@@ -2,23 +2,27 @@ package com.welcome.bot.models;
 
 public class ChoiceDTO {
 	Integer choiceId;
-	String answer;
+	String choiceValue;
+	Integer counter;
 	
 	public Integer getChoiceId() {
 		return choiceId;
 	}
-	public String getAnswer() {
-		return answer;
+	public String getChoiceValue() {
+		return choiceValue;
 	}
+	public Integer getCounter() {
+		return counter;
+	}
+
 	public void setChoiceId(Integer choiceId) {
 		this.choiceId = choiceId;
 	}
-	public void setAnswer(String answer) {
-		this.answer = answer;
+	public void setChoiceValue(String choiceValue) {
+		this.choiceValue = choiceValue;
 	}
-
-
-	
-	
+	public void setCounter(Integer counter) {
+		this.counter = counter;
+	}
 	
 }

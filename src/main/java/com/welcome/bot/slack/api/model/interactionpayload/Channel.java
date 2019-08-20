@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-"id",
-"name"
+	"id",
+	"name"
 })
 public class Channel {
 
@@ -15,18 +15,24 @@ public class Channel {
 	private String id;
 	@JsonProperty("name")
 	private String name;
-	
+
 	public String getId() {
 		return id;
 	}
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
+	@Override
+	public String toString() {
+		return "Channel [id=" + id + ", name=" + name + "]";
+	}
+	
+	
 }

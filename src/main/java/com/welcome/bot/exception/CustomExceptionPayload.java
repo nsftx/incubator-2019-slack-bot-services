@@ -4,11 +4,13 @@ import java.util.Date;
 
 import org.springframework.http.HttpStatus;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.welcome.bot.exception.base.BaseException;
 
 public class CustomExceptionPayload {
 	private HttpStatus status;
 	private Integer error;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") 
 	private Date timestamp;
 	private String message;
 	private String path;

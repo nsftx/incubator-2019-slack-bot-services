@@ -56,6 +56,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
 	 private final InviteService inviteService;
 	 private final UserRepository userRepository;
          private final UserSettingsRepository userSettingsRepository;
@@ -81,7 +82,7 @@ public class UserController {
 	public UserService(final UserService userService) {
          this.userService= userService;
          }
-   
+
     
     @GetMapping("/translation")
     @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
@@ -158,7 +159,7 @@ public class UserController {
     	        user.setRole(signUpRequest.getRole());
     	        inviteRepository.save(user.getInvite());
     	        userSettingsRepository.save(user.getUserSettings());
-    	        
+
     	        User result = userRepository.save(user);
     	        if(inviteService.sendInvite(result.getEmail())) {
     	        

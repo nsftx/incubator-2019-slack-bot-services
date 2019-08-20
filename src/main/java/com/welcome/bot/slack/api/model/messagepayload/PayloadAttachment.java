@@ -8,8 +8,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-"color",
-"blocks"
+	"color",
+	"blocks"
 })
 public class PayloadAttachment {
 
@@ -17,17 +17,17 @@ public class PayloadAttachment {
 	private String color;
 	@JsonProperty("blocks")
 	private List<PayloadBlock> blocks = null;
-	
+
 	// Constructor
 	public PayloadAttachment() {}
-	
+
 	public String getColor() {
 		return color;
 	}
 	public void setColor(String color) {
 		this.color = color;
 	}
-	
+
 	public List<PayloadBlock> getBlocks() {
 		return blocks;
 	}

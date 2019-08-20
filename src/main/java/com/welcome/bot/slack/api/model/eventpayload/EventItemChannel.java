@@ -6,14 +6,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-"id",
-"is_channel",
-"name",
-"name_normalized",
-"created",
-"creator",
-"is_shared",
-"is_org_shared"
+	"id",
+	"is_channel",
+	"name",
+	"name_normalized",
+	"created",
+	"creator",
+	"is_shared",
+	"is_org_shared"
 })
 public class EventItemChannel {
 
@@ -33,7 +33,7 @@ public class EventItemChannel {
 	private Boolean isShared;
 	@JsonProperty("is_org_shared")
 	private Boolean isOrgShared;
-	
+
 	public EventItemChannel(String id, Boolean isChannel, String name, String nameNormalized, Integer created, String creator, Boolean isShared, Boolean isOrgShared) {
 		this.id = id;
 		this.isChannel = isChannel;
@@ -44,7 +44,7 @@ public class EventItemChannel {
 		this.isShared = isShared;
 		this.isOrgShared = isOrgShared; 
 	}
-	
+
 	public EventItemChannel(String id, Boolean isChannel, String name, String nameNormalized, Integer created) {
 		this.id = id;
 		this.isChannel = isChannel;
@@ -52,56 +52,56 @@ public class EventItemChannel {
 		this.nameNormalized = nameNormalized;
 		this.created = created;
 	}
-	
+
 	public String getId() {
 		return id;
 	}
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 	public Boolean getIsChannel() {
 		return isChannel;
 	}
 	public void setIsChannel(Boolean isChannel) {
 		this.isChannel = isChannel;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public String getNameNormalized() {
 		return nameNormalized;
 	}
 	public void setNameNormalized(String nameNormalized) {
 		this.nameNormalized = nameNormalized;
 	}
-	
+
 	public Integer getCreated() {
 		return created;
 	}
 	public void setCreated(Integer created) {
 		this.created = created;
 	}
-	
+
 	public String getCreator() {
 		return creator;
 	}
 	public void setCreator(String creator) {
 		this.creator = creator;
 	}
-	
+
 	public Boolean getIsShared() {
 		return isShared;
 	}
 	public void setIsShared(Boolean isShared) {
 		this.isShared = isShared;
 	}
-	
+
 	public Boolean getIsOrgShared() {
 		return isOrgShared;
 	}
