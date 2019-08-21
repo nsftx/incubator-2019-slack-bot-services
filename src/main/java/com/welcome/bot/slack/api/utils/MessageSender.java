@@ -96,7 +96,7 @@ public class MessageSender {
 				channelList.add(c);
 			}
 		} catch (JSONException e) {
-			e.printStackTrace();
+			throw new JSONException(e);
 		}
 		return channelList;
 	}

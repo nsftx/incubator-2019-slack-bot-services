@@ -1,11 +1,16 @@
 package com.welcome.bot.slack.api;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -164,6 +169,8 @@ public class SlackClientService implements SlackClientApi {
 		if(messageTimestamp == null || messageTimestamp.isEmpty()) {
 			throw new MessageSendingException("Poll sending failed due to Slack unavailability");
 		}
+		//scheduleClosingThePoll(channel, "finish", messageTimestamp);
+		
 		return messageTimestamp;
 	}
 
@@ -341,7 +348,44 @@ public class SlackClientService implements SlackClientApi {
 				e.printStackTrace();
 			}
 		}
+		
 	}
+	
+	public void scheduleClosingThePoll(String channel, String text, String timestamp) {
+		System.out.println("TEST DEMO OK 1");
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime closeAt = LocalDateTime.now()
+                .withHour(14)
+                .withMinute(45)
+                .withSecond(0)
+                .withNano(0);
+        
+        ScheduledExecutorService scheduleClosing = Executors.newScheduledThreadPool(1);
+        try {
+            scheduleClosing.schedule(closePoll(channel, text, timestamp), now.until(closeAt, ChronoUnit.MILLIS), TimeUnit.MILLISECONDS);
+            System.out.println("TEST DEMO OK 2");
+        } catch (InterruptedException e) {
+        	System.out.println("TEST DEMO OK 3");
+            e.printStackTrace();
+        }
+        System.out.println("TEST DEMO OK 4");
+    }
+    
+    private Runnable closePoll(String channel, String text, String timestamp) throws InterruptedException {
+    	System.out.println("TEST DEMO OK 5");
+    	Runnable run = () -> {
+             try {
+            	 System.out.println("TEST DEMO OK 6");
+                    updateMessage(channel, text, timestamp);
+                } catch (SlackApiException e) {
+                	System.out.println("TEST DEMO OK 7");
+                    e.printStackTrace();
+                }
+        };
+        System.out.println("TEST DEMO OK 8");
+        return run;
+    }
+	
 
 	//TODO - TEST/DELETE
 
