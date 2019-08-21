@@ -1,14 +1,6 @@
 package com.welcome.bot.controllers;
 
-
-
-
-
 import org.springframework.web.bind.annotation.GetMapping;
-
-
-
-
 
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -36,135 +28,121 @@ import com.welcome.bot.services.UserService;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
-
-
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.Set;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PreAuthorize;
-
-
+import org.springframework.util.CollectionUtils;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
 	@Autowired
-    private InviteService inviteService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserSettingsRepository userSettingsRepository;
-    @Autowired
-    MessageSource messageSource;
-    @Autowired
-    InviteRepository inviteRepository;
-    @Autowired
-    UserService userService;
-    
-    @GetMapping("/translation")
-    @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
-    public TranslationSettings translate() {
- 
-    	TranslationSettings data=new TranslationSettings();
-    	data.setSettings(messageSource.getMessage("settings", null, LocaleContextHolder.getLocale()));
-    	data.setTheme(messageSource.getMessage("theme", null, LocaleContextHolder.getLocale()));
-    	data.setSelectColor(messageSource.getMessage("select.color", null, LocaleContextHolder.getLocale()));
-    	data.setSelectLanguage(messageSource.getMessage("select.language", null, LocaleContextHolder.getLocale()));
-    	data.setLanguage(messageSource.getMessage("language", null, LocaleContextHolder.getLocale()));
-    	data.setSave(messageSource.getMessage("save", null, LocaleContextHolder.getLocale()));
-         data.setChannel(messageSource.getMessage("channel",null,LocaleContextHolder.getLocale()));
-		data.setMessages(messageSource.getMessage("messages",null,LocaleContextHolder.getLocale()));
-		data.setMessage(messageSource.getMessage("message",null,LocaleContextHolder.getLocale()));
-		data.setSchedules(messageSource.getMessage("schedules",null,LocaleContextHolder.getLocale()));
-		data.setUsers(messageSource.getMessage("users",null,LocaleContextHolder.getLocale()));
-		data.setActiveAt(messageSource.getMessage("activeAt",null,LocaleContextHolder.getLocale()));
-		data.setTriggers(messageSource.getMessage("triggers",null,LocaleContextHolder.getLocale()));
-		data.setTrigger(messageSource.getMessage("trigger",null,LocaleContextHolder.getLocale()));
-		data.setName(messageSource.getMessage("name",null,LocaleContextHolder.getLocale()));
-		data.setRole(messageSource.getMessage("role",null,LocaleContextHolder.getLocale()));
-		data.setNextRun(messageSource.getMessage("nextRun",null,LocaleContextHolder.getLocale()));
-		data.setTitle(messageSource.getMessage("title",null,LocaleContextHolder.getLocale()));
-		data.setText(messageSource.getMessage("text",null,LocaleContextHolder.getLocale()));
-		data.setActive(messageSource.getMessage("active",null,LocaleContextHolder.getLocale()));
-		data.setRepeat(messageSource.getMessage("active",null,LocaleContextHolder.getLocale()));
+	private InviteService inviteService;
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
+	private UserSettingsRepository userSettingsRepository;
+	@Autowired
+	InviteRepository inviteRepository;
+	@Autowired
+	UserService userService;
+	@Autowired
+	MessageSource messageSource;
+	private Properties prop = null;
 
-     return data;
-    }
-    
-    @GetMapping("/me")
-    @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
-    public User getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
-        return userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
-    }
-    @GetMapping("/delete")
-    @PreAuthorize("hasRole('ADMIN')")
-    public void deleteUser(@RequestBody User user) {
-    	userRepository.delete(user);
-    		
-    }
-    @GetMapping("/getAllUsers")
-    public Page<UserDTO> getAllUsers(Pageable pageable) {
-    	return userService.getAllUsers(pageable);
-    }
-   
-   
-    @PostMapping("/userSettings")
-    @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
-    public UserSettings setUserSettings( @RequestBody UserSettings userSettings,@CurrentUser UserPrincipal userPrincipal) {
-    	User user=userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
-    	UserSettings usersettings2=userSettingsRepository.findById(user.getUserSettings().getId()).orElseThrow(() -> new ResourceNotFoundException("UserSettings", "id", userSettings.getId()));
-    	usersettings2.setTheme(userSettings.getTheme());
-    	usersettings2.setLanguage(userSettings.getLanguage());
-    	UserSettings result=userSettingsRepository.save(usersettings2);
-    	return result;
-    	
-    	
-    }
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/create")
-    	  public ResponseEntity<?> registerUser(@Valid @RequestBody RegistrationRequest signUpRequest) {
-    	        if(userRepository.existsByEmail(signUpRequest.getEmail())) {
-    	            throw new BaseException("Email address already in use.");
-    	        }
+	@GetMapping("/translation")
+	@PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
+	public Map<String, String> translate() {
+		Map<String, String> data = new HashMap<String, String>();
+		InputStream is = null;
+		prop = null;
+		try {
+			this.prop = new Properties();
+			is = this.getClass().getResourceAsStream("/messages_" + LocaleContextHolder.getLocale() + ".properties");
+			prop.load(is);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Set<Object> keys = prop.keySet();
+		for (Object k : keys) {
+			String key = (String) k;
+			data.put(key, this.prop.getProperty(key));
+		}
+		return data;
+	}
 
-    	       
-    	        User user = new User(signUpRequest.getEmail());
-    	       
-    	        user.setRole(signUpRequest.getRole());
-    	        inviteRepository.save(user.getInvite());
-    	        userSettingsRepository.save(user.getUserSettings());
-    	        
-    	        User result = userRepository.save(user);
-    	        if(inviteService.sendInvite(result.getEmail())) {
-    	        
-    	        result.getInvite().setSent(true);
-    	        }
-    	        else {
-    	        	
-    	        }
-    	       
-    	        
-    	        
-    	        URI location = ServletUriComponentsBuilder
-    	                .fromCurrentContextPath().path("/user/me")
-    	                .buildAndExpand(result.getId()).toUri();
+	@GetMapping("/me")
+	@PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
+	public User getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
+		return userRepository.findById(userPrincipal.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+	}
 
-    	        return ResponseEntity.created(location)
-    	                .body(new ApiResponse(true, "User registered successfully@"));
-    	    }
+	@GetMapping("/delete")
+	@PreAuthorize("hasRole('ADMIN')")
+	public void deleteUser(@RequestBody User user) {
+		userRepository.delete(user);
 
-   
-    
-    
+	}
+
+	@GetMapping("/getAllUsers")
+	@PreAuthorize("hasRole('ADMIN')")
+	public Page<UserDTO> getAllUsers(Pageable pageable) {
+		return userService.getAllUsers(pageable);
+	}
+
+	@PostMapping("/userSettings")
+	@PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
+	public UserSettings setUserSettings(@RequestBody UserSettings userSettings,@CurrentUser UserPrincipal userPrincipal) {
+		User user = userRepository.findById(userPrincipal.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+		UserSettings usersettings2 = userSettingsRepository.findById(user.getUserSettings().getId())
+				.orElseThrow(() -> new ResourceNotFoundException("UserSettings", "id", userSettings.getId()));
+		usersettings2.setTheme(userSettings.getTheme());
+		usersettings2.setLanguage(userSettings.getLanguage());
+		UserSettings result = userSettingsRepository.save(usersettings2);
+		return result;
+
+	}
+
+	@PreAuthorize("hasRole('ADMIN')")
+	@PostMapping("/create")
+	public ResponseEntity<?> registerUser(@Valid @RequestBody RegistrationRequest signUpRequest) {
+		if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+			throw new BaseException("Email address already in use.");
+		}
+		User user = new User(signUpRequest.getEmail());
+		user.setRole(signUpRequest.getRole());
+		inviteRepository.save(user.getInvite());
+		userSettingsRepository.save(user.getUserSettings());
+		User result = userRepository.save(user);
+		if (inviteService.sendInvite(result.getEmail())) {
+			result.getInvite().setSent(true);
+		}
+		URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/me")
+				.buildAndExpand(result.getId()).toUri();
+		return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully@"));
+	}
+
 }
-
