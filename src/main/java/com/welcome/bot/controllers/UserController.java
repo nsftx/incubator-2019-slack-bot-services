@@ -1,14 +1,6 @@
 package com.welcome.bot.controllers;
 
-
-
-
-
 import org.springframework.web.bind.annotation.GetMapping;
-
-
-
-
 
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -36,20 +28,29 @@ import com.welcome.bot.services.UserService;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
-
-
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.Set;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.CollectionUtils;
 
 
 
@@ -84,35 +85,28 @@ public class UserController {
          }
 
     
-    @GetMapping("/translation")
-    @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
-    public TranslationSettings translate() {
- 
-    	TranslationSettings data=new TranslationSettings();
-    	data.setSettings(messageSource.getMessage("settings", null, LocaleContextHolder.getLocale()));
-    	data.setTheme(messageSource.getMessage("theme", null, LocaleContextHolder.getLocale()));
-    	data.setSelectColor(messageSource.getMessage("select.color", null, LocaleContextHolder.getLocale()));
-    	data.setSelectLanguage(messageSource.getMessage("select.language", null, LocaleContextHolder.getLocale()));
-    	data.setLanguage(messageSource.getMessage("language", null, LocaleContextHolder.getLocale()));
-    	data.setSave(messageSource.getMessage("save", null, LocaleContextHolder.getLocale()));
-        data.setChannel(messageSource.getMessage("channel",null,LocaleContextHolder.getLocale()));
-	data.setMessages(messageSource.getMessage("messages",null,LocaleContextHolder.getLocale()));
-	data.setMessage(messageSource.getMessage("message",null,LocaleContextHolder.getLocale()));
-	data.setSchedules(messageSource.getMessage("schedules",null,LocaleContextHolder.getLocale()));
-	data.setUsers(messageSource.getMessage("users",null,LocaleContextHolder.getLocale()));
-	data.setActiveAt(messageSource.getMessage("activeAt",null,LocaleContextHolder.getLocale()));
-	data.setTriggers(messageSource.getMessage("triggers",null,LocaleContextHolder.getLocale()));
-	data.setTrigger(messageSource.getMessage("trigger",null,LocaleContextHolder.getLocale()));
-	data.setName(messageSource.getMessage("name",null,LocaleContextHolder.getLocale()));
-	data.setRole(messageSource.getMessage("role",null,LocaleContextHolder.getLocale()));
-	data.setNextRun(messageSource.getMessage("nextRun",null,LocaleContextHolder.getLocale()));
-	data.setTitle(messageSource.getMessage("title",null,LocaleContextHolder.getLocale()));
-	data.setText(messageSource.getMessage("text",null,LocaleContextHolder.getLocale()));
-	data.setActive(messageSource.getMessage("active",null,LocaleContextHolder.getLocale()));
-	data.setRepeat(messageSource.getMessage("active",null,LocaleContextHolder.getLocale()));
-
-     return data;
-    }
+   @GetMapping("/translation")
+	@PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
+	public Map<String, String> translate() {
+		Map<String, String> data = new HashMap<String, String>();
+		InputStream is = null;
+		prop = null;
+		try {
+			this.prop = new Properties();
+			is = this.getClass().getResourceAsStream("/messages_" + LocaleContextHolder.getLocale() + ".properties");
+			prop.load(is);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Set<Object> keys = prop.keySet();
+		for (Object k : keys) {
+			String key = (String) k;
+			data.put(key, this.prop.getProperty(key));
+		}
+		return data;
+	}
     
     @GetMapping("/me")
     @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
