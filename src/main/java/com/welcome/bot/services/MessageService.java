@@ -48,7 +48,6 @@ public class MessageService {
 	@Autowired
 	private UserRepository userRepository;
 	
-	
 	public Page<MessageDTO> getAllMessages(Pageable pageParam, UserPrincipal userPrincipal){
 		User user = userRepository.findById(userPrincipal.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
@@ -70,9 +69,6 @@ public class MessageService {
 
 		//creating Page with DTO
 		Page<MessageDTO> messageDTOPage = new PageImpl<MessageDTO>(messageDTOs, pageParam, messagePage.getTotalElements());
-		System.out.println(messageDTOs);
-		System.out.println(pageParam);
-		System.out.println(messagePage.getTotalElements());
 		return messageDTOPage;
 	}
 	
@@ -98,7 +94,6 @@ public class MessageService {
 				
 		//set attributes to message DTO
 		MessageDTO messageDTO = convertToDto(message);
-		System.out.println(messageDTO);
 							
 		//return https status with header "location" and response body
 		return messageDTO;
@@ -165,8 +160,8 @@ public class MessageService {
 		if(messageModel.getText().length() < 20) {
 			throw new MessageValidationException(messageModel.getText());
 		}
-
 	}
+	
 	private void validateMessageDuplicates(MessageCreateDTO messageModel) throws MessageValidationException {
 		List<Message> msglist = messageRepository.findAllByTitle(messageModel.getTitle());;
 		if(!msglist.isEmpty()) {

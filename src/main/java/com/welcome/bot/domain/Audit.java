@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -16,35 +17,52 @@ public class Audit {
 	private String cause;
 	private String consequence;
 	
+	@ManyToOne
+	private User user;
 	
-	
-	public Audit(String cause, String consequence) {
+	public Audit(String cause, String consequence, User user) {
 		this.cause = cause;
 		this.consequence = consequence;
+		this.user = user;
 	}
 	
 	protected Audit() {
 	
 	}
-	
+
 	public Integer getAuditId() {
 		return auditId;
 	}
+
 	public String getCause() {
 		return cause;
 	}
+
 	public String getConsequence() {
 		return consequence;
 	}
+
+	public User getUser() {
+		return user;
+	}
+
 	public void setAuditId(Integer auditId) {
 		this.auditId = auditId;
 	}
+
 	public void setCause(String cause) {
 		this.cause = cause;
 	}
+
 	public void setConsequence(String consequence) {
 		this.consequence = consequence;
 	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+	
+
 	
 	
 }

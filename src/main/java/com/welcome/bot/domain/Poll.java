@@ -22,7 +22,6 @@ public class Poll {
 	private String channel;
 	private boolean active;
 	private Date createdAt;
-	private Date updatedAt;
 	
 	@Type(type="org.hibernate.type.UUIDCharType")
 	private UUID pollUuid;
@@ -53,9 +52,7 @@ public class Poll {
 	public Date getCreatedAt() {
 		return createdAt;
 	}
-	public Date getUpdatedAt() {
-		return updatedAt;
-	}
+
 	public UUID getPollUuid() {
 		return pollUuid;
 	}
@@ -72,17 +69,17 @@ public class Poll {
 		this.active = active;
 	}
 	public void setCreatedAt() {
-		this.createdAt =  new Date();;
+		this.createdAt =  new Date();
 	}
-	public void setUpdatedAt() {
-		this.updatedAt =  new Date();;
-	}
+
 	public void setPollUuid(UUID pollUuid) {
 		this.pollUuid = pollUuid;
 	}
+
 	@Override
 	public String toString() {
 		return "Poll [pollId=" + pollId + ", title=" + title + ", channel=" + channel + ", active=" + active
-				+ ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", pollUuid=" + pollUuid + "]";
+				+ ", createdAt=" + createdAt + ", pollUuid=" + pollUuid + "]";
 	}
+
 }

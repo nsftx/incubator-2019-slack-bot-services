@@ -56,9 +56,7 @@ public class PollService {
 	}
 	
 	public PollDTO createPoll(PollCreateDTO pollModel) {
-		//String channel = channelService.getChannelById(pollModel.getChannel());
-		String channel = "tarikov kanal";
-		String channelId = slackClientApi.getChannelsList().get(0).getId();
+		String channel = channelService.getChannelById(pollModel.getChannel());
 		
 		Poll poll = new Poll(pollModel.getTitle(), channel, pollModel.isActive());
 		pollRepository.save(poll);
@@ -68,7 +66,7 @@ public class PollService {
 		choiceService.createChoices(poll, choiceList);
 		
 		if(poll.isActive()) {
-			slackService.createPoll(poll, choiceList, channelId);
+			slackService.createPoll(poll, choiceList, pollModel.getChannel());
 		}
 		
 		PollDTO pollDTO = convertToDto(poll, choiceList);
@@ -119,7 +117,7 @@ public class PollService {
 	    for (int i = 0; i < numberOfElements; i++) {
 	        int randomIndex = rand.nextInt(choiceList.size());
 	        Choice randomElement = choiceList.get(randomIndex);
-	        PollResult pollResult = new PollResult(null, randomElement.getChoiceId(), choiceList.get(0).getPoll().getPollUuid());
+	        PollResult pollResult = new PollResult(null, randomElement.getChoiceId(), pollUUID);
 	        pollResultsRepository.save(pollResult);
 	    }
 	}

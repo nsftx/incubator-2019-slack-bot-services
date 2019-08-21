@@ -3,6 +3,7 @@ package com.welcome.bot.services;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -13,6 +14,7 @@ import com.welcome.bot.slack.api.EventType;
 import com.welcome.bot.slack.api.SlackClientApi;
 import com.welcome.bot.slack.api.SlackEventTriggeredEvent;
 import com.welcome.bot.slack.api.SlackInteractionTriggeredEvent;
+import com.welcome.bot.slack.api.customexceptionhandler.SlackApiException;
 import com.welcome.bot.slack.api.model.interactionpayload.Channel;
 import com.welcome.bot.slack.api.model.publishevent.PublishEventMessage;
 import com.welcome.bot.slack.api.model.publishevent.PublishInteractionMessage;
@@ -61,17 +63,21 @@ public class SlackApiEventListener {
 		String text = interactionData.getText();
 		String user = interactionData.getUser();
 		String choice = interactionData.getChoiceSelected();
-		String choiceID = interactionData.getChoiceID();
-		String pollID = interactionData.getPollID().toString();
+		Integer choiceId = Integer.parseInt(interactionData.getChoiceID());
+		UUID pollId = interactionData.getPollID();
 		
 		String timestamp = interactionData.getTimestamp();
 		System.out.println("IN HANDLE INTERACTION, INTERACTION TS (TIMESTAMP) IS : " + timestamp);
 		
-		String combinedResponse = "RESULT:\nText: " + text + "\nUser: " + user + "\nChoice Selected: " + choice + "\nChoice ID: " + choiceID + "\nBlock ID: " + pollID;
+		String combinedResponse = "RESULT:\nText: " + text + "\nUser: " + user + "\nChoice Selected: " + choice + "\nChoice ID: " + choiceId + "\nBlock ID: " + pollId;
 		
-		//slackService.createAVote();
-		//sendMessage(channel, combinedResponse, user);
-		//updateMessage(channel, combinedResponse, timestamp);
+		slackService.createAVote(user, choiceId, pollId);
+		
+		try {
+			slackClientApi.sendMessage(channel, combinedResponse, user);
+		} catch (SlackApiException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@EventListener
@@ -86,6 +92,7 @@ public class SlackApiEventListener {
 		switch (eventType.toString()) {
 		
 		case "app_mention":
+			System.out.println(eventType + " " + channel);
 			slackService.triggerApp(eventType, channel);
 			break;
 		case "member_joined_channel":
@@ -99,8 +106,20 @@ public class SlackApiEventListener {
 			break;			
 			
 		}	
+		
+			
+//		app_mention,
+//		member_joined_channel,
+//		member_left_channel,
+//		channel_created,
+//		channel_deleted,
+//		channel_rename,
+//		channel_archive,
+//		channel_unarchive
+	
 		System.out.println(slackClientApi.getChannelsList());
-//		PublishEventMessage eventData = event.getEventData();
+
+		//		PublishEventMessage eventData = event.getEventData();
 //		
 //		String channel = eventData.getChannel();
 //		UUID id = UUID.randomUUID();

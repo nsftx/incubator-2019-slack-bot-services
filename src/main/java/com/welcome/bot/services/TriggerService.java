@@ -63,12 +63,10 @@ public class TriggerService {
 
 	//get trigger
 	public TriggerDTO getTrigger(Integer triggerId) {
-		
 		Trigger trigger = triggerRepository.findById(triggerId)
 				.orElseThrow(() -> new TriggerNotFoundException(triggerId));		
 		
 		TriggerDTO triggerContentDTO = convertToDto(trigger);
-		
 		return triggerContentDTO;
 	}
 	
@@ -120,11 +118,13 @@ public class TriggerService {
 				.orElseThrow(() -> new MessageNotFoundException(triggerModel.getMessageId()));
 		
 		
-		//String channelName = channelService.getChannelById(triggerModel.getChannelId());
-		String tarikovKanal = "tarikov kanaala";
+		String channelName = channelService.getChannelById(triggerModel.getChannelId());
+		if(channelName == null) {
+			channelName = "tarik mockup kanal";
+		}
 		
 		
-		Trigger trigger = new Trigger(tarikovKanal,
+		Trigger trigger = new Trigger(channelName,
 									triggerModel.getChannelId(), 
 									triggerModel.getTriggerType(),
 									triggerModel.isActive(), 
@@ -155,9 +155,7 @@ public class TriggerService {
 	//delete trigger 
 	public ResponseEntity<Trigger> deleteTrigger(Integer triggerId) {
 		Trigger trigger = triggerRepository.findById(triggerId).orElseThrow();
-		
 		softDelete(trigger);
-		
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 	}
 	
@@ -170,7 +168,7 @@ public class TriggerService {
 	//delete all triggers by list you send as parameter
 	public void deleteAllTriggersByList(List<Trigger> triggerList) {
 		for (Trigger trigger : triggerList) {
-			trigger.setDeleted(true);
+			softDelete(trigger);
 		}
 	}
 	
@@ -195,7 +193,6 @@ public class TriggerService {
 			deleteAllTriggersByList(triggersList);
 		}	
 	}
-	
 	
 	//CONVERTS to trigger dto
 	private TriggerDTO convertToDto(Trigger trigger) {

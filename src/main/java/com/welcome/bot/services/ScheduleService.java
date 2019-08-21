@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import org.hibernate.validator.internal.engine.messageinterpolation.parser.ELState;
 import org.json.JSONException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,13 +96,17 @@ public class ScheduleService {
 			intervalType = getIntervalType(scheduleModel);
 		}
 		
-		String channel = channelService.getChannelById(scheduleModel.getChannelId());
+		String channelName = channelService.getChannelById(scheduleModel.getChannelId());
+		if(channelName == null) {
+			channelName = "tarik mockup kanal";
+		}
 		
+		//String channel = "#general";
 		Schedule schedule = new Schedule(scheduleModel.isActive(),
 										scheduleModel.isRepeat(),
 										intervalType,
 										scheduleModel.getRunAt(), 
-										channel, 
+										channelName, 
 										message,
 										scheduleModel.getChannelId(),
 										user);
@@ -110,7 +116,7 @@ public class ScheduleService {
 			try {
 				sendScheduleToSlackApi(schedule);
 			} catch (Exception e) {
-				e.printStackTrace();
+				throw new BaseException(e.getMessage());
 			}	
 		}
 		
@@ -157,16 +163,16 @@ public class ScheduleService {
 		
 		boolean lastState = schedule.getActive();
 		
-
 		if(lastState == false && active == true) {
 			deleteScheduleInSlackApi(schedule);
 			try {
 				sendScheduleToSlackApi(schedule);
 			} catch (Exception e) {
-				e.printStackTrace();
+				throw new BaseException(e.getMessage());
 			}	
 		}
 		schedule.setActive(active);	
+		schedule.setUpdatedAt();
 		scheduleRepository.save(schedule);
 		
 		ScheduleDTO scheduleContentDTO = convertToDto(schedule);
@@ -177,6 +183,7 @@ public class ScheduleService {
 	private void softDelete(Schedule schedule) {
 		schedule.setDeleted(true);
 		schedule.setActive(false);
+		schedule.setUpdatedAt();
 		scheduleRepository.save(schedule);
 	}
 	
@@ -263,7 +270,7 @@ public class ScheduleService {
 	
 	
 	//sending schedule to slack
-	public void sendScheduleToSlackApi(Schedule schedule) throws Exception {
+	public void sendScheduleToSlackApi(Schedule schedule) throws BaseException {
 		String slackMessageId = "";
 		System.out.println(schedule.getChannel());
 		
@@ -293,7 +300,7 @@ public class ScheduleService {
 			try {
 				slackClientApi.deleteSchedule(schedule.getSlackScheduleId(), schedule.getChannel());
 			} catch (SlackApiException e) {
-				e.printStackTrace();
+				throw new BaseException(e.getMessage());
 			}		
 		}
 		return status;
