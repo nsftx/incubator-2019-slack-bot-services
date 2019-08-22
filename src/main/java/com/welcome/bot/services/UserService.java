@@ -24,7 +24,7 @@ public class UserService{
 	@Autowired
 	ModelMapper modelMapper;
 
-	public User AddUser( User user) {
+	public User AddUser(User user) {
 		userRepository.save(user);
 		return user;
 	}
@@ -38,7 +38,6 @@ public class UserService{
 		User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("No data!"));
 		return user;
 	}
-	
 
 	public User UpdateUser(Integer id, User user) {
 		userRepository.save(user);

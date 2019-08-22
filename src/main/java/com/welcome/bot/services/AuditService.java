@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.welcome.bot.domain.Audit;
 import com.welcome.bot.domain.Message;
@@ -45,7 +47,7 @@ public class AuditService {
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
 		
 		Page<Audit> auditPage = null;
-		
+		auditPage = auditRepository.findAll(pageable);
 		if(user.getRole().equals("ADMIN")) {
 			auditPage = auditRepository.findAll(pageable);
 		}
@@ -63,6 +65,7 @@ public class AuditService {
 		return auditDtoPage;	
 	}
 	
+	@Transactional(propagation = Propagation.MANDATORY)
 	public void createScheduleLog(List<Schedule> scheduleList) {
 		String channelName = scheduleList.get(0).getChannel().substring(1);
 		
@@ -76,6 +79,7 @@ public class AuditService {
 		}
 	}
 	
+	@Transactional(propagation = Propagation.MANDATORY)
 	public void createTriggerLog(List<Trigger> triggerList) {
 		String channelName = triggerList.get(0).getChannel();
 		String cause = "because channel " + channelName + "is deleted";

@@ -15,11 +15,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.welcome.bot.domain.Message;
 import com.welcome.bot.domain.Trigger;
 import com.welcome.bot.domain.User;
 import com.welcome.bot.exception.ResourceNotFoundException;
+import com.welcome.bot.exception.base.BaseException;
 import com.welcome.bot.exception.message.MessageNotFoundException;
 import com.welcome.bot.exception.trigger.TriggerNotFoundException;
 import com.welcome.bot.models.MessageDTO;
@@ -32,6 +35,7 @@ import com.welcome.bot.repository.UserRepository;
 import com.welcome.bot.security.UserPrincipal;
 
 @Service
+@Transactional
 public class TriggerService {
 
 	TriggerRepository triggerRepository;
@@ -166,6 +170,7 @@ public class TriggerService {
 	}
 	
 	//delete all triggers by list you send as parameter
+
 	public void deleteAllTriggersByList(List<Trigger> triggerList) {
 		for (Trigger trigger : triggerList) {
 			softDelete(trigger);
@@ -187,11 +192,12 @@ public class TriggerService {
 	}
 
 	//deletes all triggers by message you send as parameter
+	//ovu metodu poziva i akcija brisanja message i akcija kad se iz slacka brisu i logiraju skedjuali
 	public void deleteAllTriggersByMessage(Message message) {
 		List<Trigger> triggersList = triggerRepository.findAllByMessage(message);
 		if(!triggersList.isEmpty()) {
 			deleteAllTriggersByList(triggersList);
-		}	
+		}
 	}
 	
 	//CONVERTS to trigger dto

@@ -16,6 +16,7 @@ public class Audit {
 	private Integer auditId;
 	private String cause;
 	private String consequence;
+	private boolean seen;
 	
 	@ManyToOne
 	private User user;
@@ -24,6 +25,7 @@ public class Audit {
 		this.cause = cause;
 		this.consequence = consequence;
 		this.user = user;
+		this.seen = false;
 	}
 	
 	protected Audit() {
@@ -40,6 +42,10 @@ public class Audit {
 
 	public String getConsequence() {
 		return consequence;
+	}
+	
+	public boolean getSeen() {
+		return seen;
 	}
 
 	public User getUser() {
@@ -58,6 +64,10 @@ public class Audit {
 		this.consequence = consequence;
 	}
 
+	public void setSeen() {
+		this.seen = true;
+	}
+	
 	public void setUser(User user) {
 		this.user = user;
 	}

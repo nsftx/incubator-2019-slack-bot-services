@@ -33,4 +33,5 @@ public interface TriggerRepository extends PagingAndSortingRepository<Trigger, I
 	
 	public Page<Trigger> findAllByUserAndDeleted(Pageable pageParam, User user, boolean deleted);
 	
+	
 }

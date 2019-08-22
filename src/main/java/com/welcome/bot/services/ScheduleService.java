@@ -15,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 import com.welcome.bot.domain.Message;
@@ -199,7 +201,9 @@ public class ScheduleService {
 		
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 	}
+	
 	//delete all triggers by list you send as parameter
+	@Transactional(propagation = Propagation.MANDATORY)
 	public void deleteAllSchedulesByList(List<Schedule> scheduleList) {
 		for (Schedule schedule : scheduleList) {
 			softDelete(schedule);

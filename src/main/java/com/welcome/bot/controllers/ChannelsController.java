@@ -21,11 +21,13 @@ public class ChannelsController {
 	@Autowired
 	SlackService slackService;
 	
-	//get list of channels when creating schedule
+	//MOCKUP CHANNELS
 	@GetMapping("/api/channels")
 	public JSONArray getChannelsList() {
 		//ne radi dok se ne poveze sa slackom
-	    return slackService.getChannelsList();
+		//return slackService.getChannelsList();
+	    return slackService.getMockupChannels();
 	}
+	
 	
 }

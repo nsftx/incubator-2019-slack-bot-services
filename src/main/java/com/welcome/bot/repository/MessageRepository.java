@@ -1,6 +1,8 @@
 package com.welcome.bot.repository;
 
 
+
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -26,5 +28,7 @@ public interface MessageRepository extends JpaRepository<Message, Integer>{
     Page<Message> findAllByTitle(String title, Pageable pageParam);
     
     Page<Message> findAllByDeleted(Pageable pageParam, boolean deleted);
+    
+    List<Message> findAllByCreatedAtLessThan(Date date);
     
 }

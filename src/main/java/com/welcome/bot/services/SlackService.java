@@ -9,6 +9,8 @@ import org.hibernate.query.criteria.internal.expression.function.SubstringFuncti
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.FinalizablePhantomReference;
 import com.welcome.bot.domain.Choice;
@@ -73,11 +75,13 @@ public class SlackService {
 			try {
 				slackClientApi.sendMessage(trigger.getChannel(), trigger.getMessage().getText());
 			} catch (SlackApiException e) {
+				// dont forget to throw your exception
 				e.printStackTrace();
 			}
 		}
 	}
 	
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
 	public void logChannelActivities(PublishEventMessage eventData) {
 		String channelId = eventData.getChannel();
 		
@@ -105,7 +109,7 @@ public class SlackService {
 		try {
 			channelList = slackClientApi.getChannelsList();
 		}catch (JSONException e) {
-			throw new BaseException("Cant find channels because of no conectivity with Slack");
+			throw new BaseException("Problems with Slack Conectivity");
 		}
 		
 		for (Channel channel : channelList) {
@@ -147,12 +151,12 @@ public class SlackService {
 
 	public void createPoll(Poll poll, List<Choice> choiceList, String channelId) {
 		//preparing and sending to slack
-		HashMap<Integer, String> choicesValuesToNumbersMap = new HashMap<>();
+		HashMap<Integer, String> choicesMap = new HashMap<>();
 		for (Choice choice : choiceList) {
-			choicesValuesToNumbersMap.put(choice.getChoiceId(), choice.getChoiceValue());
+			choicesMap.put(choice.getChoiceId(), choice.getChoiceValue());
 		}
 		try {
-			slackClientApi.sendMessagePoll(channelId, poll.getTitle(), choicesValuesToNumbersMap, poll.getPollUuid());
+			slackClientApi.sendMessagePoll(channelId, poll.getTitle(), choicesMap, poll.getPollUuid());
 		}catch (Exception e) {
 			throw new BaseException("Couldn't send poll to slack");
 		}
