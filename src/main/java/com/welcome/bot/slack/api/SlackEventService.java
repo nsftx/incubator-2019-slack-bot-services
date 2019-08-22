@@ -53,7 +53,7 @@ public class SlackEventService {
 				channel = event.getEventItem().getChannelId();
 				break;
 			}
-			passEvent(channel, eventType, user);
+			passEvent(channel, eventType, user, event.getEventItem().getText()); ////TODO - TEST/DELETE -> 4th PARAMETER
 		}
 		else if(event.getType().equals("url_verification")) {
 			return event.getChallenge();
@@ -61,11 +61,14 @@ public class SlackEventService {
 		return null;
 	}
 
-	private void passEvent(String channel, EventType eventType, String user) {
+	private void passEvent(String channel, EventType eventType, String user, String txt) { //TODO - TEST/DELETE -> 4th PARAMETER
 		PublishEventMessage eventData = new PublishEventMessage();
 		eventData.setChannel(channel);
 		eventData.setEventType(eventType);
 		eventData.setUser(user);
+		
+		//TODO - TEST/DELETE
+		eventData.setTxt(txt);
 
 		SlackEventTriggeredEvent eventHandler = new SlackEventTriggeredEvent(this, eventData);
 		appEventPublisher.publishEvent(eventHandler);

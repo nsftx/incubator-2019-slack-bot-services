@@ -46,12 +46,12 @@ public class PayloadGenerator {
 		return generateSchedulePayload(messagePayload, postAt);
 	}
 
-	public List<MessagePayload> getScheduleIntervalPayload(String channel, String text, Date postAt, String repeatInterval){
-		return generateScheduleIntervalPayload(channel, text, postAt, repeatInterval);
+	public List<MessagePayload> getScheduleIntervalPayload(String channel, String text, Date postAt){
+		return generateScheduleIntervalPayload(channel, text, postAt);
 	}
 
-	public MessagePayload getScheduleDeletePayload(String channel, String messageID) {
-		return generateScheduleDeletePayload(channel,messageID);
+	public MessagePayload getScheduleDeletePayload(String channel, String scheduleID) {
+		return generateScheduleDeletePayload(channel,scheduleID);
 	}
 
 	public MessagePayload getMessageUpdatePayload(String channel, String newText, String messageTimestamp) {
@@ -71,7 +71,7 @@ public class PayloadGenerator {
 		List<PayloadBlock> blocks = new ArrayList<>();
 
 		boolean imageExists = false;
-
+		
 		if(text.contains("[img]") && text.contains("[/img]")) {
 			imageExists = true;
 			String[] imageData = extractImageData(text);
@@ -98,7 +98,7 @@ public class PayloadGenerator {
 		block.setText(blockText);
 
 		blocks.add(block);
-		if(imageExists && blockTwo != null) {
+		if(imageExists && blockTwo != null && !isSmallImage) {
 			blocks.add(blockTwo);
 		}
 
@@ -186,9 +186,9 @@ public class PayloadGenerator {
 		return payload;
 	}
 
-	private List<MessagePayload> generateScheduleIntervalPayload(String channel, String text, Date postAt, String repeatInterval){
+	private List<MessagePayload> generateScheduleIntervalPayload(String channel, String text, Date postAt){
 		List<MessagePayload> intervalPayload = new ArrayList<>();
-		List<Date> intervalDates = dateOperator.generateRepeatTimes(postAt, repeatInterval);
+		List<Date> intervalDates = dateOperator.generateRepeatTimes(postAt);
 		for(Date date : intervalDates) {
 			MessagePayload messagePayload = generateMessagePayload(channel, text, false);
 			MessagePayload payload = new MessagePayload();
@@ -198,7 +198,7 @@ public class PayloadGenerator {
 		return intervalPayload;	
 	}
 
-	private MessagePayload generateScheduleDeletePayload(String channel, String messageID) {
+	private MessagePayload generateScheduleDeletePayload(String channel, String scheduleID) {
 		MessagePayload payload = new MessagePayload();
 
 		if(channel == null || channel.isEmpty()) {
@@ -206,7 +206,7 @@ public class PayloadGenerator {
 		}
 
 		payload.setChannel(channel);
-		payload.setScheduledMessageId(messageID);
+		payload.setScheduledMessageId(scheduleID);
 
 		return payload;
 	}

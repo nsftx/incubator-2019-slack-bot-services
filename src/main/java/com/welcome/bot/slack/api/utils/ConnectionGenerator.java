@@ -5,12 +5,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class ConnectionGenerator {
-
+	
 	static final String TOKEN_BOT_1 = "xoxb-692746321984-";
 	static final String TOKEN_BOT_2 = "692302263812-Pauu27Zu8eB9Vl4m8rtyhO55";
 	static final String TOKEN_USER_1 = "xoxp-692746321984-692279219956-";
 	static final String TOKEN_USER_2 = "725376523793-03a717bf62ff4aa55a9e0e393c4d8fca";
-
 
 	public ConnectionGenerator() {}
 
