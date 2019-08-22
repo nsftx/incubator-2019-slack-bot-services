@@ -1,50 +1,43 @@
 package com.welcome.bot.services;
 
-
-
-
-
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.mockito.Matchers.booleanThat;
-
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
-import javax.management.RuntimeErrorException;
-
+import org.hibernate.validator.internal.engine.messageinterpolation.parser.ELState;
 import org.json.JSONException;
-import org.junit.validator.PublicClassValidator;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.ejb.access.EjbAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
-
 import com.welcome.bot.domain.Message;
 import com.welcome.bot.domain.Schedule;
-import com.welcome.bot.domain.Trigger;
+import com.welcome.bot.domain.User;
+import com.welcome.bot.exception.ResourceNotFoundException;
 import com.welcome.bot.exception.base.BaseException;
 import com.welcome.bot.exception.message.MessageNotFoundException;
 import com.welcome.bot.exception.schedule.ScheduleNotFoundException;
 import com.welcome.bot.exception.schedule.ScheduleValidationException;
 import com.welcome.bot.models.MessageDTO;
 import com.welcome.bot.models.ScheduleDTO;
-import com.welcome.bot.models.TriggerDTO;
+import com.welcome.bot.models.UserDTO;
 import com.welcome.bot.models.ScheduleCreateDTO;
 import com.welcome.bot.repository.MessageRepository;
 import com.welcome.bot.repository.ScheduleRepository;
+import com.welcome.bot.repository.UserRepository;
+import com.welcome.bot.security.CurrentUser;
+import com.welcome.bot.security.UserPrincipal;
 import com.welcome.bot.slack.api.SlackClientApi;
+
 import com.welcome.bot.slack.api.customexceptionhandler.SlackApiException;
 import com.welcome.bot.slack.api.model.interactionpayload.Channel;
 
@@ -64,22 +57,34 @@ public class ScheduleService {
 	
 	SlackClientApi slackClientApi;
 	
+	ChannelService channelService;
+	
+	UserRepository userRepository;
+	
 	@Autowired
 	public ScheduleService(final MessageRepository messageRepository, 
 			final ScheduleRepository scheduleRepository,
 			final ModelMapper modelMapper, 
-			final SlackClientApi slackClientApi) {
+			final SlackClientApi slackClientApi,
+			final ChannelService channelService,
+			UserRepository userRepository) {
 		this.messageRepository = messageRepository;
 		this.scheduleRepository = scheduleRepository;
 		this.modelMapper = modelMapper;
 		this.slackClientApi = slackClientApi;
+		this.channelService = channelService;
+		this.userRepository = userRepository;
 	}
 
 	//creates schedule
-	public ScheduleDTO createSchedule(ScheduleCreateDTO scheduleModel) {
+	public ScheduleDTO createSchedule(ScheduleCreateDTO scheduleModel, UserPrincipal userPrincipal) {
+		
 		Message message = messageRepository.findById(scheduleModel.getMessageId())
 				.orElseThrow(() -> new MessageNotFoundException(scheduleModel.getMessageId()));
 		
+		User user = userRepository.findById(userPrincipal.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+			
 		//throw exception if not validate
 		try {
 			validateDate(scheduleModel);
@@ -87,31 +92,33 @@ public class ScheduleService {
 			throw e;
 		}
 
+		//if checked repeat we check for interval of repetition
 		String intervalType = null;
 		if(scheduleModel.isRepeat()) {
 			intervalType = getIntervalType(scheduleModel);
 		}
-		String channel = null;
-		try {
-			 channel = getChannelById(scheduleModel.getChannelId());
-		} catch (JSONException e) {
-			throw new BaseException("Channel not found");
+		
+		String channelName = channelService.getChannelById(scheduleModel.getChannelId());
+		if(channelName == null) {
+			channelName = "tarik mockup kanal";
 		}
-
-
+		
+		//String channel = "#general";
 		Schedule schedule = new Schedule(scheduleModel.isActive(),
 										scheduleModel.isRepeat(),
 										intervalType,
 										scheduleModel.getRunAt(), 
-										channel, 
-										message);
-		
+										channelName, 
+										message,
+										scheduleModel.getChannelId(),
+										user);
+
 		//if schedule is active we send it to slack
 		if(schedule.getActive()) {
 			try {
 				sendScheduleToSlackApi(schedule);
 			} catch (Exception e) {
-				e.printStackTrace();
+				throw new BaseException(e.getMessage());
 			}	
 		}
 		
@@ -124,16 +131,22 @@ public class ScheduleService {
 	}
 	
 	//get all schedules
-	public Page<ScheduleDTO> getAllSchedules(Pageable pageable) {
+	public Page<ScheduleDTO> getAllSchedules(Pageable pageable, UserPrincipal userPrincipal) {
+		User user = userRepository.findById(userPrincipal.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+		
 		Page<Schedule> schedulesPage = scheduleRepository.findAll(pageable);
+		
+		if(user.getRole().equals("ADMIN")) {
+			schedulesPage = scheduleRepository.findAllByDeleted(pageable, false);
+		}
+		else if(user.getRole().equals("USER")) {
+			schedulesPage = scheduleRepository.findAllByUserAndDeleted(pageable, user, false);
+		}
 
 		List<Schedule> scheduleList = schedulesPage.getContent();
 		
-		List<ScheduleDTO> scheduleContentDTOlist = new ArrayList<>();
-		for (Schedule schedule : scheduleList) {
-			ScheduleDTO scheduleDTO = convertToDto(schedule);
-			scheduleContentDTOlist.add(scheduleDTO);
-		}
+		List<ScheduleDTO> scheduleContentDTOlist = convertToListDtos(scheduleList);
 		
 		Page<ScheduleDTO> scheduleContentDTOPage = new PageImpl<ScheduleDTO>(scheduleContentDTOlist, pageable, schedulesPage.getTotalElements());
 		return scheduleContentDTOPage;
@@ -157,14 +170,23 @@ public class ScheduleService {
 			try {
 				sendScheduleToSlackApi(schedule);
 			} catch (Exception e) {
-				e.printStackTrace();
+				throw new BaseException(e.getMessage());
 			}	
 		}
 		schedule.setActive(active);	
+		schedule.setUpdatedAt();
 		scheduleRepository.save(schedule);
 		
 		ScheduleDTO scheduleContentDTO = convertToDto(schedule);
 		return scheduleContentDTO;
+	}
+	
+	//SOFT DELETE
+	private void softDelete(Schedule schedule) {
+		schedule.setDeleted(true);
+		schedule.setActive(false);
+		schedule.setUpdatedAt();
+		scheduleRepository.save(schedule);
 	}
 	
 	public ResponseEntity<Schedule> deleteSchedule(Integer scheduleId) {
@@ -175,10 +197,20 @@ public class ScheduleService {
 			deleteScheduleInSlackApi(schedule);	
 		}
 
-		softDeleteSchedule(schedule);
+		softDelete(schedule);
 		
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 	}
+	
+	//delete all triggers by list you send as parameter
+	@Transactional(propagation = Propagation.MANDATORY)
+	public void deleteAllSchedulesByList(List<Schedule> scheduleList) {
+		for (Schedule schedule : scheduleList) {
+			softDelete(schedule);
+		}
+	}
+	
+
 	
 	// deletes schedules in database and in slack
 	public void deleteAllSchedulesByMessage(Message message) {
@@ -192,18 +224,30 @@ public class ScheduleService {
 		}
 	}
 	
-	//delete all triggers by list you send as parameter
-	public void deleteAllSchedulesByList(List<Schedule> scheduleList) {
-		for (Schedule schedule : scheduleList) {
-			softDeleteSchedule(schedule);
-		}
-	}
+//	public boolean deleteScheduleInSlackApi(Schedule schedule) {
+//		String slackMessageId = schedule.getSlackScheduleId();
+//		boolean status = false;
+//		if(slackMessageId != null && !slackMessageId.isEmpty()) {
+//			status = slackClientApi.deleteSchedule(schedule.getSlackScheduleId(), schedule.getChannel());		
+//		}
+//		return status;
+//	}
 	
 	//convert entity to model
 	private ScheduleDTO convertToDto(Schedule schedule) {
 		ScheduleDTO scheduleContentDTO = modelMapper.map(schedule, ScheduleDTO.class);
 		scheduleContentDTO.setMessageDto(modelMapper.map(schedule.getMessage(), MessageDTO.class));
+		scheduleContentDTO.setUserDto(modelMapper.map(schedule.getUser(), UserDTO.class));
 	    return scheduleContentDTO;
+	}
+	
+	private List<ScheduleDTO> convertToListDtos(List<Schedule> scheduleList){
+		List<ScheduleDTO> scheduleListDTOs = new ArrayList<>();
+		for (Schedule schedule : scheduleList) {
+			ScheduleDTO scheduleDTO = convertToDto(schedule);
+			scheduleListDTOs.add(scheduleDTO);
+		}
+		return scheduleListDTOs;
 	}
 	
 	//validation for date
@@ -211,26 +255,46 @@ public class ScheduleService {
 		Date trenutniDatum = new Date();
 		Integer dateStatus = scheduleModel.getRunAt().compareTo(trenutniDatum);
 		if(dateStatus == -1) {
-			throw new ScheduleValidationException(scheduleModel.getRunAt(), trenutniDatum);
+			throw new ScheduleValidationException(scheduleModel.getRunAt());
 		}
+		
+		Calendar c = Calendar.getInstance();
+		c.setTime(new Date());
+		c.add(Calendar.DATE, 120);
+		Date limitDate = c.getTime();
+		
+		dateStatus = scheduleModel.getRunAt().compareTo(limitDate);
+		if(dateStatus == 1) {
+			throw new ScheduleValidationException(scheduleModel.getRunAt());
+		}
+		
+		
 	}
 	
-	//SLACK API methods
+	
 	
 	//sending schedule to slack
-	public void sendScheduleToSlackApi(Schedule schedule) throws Exception {
+	public void sendScheduleToSlackApi(Schedule schedule) throws BaseException {
 		String slackMessageId = "";
-		//slackMessageId = slackClientApi.createSchedule("#general", schedule.getMessage().getText(), schedule.getRunAt(), schedule.getRepeat());
+		System.out.println(schedule.getChannel());
+		
 		try {
-			slackMessageId = slackClientApi.createSchedule(schedule.getChannel(), schedule.getMessage().getText(), schedule.getRunAt(), schedule.getIntervalType());
-		} catch (Exception e) {
-			throw e;
+			if(schedule.getRepeat()) {
+				slackMessageId = slackClientApi.createSchedule(schedule.getChannel(), schedule.getMessage().getText(), schedule.getRunAt(), schedule.getIntervalType());
+			}else {
+				slackMessageId = slackClientApi.createSchedule(schedule.getChannel(), schedule.getMessage().getText(), schedule.getRunAt());
+			}	
+		} catch(JSONException e){
+			throw new BaseException("Schedule not sent to Slack");
+		}catch (Exception e) {
+			throw new BaseException("Somethings wrong with slack: " + e.getMessage());
 		}
 		
 		if(slackMessageId != null && !slackMessageId.isEmpty()) {
 			schedule.setSlackScheduleId(slackMessageId);
 		}
 	}
+
 	
 	//deletes scheduels in slack api
 	public boolean deleteScheduleInSlackApi(Schedule schedule) {
@@ -240,16 +304,19 @@ public class ScheduleService {
 			try {
 				slackClientApi.deleteSchedule(schedule.getSlackScheduleId(), schedule.getChannel());
 			} catch (SlackApiException e) {
-				e.printStackTrace();
+				throw new BaseException(e.getMessage());
 			}		
 		}
 		return status;
 	}
 
 
-	
-	public List<Schedule> getAllByChannel(String channel){
-		List<Schedule> scheduleList = scheduleRepository.findAllByChannel(channel);
+
+
+
+	public List<Schedule> getAllByChannelId(String channelId){
+		System.out.println(channelId);
+		List<Schedule> scheduleList = scheduleRepository.findAllByChannelId(channelId);
 		return scheduleList;
 	}
 	
@@ -304,20 +371,7 @@ public class ScheduleService {
 		}
 	}
 	
-	private String getChannelById(String channelId) {
-		List<Channel> list = slackClientApi.getChannelsList();
-		for (Channel channel : list) {
-			if(channel.getId().equals(channelId)) {
-				return channel.getName();
-			}
-		}
-		return null;
-	}
-	
-	private void softDeleteSchedule(Schedule schedule) {
-		schedule.setDeleted(true);
-		scheduleRepository.save(schedule);
-	}
+
 }
 
 

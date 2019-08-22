@@ -1,5 +1,6 @@
 package com.welcome.bot.models;
 
+import java.sql.Date;
 import java.util.List;
 
 import com.welcome.bot.domain.Choice;
@@ -7,34 +8,54 @@ import com.welcome.bot.domain.Choice;
 public class PollCreateDTO {
 	String title;
 	String channel;
-	List<ChoiceCreateDTO> answerList;
+	boolean active;
+	Date activeUntil;
 	
+	List<ChoiceCreateDTO> choiceList;
+
 	public String getTitle() {
 		return title;
 	}
+
 	public String getChannel() {
 		return channel;
 	}
-	public List<ChoiceCreateDTO> getAnswerList() {
-		return answerList;
+
+	public boolean isActive() {
+		return active;
 	}
+
+	public Date getActiveUntil() {
+		return activeUntil;
+	}
+
+	public List<ChoiceCreateDTO> getChoiceList() {
+		return choiceList;
+	}
+
 	public void setTitle(String title) {
 		this.title = title;
 	}
+
 	public void setChannel(String channel) {
 		this.channel = channel;
 	}
-	public void setAnswerList(List<ChoiceCreateDTO> answerList) {
-		this.answerList = answerList;
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
-	@Override
-	public String toString() {
-		return "PollCreateDTO [title=" + title + ", channel=" + channel + ", answerList=" + answerList + "]";
+
+	public void setActiveUntil(Date activeUntil) {
+		this.activeUntil = activeUntil;
+	}
+
+	public void setChoiceList(List<ChoiceCreateDTO> choiceList) {
+		this.choiceList = choiceList;
 	}
 	
 
-	
-	
+
+
 
 	
 }

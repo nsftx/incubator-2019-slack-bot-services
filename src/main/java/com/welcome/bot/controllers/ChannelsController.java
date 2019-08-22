@@ -13,17 +13,21 @@ import com.welcome.bot.services.SlackApiEventListener;
 import com.welcome.bot.services.SlackService;
 import com.welcome.bot.slack.api.model.interactionpayload.Channel;
 
+import net.minidev.json.JSONArray;
+
 @RestController
 public class ChannelsController {
 	
 	@Autowired
 	SlackService slackService;
 	
-	//get list of channels when creating schedule
+	//MOCKUP CHANNELS
 	@GetMapping("/api/channels")
-	public List<Channel> getChannelsList() {
+	public JSONArray getChannelsList() {
 		//ne radi dok se ne poveze sa slackom
-	    return slackService.getChannelsList();
+		//return slackService.getChannelsList();
+	    return slackService.getMockupChannels();
 	}
+	
 	
 }

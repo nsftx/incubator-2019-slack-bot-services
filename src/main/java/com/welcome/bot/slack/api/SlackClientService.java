@@ -1,11 +1,16 @@
 package com.welcome.bot.slack.api;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -342,128 +347,164 @@ public class SlackClientService implements SlackClientApi {
 				e.printStackTrace();
 			}
 		}
+		
 	}
-
+	
+	public void scheduleClosingThePoll(String channel, String text, String timestamp) {
+		System.out.println("TEST DEMO OK 1");
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime closeAt = LocalDateTime.now()
+                .withHour(14)
+                .withMinute(45)
+                .withSecond(0)
+                .withNano(0);
+        
+        ScheduledExecutorService scheduleClosing = Executors.newScheduledThreadPool(1);
+        try {
+            scheduleClosing.schedule(closePoll(channel, text, timestamp), now.until(closeAt, ChronoUnit.MILLIS), TimeUnit.MILLISECONDS);
+            System.out.println("TEST DEMO OK 2");
+        } catch (InterruptedException e) {
+        	System.out.println("TEST DEMO OK 3");
+            e.printStackTrace();
+        }
+        System.out.println("TEST DEMO OK 4");
+    }
+    
+    private Runnable closePoll(String channel, String text, String timestamp) throws InterruptedException {
+    	System.out.println("TEST DEMO OK 5");
+    	Runnable run = () -> {
+             try {
+            	 System.out.println("TEST DEMO OK 6");
+                    updateMessage(channel, text, timestamp);
+                } catch (SlackApiException e) {
+                	System.out.println("TEST DEMO OK 7");
+                    e.printStackTrace();
+                }
+        };
+        System.out.println("TEST DEMO OK 8");
+        return run;
+    }
+	
 													/** /////////////////////////////////////////////
 													// TODO - TEST/DELETE *** EVERYTHING BELOW *** //
 													///////////////////////////////////////////////*/
 	
-	@EventListener
-	public void handleEvent(SlackEventTriggeredEvent event) {
-		PublishEventMessage eventData = event.getEventData();
-
-		String channel = eventData.getChannel();
-		String user = eventData.getUser();
-		
-		UUID id = UUID.randomUUID();
-		HashMap<Integer,String> choices = new HashMap<Integer,String>();
-		choices.put(1, "Puppet - UPDATE");
-		choices.put(2, "Iron Man - DELETE");
-		choices.put(3, "Deadpool - PUBLIC");
-		choices.put(4, "Puppet (Again) - PRIVATE");
-
-		String text = eventData.getTxt();
-		String respoText = "Hello there, [img]https://images.pexels.com/photos/1533960/pexels-photo-1533960.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940|TEST[/img]how are you?";
-		switch (text) {
-		case "<@ULC8W7RPW> poll":
-			try {
-				Date finishPollAt = new Date();
-				finishPollAt.setMinutes(finishPollAt.getMinutes()+2);
-				createPoll(channel, "POLL MESSAGE --- will (or at least, should) close in 2minutes.", choices, id, finishPollAt);
-			} catch (SlackApiException e) {
-				e.printStackTrace();
-			}
-			break;
-		case "<@ULC8W7RPW> private":
-			try {
-				sendMessage(channel, "PRIVATE MESSAGE", user);
-			} catch (SlackApiException e) {
-				e.printStackTrace();
-			}
-			break;
-		case "<@ULC8W7RPW> public":
-			try {
-				String txt = respoText+"\nThis is default (large) image display.";
-				sendMessage(channel, txt);
-			} catch (SlackApiException e) {
-				e.printStackTrace();
-			}
-			break;
-		case "<@ULC8W7RPW> public large":
-			try {
-				String txt = respoText+"\nThis is large image display.";
-				sendMessage(channel, txt, false);
-			} catch (SlackApiException e) {
-				e.printStackTrace();
-			}
-			break;
-		case "<@ULC8W7RPW> public small":
-			try {
-				String txt = respoText+"\nThis is small image display.";
-				sendMessage(channel, txt, true);
-			} catch (SlackApiException e) {
-				e.printStackTrace();
-			}
-			break;
-		case "<@ULC8W7RPW> schedule in 1":
-			try {
-				String txt = "Scheduled message";
-				Date post = new Date();
-				post.setMinutes(post.getMinutes()+1);
-				createSchedule(channel, txt, post);
-			} catch (SlackApiException e) {
-				e.printStackTrace();
-			}
-			break;
-		case "<@ULC8W7RPW> del schedules":
-			deleteAllSchedulesFromSlack();
-			break;
-		}
-	}
-
-	@EventListener
-	public void handleInteraction(SlackInteractionTriggeredEvent interaction) {
-		PublishInteractionMessage interactionData = interaction.getInteractionData();
-
-		String channel = interactionData.getChannel();
-		String text = interactionData.getText();
-		String user = interactionData.getUser();
-		String choice = interactionData.getChoiceSelected();
-		String choiceID = interactionData.getChoiceID();
-		String pollID = interactionData.getPollID().toString();
-		String timestamp = interactionData.getTimestamp();
-
-		String combinedResponse = "RESULT:\nText: " + text + "\nUser: " + user + "\nChoice Selected: " + choice + "\nChoice ID: " + choiceID + "\nBlock ID: " + pollID;
-		
-		switch(choiceID) {
-		case "1":
-			try {
-				updateMessage(channel, combinedResponse, timestamp);
-			} catch (SlackApiException e) {
-				e.printStackTrace();
-			}
-			break;
-		case "2":
-			try {
-				deleteMessage(channel, timestamp);
-			} catch (SlackApiException e) {
-				e.printStackTrace();
-			}
-			break;
-		case "3":
-			try {
-				sendMessage(channel, combinedResponse);
-			} catch (SlackApiException e) {
-				e.printStackTrace();
-			}
-			break;
-		case "4":
-			try {
-				sendMessage(channel, combinedResponse, user);
-			} catch (SlackApiException e) {
-				e.printStackTrace();
-			}
-			break;
-		}
-	}
+//	@EventListener
+//	public void handleEvent(SlackEventTriggeredEvent event) {
+//		PublishEventMessage eventData = event.getEventData();
+//
+//		String channel = eventData.getChannel();
+//		String user = eventData.getUser();
+//		
+//		UUID id = UUID.randomUUID();
+//		HashMap<Integer,String> choices = new HashMap<Integer,String>();
+//		choices.put(1, "Puppet - UPDATE");
+//		choices.put(2, "Iron Man - DELETE");
+//		choices.put(3, "Deadpool - PUBLIC");
+//		choices.put(4, "Puppet (Again) - PRIVATE");
+//
+//		String text = eventData.getTxt();
+//		String respoText = "Hello there, [img]https://images.pexels.com/photos/1533960/pexels-photo-1533960.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940|TEST[/img]how are you?";
+//		switch (text) {
+//		case "<@ULC8W7RPW> poll":
+//			try {
+//				Date finishPollAt = new Date();
+//				finishPollAt.setMinutes(finishPollAt.getMinutes()+2);
+//				createPoll(channel, "POLL MESSAGE --- will (or at least, should) close in 2minutes.", choices, id, finishPollAt);
+//			} catch (SlackApiException e) {
+//				e.printStackTrace();
+//			}
+//			break;
+//		case "<@ULC8W7RPW> private":
+//			try {
+//				sendMessage(channel, "PRIVATE MESSAGE", user);
+//			} catch (SlackApiException e) {
+//				e.printStackTrace();
+//			}
+//			break;
+//		case "<@ULC8W7RPW> public":
+//			try {
+//				String txt = respoText+"\nThis is default (large) image display.";
+//				sendMessage(channel, txt);
+//			} catch (SlackApiException e) {
+//				e.printStackTrace();
+//			}
+//			break;
+//		case "<@ULC8W7RPW> public large":
+//			try {
+//				String txt = respoText+"\nThis is large image display.";
+//				sendMessage(channel, txt, false);
+//			} catch (SlackApiException e) {
+//				e.printStackTrace();
+//			}
+//			break;
+//		case "<@ULC8W7RPW> public small":
+//			try {
+//				String txt = respoText+"\nThis is small image display.";
+//				sendMessage(channel, txt, true);
+//			} catch (SlackApiException e) {
+//				e.printStackTrace();
+//			}
+//			break;
+//		case "<@ULC8W7RPW> schedule in 1":
+//			try {
+//				String txt = "Scheduled message";
+//				Date post = new Date();
+//				post.setMinutes(post.getMinutes()+1);
+//				createSchedule(channel, txt, post);
+//			} catch (SlackApiException e) {
+//				e.printStackTrace();
+//			}
+//			break;
+//		case "<@ULC8W7RPW> del schedules":
+//			deleteAllSchedulesFromSlack();
+//			break;
+//		}
+//	}
+//
+//	@EventListener
+//	public void handleInteraction(SlackInteractionTriggeredEvent interaction) {
+//		PublishInteractionMessage interactionData = interaction.getInteractionData();
+//
+//		String channel = interactionData.getChannel();
+//		String text = interactionData.getText();
+//		String user = interactionData.getUser();
+//		String choice = interactionData.getChoiceSelected();
+//		String choiceID = interactionData.getChoiceID();
+//		String pollID = interactionData.getPollID().toString();
+//		String timestamp = interactionData.getTimestamp();
+//
+//		String combinedResponse = "RESULT:\nText: " + text + "\nUser: " + user + "\nChoice Selected: " + choice + "\nChoice ID: " + choiceID + "\nBlock ID: " + pollID;
+//		
+//		switch(choiceID) {
+//		case "1":
+//			try {
+//				updateMessage(channel, combinedResponse, timestamp);
+//			} catch (SlackApiException e) {
+//				e.printStackTrace();
+//			}
+//			break;
+//		case "2":
+//			try {
+//				deleteMessage(channel, timestamp);
+//			} catch (SlackApiException e) {
+//				e.printStackTrace();
+//			}
+//			break;
+//		case "3":
+//			try {
+//				sendMessage(channel, combinedResponse);
+//			} catch (SlackApiException e) {
+//				e.printStackTrace();
+//			}
+//			break;
+//		case "4":
+//			try {
+//				sendMessage(channel, combinedResponse, user);
+//			} catch (SlackApiException e) {
+//				e.printStackTrace();
+//			}
+//			break;
+//		}
+//	}
 }

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 
 
+
+
 import org.springframework.web.bind.annotation.PostMapping;
 
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,15 +22,20 @@ import com.welcome.bot.domain.User;
 import com.welcome.bot.domain.UserSettings;
 import com.welcome.bot.exception.ResourceNotFoundException;
 import com.welcome.bot.exception.base.BaseException;
+import com.welcome.bot.models.UserDTO;
 import com.welcome.bot.payload.ApiResponse;
 import com.welcome.bot.payload.RegistrationRequest;
 import com.welcome.bot.payload.TranslationSettings;
+import com.welcome.bot.repository.InviteRepository;
 import com.welcome.bot.repository.UserRepository;
 import com.welcome.bot.repository.UserSettingsRepository;
 import com.welcome.bot.security.CurrentUser;
 import com.welcome.bot.security.UserPrincipal;
 import com.welcome.bot.services.InviteService;
+import com.welcome.bot.services.UserService;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import java.net.URI;
 
 
@@ -49,26 +56,74 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-	@Autowired
-    private InviteService inviteService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserSettingsRepository userSettingsRepository;
-    @Autowired
-    MessageSource messageSource;
+
+	 private final InviteService inviteService;
+	 private final UserRepository userRepository;
+     private final UserSettingsRepository userSettingsRepository;
+     private final MessageSource messageSource;
+     private final InviteRepository inviteRepository;
+     private final UserService userService;
+	
+     
+     
+//	 public InviteService(final InviteService inviteService) {
+//         this.inviteService = inviteService;
+//        }
+//	 public UserRepository(final UserRepository userRepository) {
+//         this.userRepository = userRepository;
+//         }
+//	 public UserSettingsRepository(final UserSettingsRepository userSettingsRepository) {
+//         this.userSettingsRepository = userSettingsRepository;
+//         }
+//	 public InviteRepository(final InviteRepository inviteRepository) {
+//         this.inviteRepository = inviteRepository;
+//         }
+//	 public MessageSource(final MessageSource messageSource) {
+//         this.messageSource= messageSource;
+//         }
+//	public UserService(final UserService userService) {
+//         this.userService= userService;
+//         }
+
     
-    @RequestMapping(value = "/translation", method = RequestMethod.GET)
+    public UserController(InviteService inviteService, UserRepository userRepository,
+			UserSettingsRepository userSettingsRepository, MessageSource messageSource,
+			InviteRepository inviteRepository, UserService userService) {
+		this.inviteService = inviteService;
+		this.userRepository = userRepository;
+		this.userSettingsRepository = userSettingsRepository;
+		this.messageSource = messageSource;
+		this.inviteRepository = inviteRepository;
+		this.userService = userService;
+	}
+
+	@GetMapping("/translation")
     @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
     public TranslationSettings translate() {
  
     	TranslationSettings data=new TranslationSettings();
-    	data.setTitle(messageSource.getMessage("settings", null, LocaleContextHolder.getLocale()));
+    	data.setSettings(messageSource.getMessage("settings", null, LocaleContextHolder.getLocale()));
     	data.setTheme(messageSource.getMessage("theme", null, LocaleContextHolder.getLocale()));
     	data.setSelectColor(messageSource.getMessage("select.color", null, LocaleContextHolder.getLocale()));
     	data.setSelectLanguage(messageSource.getMessage("select.language", null, LocaleContextHolder.getLocale()));
     	data.setLanguage(messageSource.getMessage("language", null, LocaleContextHolder.getLocale()));
     	data.setSave(messageSource.getMessage("save", null, LocaleContextHolder.getLocale()));
+        data.setChannel(messageSource.getMessage("channel",null,LocaleContextHolder.getLocale()));
+	data.setMessages(messageSource.getMessage("messages",null,LocaleContextHolder.getLocale()));
+	data.setMessage(messageSource.getMessage("message",null,LocaleContextHolder.getLocale()));
+	data.setSchedules(messageSource.getMessage("schedules",null,LocaleContextHolder.getLocale()));
+	data.setUsers(messageSource.getMessage("users",null,LocaleContextHolder.getLocale()));
+	data.setActiveAt(messageSource.getMessage("activeAt",null,LocaleContextHolder.getLocale()));
+	data.setTriggers(messageSource.getMessage("triggers",null,LocaleContextHolder.getLocale()));
+	data.setTrigger(messageSource.getMessage("trigger",null,LocaleContextHolder.getLocale()));
+	data.setName(messageSource.getMessage("name",null,LocaleContextHolder.getLocale()));
+	data.setRole(messageSource.getMessage("role",null,LocaleContextHolder.getLocale()));
+	data.setNextRun(messageSource.getMessage("nextRun",null,LocaleContextHolder.getLocale()));
+	data.setTitle(messageSource.getMessage("title",null,LocaleContextHolder.getLocale()));
+	data.setText(messageSource.getMessage("text",null,LocaleContextHolder.getLocale()));
+	data.setActive(messageSource.getMessage("active",null,LocaleContextHolder.getLocale()));
+	data.setRepeat(messageSource.getMessage("active",null,LocaleContextHolder.getLocale()));
+
      return data;
     }
     
@@ -83,6 +138,11 @@ public class UserController {
     public void deleteUser(@RequestBody User user) {
     	userRepository.delete(user);
     		
+    }
+    @GetMapping("/getAllUsers")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Page<UserDTO> getAllUsers(Pageable pageable) {
+    	return userService.getAllUsers(pageable);
     }
    
    
@@ -108,11 +168,15 @@ public class UserController {
 
     	       
     	        User user = new User(signUpRequest.getEmail());
+    	       
     	        user.setRole(signUpRequest.getRole());
+    	        inviteRepository.save(user.getInvite());
+    	        userSettingsRepository.save(user.getUserSettings());
+
     	        User result = userRepository.save(user);
     	        if(inviteService.sendInvite(result.getEmail())) {
     	        
-    	        user.getInvite().setSent(1);
+    	        result.getInvite().setSent(true);
     	        }
     	        else {
     	        	

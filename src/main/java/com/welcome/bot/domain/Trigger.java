@@ -34,8 +34,9 @@ public class Trigger {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer triggerId;
 
-	@Column(nullable=false)
 	private String channel;
+	private String channelId;
+	
 	@Column(nullable=false)
 	private String triggerType;
 
@@ -43,35 +44,40 @@ public class Trigger {
 	private boolean active;
 	private Date createdAt;
 	private Date updatedAt;
-	
-    //@JsonIgnore
 
-	//OBRATI PAZNJU NA OPTIONAL TRUE FALSE
-	//@ManyToOne(fetch = FetchType.EAGER, optional = true)
-	//@JoinColumn(name = "message_id", nullable = false)
 	
-	
+
 	@ManyToOne
 	@JoinColumn(name = "message_id")
 	private Message message;
-    	
-	public Trigger(String channel, String triggerType, boolean active, Message message) {
+    
+	@ManyToOne
+	private User user;
+
+	
+	public Trigger(String channel, String channelId, String triggerType,
+			boolean active, Message message, User user) {
 		this.channel = channel;
+		this.channelId = channelId;
 		this.triggerType = triggerType;
 		this.active = active;
-		this.message = message;
 		this.createdAt = new Date();
-		this.deleted = false;
+		this.message = message;
+		this.user = user;
 	}
 	
-	protected Trigger() {
-	
-	}
+	public Trigger() {}
+
+
 
 	public Integer getTriggerId() {
 		return triggerId;
 	}
 
+	public String getChannelId() {
+		return channelId;
+	}
+	
 	public String getChannel() {
 		return channel;
 	}
@@ -100,10 +106,18 @@ public class Trigger {
 		return message;
 	}
 
+	public User getUser() {
+		return user;
+	}
+
 	public void setTriggerId(Integer triggerId) {
 		this.triggerId = triggerId;
 	}
 
+
+	public void setChannelId(String channelId) {
+		this.channelId = channelId;
+	}
 	public void setChannel(String channel) {
 		this.channel = channel;
 	}
@@ -132,5 +146,12 @@ public class Trigger {
 		this.message = message;
 	}
 
+	public void setUser(User user) {
+		this.user = user;
+	}
+	
+
+	
+	
 	
 }
