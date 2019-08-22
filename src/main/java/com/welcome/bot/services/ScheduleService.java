@@ -209,9 +209,7 @@ public class ScheduleService {
 			softDelete(schedule);
 		}
 	}
-	
 
-	
 	// deletes schedules in database and in slack
 	public void deleteAllSchedulesByMessage(Message message) {
 		List<Schedule> scheduleList = scheduleRepository.findAllByMessage(message);

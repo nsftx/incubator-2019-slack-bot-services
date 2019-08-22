@@ -97,8 +97,8 @@ public class MessageService {
 			validateMessageInput(messageModel);
 			validateMessageDuplicates(messageModel);
 		}
-		catch (MessageValidationException e) {
-			throw new MessageValidationException(e.getMessage());
+		catch (MessageValidationException messageValidationException) {
+			throw messageValidationException;
 		}
 		
 		User user = userRepository.findById(principal.getId())
@@ -172,7 +172,7 @@ public class MessageService {
 	}	
 	
 	private void softDelete(Message message) {
-		message.setDeleted(true);
+		message.setDeleted();
 		messageRepository.save(message);
 	}
 	

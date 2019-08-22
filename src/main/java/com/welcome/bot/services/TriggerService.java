@@ -170,7 +170,7 @@ public class TriggerService {
 	}
 	
 	//delete all triggers by list you send as parameter
-
+	@Transactional(propagation = Propagation.MANDATORY)
 	public void deleteAllTriggersByList(List<Trigger> triggerList) {
 		for (Trigger trigger : triggerList) {
 			softDelete(trigger);
@@ -182,7 +182,7 @@ public class TriggerService {
 		List<Trigger> triggerList = triggerRepository.findAllByChannelId(channelId);
 		return triggerList;
 	}
-
+	//asd
 	//update active attribute of list of triggers by boolean parameter you send
 	public void updateActiveStatus(List<Trigger> triggerList, boolean active) {
 		for (Trigger trigger : triggerList) {

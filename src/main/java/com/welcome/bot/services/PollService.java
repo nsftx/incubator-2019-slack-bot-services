@@ -72,7 +72,7 @@ public class PollService {
 		this.slackService = slackService;
 	}
 	
-	//@Transactional(propagation = Propagation.MANDATORY )
+	//@Transactional(propagation = Propagation.MANDATORY)
 	public PollDTO createPoll(PollCreateDTO pollModel) {
 		String channel = channelService.getChannelById(pollModel.getChannel());
 		
@@ -158,6 +158,15 @@ public class PollService {
 		Date date = new Date();
 		List<Poll> list = pollRepository.findAllByActiveUntilLessThan(date);
 		return list;
+	}
+	
+	public void deactivatePollsByList(List<Poll> pollList) {
+		if(!pollList.isEmpty()) {
+			for (Poll poll : pollList) {
+				poll.setActive(false);
+				pollRepository.save(poll);
+			}	
+		}
 	}
 	
 	

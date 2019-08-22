@@ -14,13 +14,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @Entity(name = "message")
-@JsonPropertyOrder({
-"messageId", 
-"title",
-"text",
-"createdAt,",
-"updatedAt"
-})
+
 public class Message {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +31,7 @@ public class Message {
 	private Date createdAt;
 	private Date updatedAt;
 	private boolean deleted;
+	
 	
 	@ManyToOne
 	private User user;
@@ -77,7 +72,7 @@ public class Message {
 	public boolean isDeleted() {
 		return deleted;
 	}
-
+	
 	public User getUser() {
 		return user;
 	}
@@ -102,15 +97,12 @@ public class Message {
 		this.updatedAt = new Date();
 	}
 
-	public void setDeleted(boolean deleted) {
-		this.deleted = deleted;
+	public void setDeleted() {
+		this.deleted = true;
 	}
-
+	
 	public void setUser(User user) {
 		this.user = user;
 	}
 
-
-
-	
 }
