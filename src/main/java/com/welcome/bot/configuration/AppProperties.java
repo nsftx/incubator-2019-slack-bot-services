@@ -89,10 +89,4 @@ public class AppProperties {
 	public ObjectMapper jsonMapper() {
 		return new ObjectMapper();
 	}
-<<<<<<< HEAD
 }
-=======
-
-
-}
->>>>>>> 0caaafae4cf28684ead6367e5e8982be53bff845

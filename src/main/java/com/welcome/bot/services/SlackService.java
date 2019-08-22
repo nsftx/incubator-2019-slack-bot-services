@@ -156,7 +156,8 @@ public class SlackService {
 			choicesMap.put(choice.getChoiceId(), choice.getChoiceValue());
 		}
 		try {
-			slackClientApi.sendMessagePoll(channelId, poll.getTitle(), choicesMap, poll.getPollUuid());
+			//slackClientApi.createPoll(channelId, poll.getTitle(), choicesMap, poll.getPollUuid());
+			// MISSING DATE
 		}catch (Exception e) {
 			throw new BaseException("Couldn't send poll to slack");
 		}

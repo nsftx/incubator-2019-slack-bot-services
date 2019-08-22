@@ -280,7 +280,8 @@ public class ScheduleService {
 		
 		try {
 			if(schedule.getRepeat()) {
-				slackMessageId = slackClientApi.createSchedule(schedule.getChannel(), schedule.getMessage().getText(), schedule.getRunAt(), schedule.getIntervalType());
+				// DELETED INTERVAL PARAMETER
+				slackMessageId = slackClientApi.createRepeatedSchedule(schedule.getChannel(), schedule.getMessage().getText(), schedule.getRunAt());
 			}else {
 				slackMessageId = slackClientApi.createSchedule(schedule.getChannel(), schedule.getMessage().getText(), schedule.getRunAt());
 			}	
