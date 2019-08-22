@@ -14,7 +14,7 @@ public class DateOperator {
 		return epochTime;
 	}
 
-	public List<Date> generateRepeatTimes(Date date, String interval){
+	public List<Date> generateRepeatTimes(Date date){
 		List<Date> repeatDates = new ArrayList<>();
 		Calendar c = Calendar.getInstance();
 		c.setTime(date);
