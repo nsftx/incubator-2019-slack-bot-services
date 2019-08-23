@@ -53,7 +53,6 @@ public interface SlackClientApi {
 	 * @param choices - Map of id/value pairs that will be presented to users as options for voting,
 	 * @param pollID - Unique ID of poll to create, used to map votes with right poll, and differentiate polls from each other,
 	 * @param pollCloseTime - Time and date at which poll will be closed,
-	 * @param newText - Text to display when poll is finished.
 	 * @return String messageTimestamp - If poll is sent successfully, method will return time stamp of the poll.
 	 * @throws SlackApiException - If something is wrong (arguments invalid, sending failed), exception will be thrown.
 	 */

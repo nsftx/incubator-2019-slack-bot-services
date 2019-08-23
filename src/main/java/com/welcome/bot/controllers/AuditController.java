@@ -14,6 +14,9 @@ import com.welcome.bot.services.AuditService;
 
 @RestController
 public class AuditController {
+	
+	// NOTIFICATION
+	public static int NEW_LOGS_COUNT = 0;
 
 	@Autowired
 	AuditService auditService;
@@ -21,6 +24,15 @@ public class AuditController {
 	@GetMapping("/api/logs")
 	public Page<AuditDTO> getAllLogs(Pageable pageable, @CurrentUser UserPrincipal userPrincipal){
 		return auditService.getAllLogs(pageable, userPrincipal);
+		
+		/* TODO
+		 * Page<AuditDTO> auditList = auditService.getAllLogs(pageable, userPrincipal);
+		 * auditService.updateAllWhereSeenFalse(set seen to true);
+		 * NEW_LOGS_COUNT = 0;
+		 * return auditList;
+		 */
 	}
 	
+	// NOTIFICATION
+	// SSE EMIT METHOD
 }
