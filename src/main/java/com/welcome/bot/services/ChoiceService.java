@@ -1,7 +1,5 @@
 package com.welcome.bot.services;
 
-import static org.hamcrest.CoreMatchers.nullValue;
-
 import java.util.ArrayList;
 import java.util.List;
 

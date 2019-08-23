@@ -31,7 +31,7 @@ public class PollClosingSchedulerService {
 		Date currentDate = new Date();
 	    
 		// TEST
-		System.out.println("SCHEDULED CRON - " + currentDate);
+		//System.out.println("SCHEDULED CRON - " + currentDate);
 	    
 	    // 2)
 //	    List<Poll> pollList = pollService.getActivePolls();

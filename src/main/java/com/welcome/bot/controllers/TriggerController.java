@@ -38,8 +38,8 @@ public class TriggerController {
 	
 	//get all triggers
 	@GetMapping("/api/triggers")
-	public Page<TriggerDTO> getAllTriggers(Pageable pageable, @CurrentUser UserPrincipal userPrincipal){
-		return triggerService.getAllTriggers(pageable, userPrincipal);
+	public Page<TriggerDTO> getAllTriggers(Pageable pageable){
+		return triggerService.getAllTriggers(pageable);
 	}
 	
 	//get trigger by Message
@@ -50,8 +50,8 @@ public class TriggerController {
 	
 	//create trigger
 	@PostMapping("/api/triggers")
-	public TriggerDTO createTrigger(@RequestBody TriggerCreateDTO triggerModel, @CurrentUser UserPrincipal userPrincipal) {
-		return triggerService.createTrigger(triggerModel, userPrincipal);		
+	public TriggerDTO createTrigger(@RequestBody TriggerCreateDTO triggerModel) {
+		return triggerService.createTrigger(triggerModel);		
 	}
 	
 	@PutMapping("/api/triggers/{triggerId}")

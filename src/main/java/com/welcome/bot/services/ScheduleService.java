@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ import com.welcome.bot.exception.base.BaseException;
 import com.welcome.bot.exception.message.MessageNotFoundException;
 import com.welcome.bot.exception.schedule.ScheduleNotFoundException;
 import com.welcome.bot.exception.schedule.ScheduleValidationException;
+import com.welcome.bot.exception.user.UserNotFoundException;
 import com.welcome.bot.models.MessageDTO;
 import com.welcome.bot.models.ScheduleDTO;
 import com.welcome.bot.models.UserDTO;
@@ -77,13 +79,14 @@ public class ScheduleService {
 	}
 
 	//creates schedule
-	public ScheduleDTO createSchedule(ScheduleCreateDTO scheduleModel, UserPrincipal userPrincipal) {
+	public ScheduleDTO createSchedule(ScheduleCreateDTO scheduleModel) {
+		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
 		Message message = messageRepository.findById(scheduleModel.getMessageId())
 				.orElseThrow(() -> new MessageNotFoundException(scheduleModel.getMessageId()));
 		
-		User user = userRepository.findById(userPrincipal.getId())
-				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+		User user = userRepository.findById(principal.getId())
+				.orElseThrow(() -> new UserNotFoundException(principal.getId()));
 			
 		//throw exception if not validate
 		try {
@@ -131,16 +134,21 @@ public class ScheduleService {
 	}
 	
 	//get all schedules
-	public Page<ScheduleDTO> getAllSchedules(Pageable pageable, UserPrincipal userPrincipal) {
-		User user = userRepository.findById(userPrincipal.getId())
-				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+	public Page<ScheduleDTO> getAllSchedules(Pageable pageable) {
+		
+		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		User user = userRepository.findById(principal.getId())
+				.orElseThrow(() -> new UserNotFoundException(principal.getId()));
+		
+		String role = principal.getAuthorities().toString();
 		
 		Page<Schedule> schedulesPage = scheduleRepository.findAll(pageable);
-		
-		if(user.getRole().equals("ADMIN")) {
+
+		if(role.equals("[ROLE_ADMIN]")) {
 			schedulesPage = scheduleRepository.findAllByDeleted(pageable, false);
 		}
-		else if(user.getRole().equals("USER")) {
+		else if(role.equals("[ROLE_USER]")) {
 			schedulesPage = scheduleRepository.findAllByUserAndDeleted(pageable, user, false);
 		}
 
@@ -191,15 +199,18 @@ public class ScheduleService {
 	
 	public ResponseEntity<Schedule> deleteSchedule(Integer scheduleId) {
 		Schedule schedule = scheduleRepository.findById(scheduleId)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule data for id: " + scheduleId + "not found"));
+				.orElseThrow(() -> new ScheduleNotFoundException(scheduleId));
 		
 		if(schedule.getActive()) {
 			deleteScheduleInSlackApi(schedule);	
 		}
-
-		softDelete(schedule);
+		if(schedule.getDeleted()) {
+			throw new ScheduleNotFoundException(scheduleId);
+		}
 		
+		softDelete(schedule);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+	
 	}
 	
 	//delete all triggers by list you send as parameter
@@ -278,7 +289,6 @@ public class ScheduleService {
 		
 		try {
 			if(schedule.getRepeat()) {
-				// DELETED INTERVAL PARAMETER
 				slackMessageId = slackClientApi.createRepeatedSchedule(schedule.getChannel(), schedule.getMessage().getText(), schedule.getRunAt());
 			}else {
 				slackMessageId = slackClientApi.createSchedule(schedule.getChannel(), schedule.getMessage().getText(), schedule.getRunAt());

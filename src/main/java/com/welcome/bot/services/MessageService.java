@@ -158,6 +158,10 @@ public class MessageService {
 				.orElseThrow(() -> new MessageNotFoundException(id));
 		
 		//delete message
+		if(message.isDeleted()) {
+			throw new MessageNotFoundException(id);
+		}
+		
 		softDelete(message);
 		
 		//deletes all triggers connected with message

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import com.welcome.bot.domain.Schedule;
 import com.welcome.bot.domain.Trigger;
 import com.welcome.bot.domain.User;
 import com.welcome.bot.exception.ResourceNotFoundException;
+import com.welcome.bot.exception.user.UserNotFoundException;
 import com.welcome.bot.models.AuditDTO;
 import com.welcome.bot.repository.AuditRepository;
 import com.welcome.bot.repository.UserRepository;
@@ -42,16 +44,23 @@ public class AuditService {
 		this.userRepository = userRepository;
 	}
 
-	public Page<AuditDTO> getAllLogs(Pageable pageable, UserPrincipal userPrincipal) {
-		User user = userRepository.findById(userPrincipal.getId())
-				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+	public Page<AuditDTO> getAllLogs(Pageable pageable) {
+
+		
+		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		User user = userRepository.findById(principal.getId())
+				.orElseThrow(() -> new UserNotFoundException(principal.getId()));
+		
+
+		
+		String role = principal.getAuthorities().toString();
 		
 		Page<Audit> auditPage = null;
-		auditPage = auditRepository.findAll(pageable);
-		if(user.getRole().equals("ADMIN")) {
+		if(role.equals("ROLE_ADMIN]")) {
 			auditPage = auditRepository.findAll(pageable);
 		}
-		else if(user.getRole().equals("USER")) {
+		else if(role.equals("ROLE_USER]")) {
 			auditPage = auditRepository.findAllByUser(pageable, user);
 		}
 		
@@ -59,10 +68,9 @@ public class AuditService {
 		
 		List<AuditDTO> auditDtoList = modelMapper.map(auditList, new TypeToken<List<AuditDTO>>(){}.getType());
 		
-		System.out.println(auditDtoList);
 		Page<AuditDTO> auditDtoPage = new PageImpl<AuditDTO>(auditDtoList, pageable, auditPage.getTotalElements());
-		System.out.println(auditDtoPage);
-		return auditDtoPage;	
+
+		return auditDtoPage;
 	}
 	
 	@Transactional(propagation = Propagation.MANDATORY)

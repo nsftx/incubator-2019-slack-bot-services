@@ -25,6 +25,7 @@ import com.welcome.bot.exception.ResourceNotFoundException;
 import com.welcome.bot.exception.base.BaseException;
 import com.welcome.bot.exception.message.MessageNotFoundException;
 import com.welcome.bot.exception.trigger.TriggerNotFoundException;
+import com.welcome.bot.exception.user.UserNotFoundException;
 import com.welcome.bot.models.MessageDTO;
 import com.welcome.bot.models.TriggerDTO;
 import com.welcome.bot.models.UserDTO;
@@ -75,19 +76,21 @@ public class TriggerService {
 	}
 	
 	//get all triggers
-	public Page<TriggerDTO> getAllTriggers(Pageable pageable, UserPrincipal userPrincipal){
-		//final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	public Page<TriggerDTO> getAllTriggers(Pageable pageable){
+		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		User user = userRepository.findById(userPrincipal.getId())
-				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+		User user = userRepository.findById(principal.getId())
+				.orElseThrow(() -> new UserNotFoundException(principal.getId()));
+		
+		String role = principal.getAuthorities().toString();
 		
 		Page<Trigger> triggerPage = null;
 
-		if(user.getRole().equals("ADMIN")) {
+		if(role.equals("[ROLE_ADMIN]")) {
 			triggerPage = triggerRepository.findAllByDeleted(pageable, false);
 		}
 		
-		else if(user.getRole().equals("USER")) {
+		else if(role.equals("[ROLE_USER]")) {
 			triggerPage = triggerRepository.findAllByUserAndDeleted(pageable, user, false);
 		}	
 		
@@ -114,9 +117,11 @@ public class TriggerService {
 	
 	
 	//create trigger
-	public TriggerDTO createTrigger(TriggerCreateDTO triggerModel, UserPrincipal userPrincipal) {
-		User user = userRepository.findById(userPrincipal.getId())
-				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+	public TriggerDTO createTrigger(TriggerCreateDTO triggerModel) {
+		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		User user = userRepository.findById(principal.getId())
+				.orElseThrow(() -> new UserNotFoundException(principal.getId()));
 		
 		Message message = messageRepository.findById(triggerModel.getMessageId())
 				.orElseThrow(() -> new MessageNotFoundException(triggerModel.getMessageId()));
@@ -124,7 +129,7 @@ public class TriggerService {
 		
 		String channelName = channelService.getChannelById(triggerModel.getChannelId());
 		if(channelName == null) {
-			channelName = "tarik mockup kanal";
+			channelName = "kanal ne postoji";
 		}
 		
 		
@@ -159,8 +164,14 @@ public class TriggerService {
 	//delete trigger 
 	public ResponseEntity<Trigger> deleteTrigger(Integer triggerId) {
 		Trigger trigger = triggerRepository.findById(triggerId).orElseThrow();
+		
+		if(trigger.isDeleted()) {
+			throw new TriggerNotFoundException(triggerId);
+		}
+		
 		softDelete(trigger);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+
 	}
 	
 	private void softDelete(Trigger trigger) {
@@ -182,7 +193,7 @@ public class TriggerService {
 		List<Trigger> triggerList = triggerRepository.findAllByChannelId(channelId);
 		return triggerList;
 	}
-	//asd
+	
 	//update active attribute of list of triggers by boolean parameter you send
 	public void updateActiveStatus(List<Trigger> triggerList, boolean active) {
 		for (Trigger trigger : triggerList) {

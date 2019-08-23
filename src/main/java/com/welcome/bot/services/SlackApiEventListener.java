@@ -86,21 +86,22 @@ public class SlackApiEventListener {
 		System.out.println(event.toString());		
 		
 		PublishEventMessage eventData = event.getEventData();
-		String channel = eventData.getChannel();
+		String channelId = eventData.getChannel();
 		String user = eventData.getUser();
 		String eventType = eventData.getEventType().toString();
-		switch (eventType.toString()) {
 		
+		switch (eventType.toString()) {
 		case "app_mention":
-			System.out.println(eventType + " " + channel);
-			slackService.triggerApp(eventType, channel);
+			System.out.println(eventType + " " + channelId);
+			slackService.triggerApp(eventType, channelId);
 			break;
 		case "member_joined_channel":
 		case "member_left_channel":
 			//slackService.triggerApp(eventType, channel, user);
 			break;
 		case "channel_deleted":
-			slackService.logChannelActivities(eventData);
+			System.out.println(eventType + " " + channelId);
+			slackService.logChannelActivities(channelId);
 			break;
 		default:
 			break;			

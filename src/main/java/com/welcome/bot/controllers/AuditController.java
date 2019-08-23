@@ -19,8 +19,8 @@ public class AuditController {
 	AuditService auditService;
 	
 	@GetMapping("/api/logs")
-	public Page<AuditDTO> getAllLogs(Pageable pageable, @CurrentUser UserPrincipal userPrincipal){
-		return auditService.getAllLogs(pageable, userPrincipal);
+	public Page<AuditDTO> getAllLogs(Pageable pageable){
+		return auditService.getAllLogs(pageable);
 	}
 	
 }

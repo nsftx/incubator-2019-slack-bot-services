@@ -1,13 +1,14 @@
 package com.welcome.bot.domain;
 
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @Entity
 public class Audit {
@@ -17,6 +18,7 @@ public class Audit {
 	private String cause;
 	private String consequence;
 	private boolean seen;
+	private Date createdAt;
 	
 	@ManyToOne
 	private User user;
@@ -26,6 +28,7 @@ public class Audit {
 		this.consequence = consequence;
 		this.user = user;
 		this.seen = false;
+		this.createdAt = new Date();
 	}
 	
 	protected Audit() {
@@ -51,7 +54,10 @@ public class Audit {
 	public User getUser() {
 		return user;
 	}
-
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+	
 	public void setAuditId(Integer auditId) {
 		this.auditId = auditId;
 	}
@@ -71,7 +77,9 @@ public class Audit {
 	public void setUser(User user) {
 		this.user = user;
 	}
-	
+	public void setCreatedAt() {
+		this.createdAt = new Date();
+	}
 
 	
 	

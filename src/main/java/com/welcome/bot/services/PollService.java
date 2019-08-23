@@ -39,6 +39,7 @@ import com.welcome.bot.repository.ChoiceRepository;
 import com.welcome.bot.repository.PollRepository;
 import com.welcome.bot.repository.PollResultsRepository;
 import com.welcome.bot.slack.api.SlackClientApi;
+import com.welcome.bot.slack.api.customexceptionhandler.SlackApiException;
 
 @Service
 @Transactional
@@ -84,7 +85,7 @@ public class PollService {
 		choiceService.createChoices(poll, choiceList);
 		
 		if(poll.isActive()) {
-			slackService.createPoll(poll, choiceList, pollModel.getChannel());
+			slackService.createPoll(poll, choiceList, pollModel.getChannel(), pollModel.getActiveUntil());
 		}
 		
 		PollDTO pollDTO = convertToDto(poll, choiceList);
@@ -139,10 +140,18 @@ public class PollService {
 	        pollResultsRepository.save(pollResult);
 	    }
 	}
-
+	
+	//ovdje ce trebat transactional
 	public ResponseEntity<Object> deletePoll(Pageable pageable, Integer pollId) {
 		Poll poll = pollRepository.findById(pollId).orElseThrow(() -> new BaseException("Poll not found"));
 		
+		try {
+			slackClientApi.deleteMessage(poll.getChannel(), poll.getSlackTimestamp());
+		} catch (SlackApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		softDelete(poll);
 		
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);

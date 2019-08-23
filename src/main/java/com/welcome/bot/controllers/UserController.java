@@ -64,28 +64,7 @@ public class UserController {
      private final InviteRepository inviteRepository;
      private final UserService userService;
 	
-     
-     
-//	 public InviteService(final InviteService inviteService) {
-//         this.inviteService = inviteService;
-//        }
-//	 public UserRepository(final UserRepository userRepository) {
-//         this.userRepository = userRepository;
-//         }
-//	 public UserSettingsRepository(final UserSettingsRepository userSettingsRepository) {
-//         this.userSettingsRepository = userSettingsRepository;
-//         }
-//	 public InviteRepository(final InviteRepository inviteRepository) {
-//         this.inviteRepository = inviteRepository;
-//         }
-//	 public MessageSource(final MessageSource messageSource) {
-//         this.messageSource= messageSource;
-//         }
-//	public UserService(final UserService userService) {
-//         this.userService= userService;
-//         }
-
-    
+ 
     public UserController(InviteService inviteService, UserRepository userRepository,
 			UserSettingsRepository userSettingsRepository, MessageSource messageSource,
 			InviteRepository inviteRepository, UserService userService) {

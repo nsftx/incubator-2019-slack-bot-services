@@ -1,5 +1,6 @@
 package com.welcome.bot.services;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,8 +83,8 @@ public class SlackService {
 	}
 	
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-	public void logChannelActivities(PublishEventMessage eventData) {
-		String channelId = eventData.getChannel();
+	public void logChannelActivities(String channelId) {
+		
 		
 		List<Schedule> scheduleList = scheduleService.getAllByChannelId(channelId);
 		List<Trigger> triggerList = triggerService.getAllByChannelId(channelId);
@@ -149,14 +150,15 @@ public class SlackService {
 			return channelList;
 		}
 
-	public void createPoll(Poll poll, List<Choice> choiceList, String channelId) {
+	public void createPoll(Poll poll, List<Choice> choiceList, String channelId, Date activeUntil) {
 		//preparing and sending to slack
 		HashMap<Integer, String> choicesMap = new HashMap<>();
 		for (Choice choice : choiceList) {
 			choicesMap.put(choice.getChoiceId(), choice.getChoiceValue());
 		}
 		try {
-			//slackClientApi.createPoll(channelId, poll.getTitle(), choicesMap, poll.getPollUuid());
+			//testiraj
+			slackClientApi.createPoll(channelId, poll.getTitle(), choicesMap, poll.getPollUuid(), activeUntil);
 			// MISSING DATE
 		}catch (Exception e) {
 			throw new BaseException("Couldn't send poll to slack");
