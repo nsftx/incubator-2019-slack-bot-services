@@ -1,36 +1,28 @@
 package com.welcome.bot.services;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.welcome.bot.repository.PollRepository;
+import com.welcome.bot.domain.Poll;
 import com.welcome.bot.slack.api.SlackClientApi;
+import com.welcome.bot.slack.api.customexceptionhandler.SlackApiException;
 
 @Component
 public class PollClosingSchedulerService {
-	
-	/*
-     * 1) GET CURRENT DATE
-     * 2) GET ALL FROM POLL REPO WHERE DATE IS < CURRENT DATE
-     * 3) SLACK.UPDATE ALL THOSE WITH PAST DATE
-     */
-	
+
 	@Autowired
 	SlackClientApi slackService;
 	@Autowired
-	PollRepository pollRepo;
-	@Autowired
 	PollService pollService;
-	
+
 	@Scheduled(cron = "0 * * * * ?")
-	public void scheduleTaskUsingCronExpression() {
-		// 1)
-		Date currentDate = new Date();
-	    
+	public void scheduleTaskUsingCronExpression() throws SlackApiException {
 		// TEST
+
 		//System.out.println("SCHEDULED CRON - " + currentDate);
 	    
 	    // 2)
@@ -43,6 +35,22 @@ public class PollClosingSchedulerService {
 //	    		slackService.updateMessage(p.getChannel(), text, p.getTimestamp());
 //	    	}
 //	    }
+
+//		System.out.println("SCHEDULED CRON - " + new Date());
+//
+//		List<Poll> pollList = pollService.getActivePolls();
+//
+//		String text = "Thank You for voting! POLL is closed :)";
+//		if(!pollList.isEmpty()) {
+//			pollService.deactivatePollsByList(pollList);
+//			for(Poll p : pollList) {
+//				try {
+//					slackService.updateMessage(p.getChannel(), text, p.getSlackTimestamp());
+//				} catch (SlackApiException e) {
+//					throw new SlackApiException("Poll closing failed. Cause: " + e.getMessage());
+//				}
+//			}
+//		}
+
 	}
-	
 }
