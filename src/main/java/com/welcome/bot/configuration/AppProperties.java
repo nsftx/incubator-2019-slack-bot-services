@@ -3,7 +3,10 @@ package com.welcome.bot.configuration;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.welcome.bot.slack.api.utils.ConnectionGenerator;
@@ -18,13 +21,13 @@ import java.util.List;
 public class AppProperties {
 	private final Auth auth = new Auth();
 	private final OAuth2 oauth2 = new OAuth2();
-	
+
 	@Bean
 	public ModelMapper modelMapper() {
 		ModelMapper modelMapper = new ModelMapper();
 		return modelMapper;
 	}
-	
+
 	public static class Auth {
 		private String tokenSecret;
 		private long tokenExpirationMsec;

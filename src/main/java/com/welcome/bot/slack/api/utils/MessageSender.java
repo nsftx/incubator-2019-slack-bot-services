@@ -96,7 +96,7 @@ public class MessageSender {
 				channelList.add(c);
 			}
 		} catch (JSONException e) {
-			e.printStackTrace();
+			throw new JSONException(e);
 		}
 		return channelList;
 	}
@@ -137,6 +137,7 @@ public class MessageSender {
 			while ((responseLine = br.readLine()) != null) {
 				responseBuilder.append(responseLine.trim());
 			}
+			System.out.println("SLACK SCHEDULE RESPONSE -> " + responseBuilder.toString()); // TODO - TEST/DELETE
 			response = new JSONObject(responseBuilder.toString());
 			br.close();
 		} catch (IOException e) {

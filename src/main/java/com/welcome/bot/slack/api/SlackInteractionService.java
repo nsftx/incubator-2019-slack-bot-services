@@ -48,7 +48,10 @@ public class SlackInteractionService {
 		interactionData.setUser(payload.getUser().getId());
 		interactionData.setPollID(UUID.fromString(payload.getActions().get(0).getBlockId()));
 
+		//TODO - TEST/DELETE
 		interactionData.setTimestamp(payload.getContainer().getMessageTs());
+		
+		//TODO - CHECK TO DELETE OR NO
 		interactionData.setText("Thank You for voting. We will inform all participants on results when poll ends.");
 
 		passInteraction(interactionData);

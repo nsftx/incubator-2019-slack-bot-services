@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import org.hibernate.validator.internal.engine.messageinterpolation.parser.ELState;
 import org.json.JSONException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 import com.welcome.bot.domain.Message;
@@ -94,13 +98,17 @@ public class ScheduleService {
 			intervalType = getIntervalType(scheduleModel);
 		}
 		
-		String channel = channelService.getChannelById(scheduleModel.getChannelId());
+		String channelName = channelService.getChannelById(scheduleModel.getChannelId());
+		if(channelName == null) {
+			channelName = "tarik mockup kanal";
+		}
 		
+		//String channel = "#general";
 		Schedule schedule = new Schedule(scheduleModel.isActive(),
 										scheduleModel.isRepeat(),
 										intervalType,
 										scheduleModel.getRunAt(), 
-										channel, 
+										channelName, 
 										message,
 										scheduleModel.getChannelId(),
 										user);
@@ -110,7 +118,7 @@ public class ScheduleService {
 			try {
 				sendScheduleToSlackApi(schedule);
 			} catch (Exception e) {
-				e.printStackTrace();
+				throw new BaseException(e.getMessage());
 			}	
 		}
 		
@@ -157,16 +165,16 @@ public class ScheduleService {
 		
 		boolean lastState = schedule.getActive();
 		
-
 		if(lastState == false && active == true) {
 			deleteScheduleInSlackApi(schedule);
 			try {
 				sendScheduleToSlackApi(schedule);
 			} catch (Exception e) {
-				e.printStackTrace();
+				throw new BaseException(e.getMessage());
 			}	
 		}
 		schedule.setActive(active);	
+		schedule.setUpdatedAt();
 		scheduleRepository.save(schedule);
 		
 		ScheduleDTO scheduleContentDTO = convertToDto(schedule);
@@ -177,6 +185,7 @@ public class ScheduleService {
 	private void softDelete(Schedule schedule) {
 		schedule.setDeleted(true);
 		schedule.setActive(false);
+		schedule.setUpdatedAt();
 		scheduleRepository.save(schedule);
 	}
 	
@@ -192,15 +201,15 @@ public class ScheduleService {
 		
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 	}
+	
 	//delete all triggers by list you send as parameter
+	@Transactional(propagation = Propagation.MANDATORY)
 	public void deleteAllSchedulesByList(List<Schedule> scheduleList) {
 		for (Schedule schedule : scheduleList) {
 			softDelete(schedule);
 		}
 	}
-	
 
-	
 	// deletes schedules in database and in slack
 	public void deleteAllSchedulesByMessage(Message message) {
 		List<Schedule> scheduleList = scheduleRepository.findAllByMessage(message);
@@ -263,13 +272,14 @@ public class ScheduleService {
 	
 	
 	//sending schedule to slack
-	public void sendScheduleToSlackApi(Schedule schedule) throws Exception {
+	public void sendScheduleToSlackApi(Schedule schedule) throws BaseException {
 		String slackMessageId = "";
 		System.out.println(schedule.getChannel());
 		
 		try {
 			if(schedule.getRepeat()) {
-				slackMessageId = slackClientApi.createSchedule(schedule.getChannel(), schedule.getMessage().getText(), schedule.getRunAt(), schedule.getIntervalType());
+				// DELETED INTERVAL PARAMETER
+				slackMessageId = slackClientApi.createRepeatedSchedule(schedule.getChannel(), schedule.getMessage().getText(), schedule.getRunAt());
 			}else {
 				slackMessageId = slackClientApi.createSchedule(schedule.getChannel(), schedule.getMessage().getText(), schedule.getRunAt());
 			}	
@@ -293,7 +303,7 @@ public class ScheduleService {
 			try {
 				slackClientApi.deleteSchedule(schedule.getSlackScheduleId(), schedule.getChannel());
 			} catch (SlackApiException e) {
-				e.printStackTrace();
+				throw new BaseException(e.getMessage());
 			}		
 		}
 		return status;

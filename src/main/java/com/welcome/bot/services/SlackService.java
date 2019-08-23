@@ -1,23 +1,33 @@
 package com.welcome.bot.services;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
+import org.hibernate.query.criteria.internal.expression.function.SubstringFunction;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.FinalizablePhantomReference;
 import com.welcome.bot.domain.Choice;
 import com.welcome.bot.domain.Poll;
+import com.welcome.bot.domain.PollResult;
 import com.welcome.bot.domain.Schedule;
 import com.welcome.bot.domain.Trigger;
 import com.welcome.bot.exception.base.BaseException;
+import com.welcome.bot.repository.PollRepository;
+import com.welcome.bot.repository.PollResultsRepository;
 import com.welcome.bot.repository.TriggerRepository;
 import com.welcome.bot.slack.api.SlackClientApi;
 import com.welcome.bot.slack.api.customexceptionhandler.SlackApiException;
 import com.welcome.bot.slack.api.model.interactionpayload.Channel;
 import com.welcome.bot.slack.api.model.publishevent.PublishEventMessage;
 
+import net.bytebuddy.description.ModifierReviewable.OfAbstraction;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
@@ -38,6 +48,8 @@ public class SlackService {
 	
 	ChannelService channelService;
 	
+	PollResultsRepository pollResultsRepository;
+	
 	@Autowired
 	public SlackService(final SlackClientApi slackClientApi,
 			final MessageService messageService, 
@@ -45,7 +57,8 @@ public class SlackService {
 			final TriggerService triggerService,
 			final TriggerRepository triggerRepository, 
 			final AuditService auditService,
-			final ChannelService channelService) {
+			final ChannelService channelService,
+			final PollResultsRepository pollResultsRepository) {
 		this.slackClientApi = slackClientApi;
 		this.messageService = messageService;
 		this.scheduleService = scheduleService;
@@ -53,20 +66,22 @@ public class SlackService {
 		this.triggerRepository = triggerRepository;
 		this.auditService = auditService;
 		this.channelService = channelService;
+		this.pollResultsRepository = pollResultsRepository;
 	}
 
-	public void triggerApp(String eventType, String channel) {
-		
-		List<Trigger> list = triggerRepository.findAllByTriggerTypeAndChannel(eventType, channel);
+	public void triggerApp(String eventType, String channelId) {
+		List<Trigger> list = triggerRepository.findAllByTriggerTypeAndChannelId(eventType, channelId);
 		for (Trigger trigger : list) {
 			try {
 				slackClientApi.sendMessage(trigger.getChannel(), trigger.getMessage().getText());
 			} catch (SlackApiException e) {
+				// dont forget to throw your exception
 				e.printStackTrace();
 			}
 		}
 	}
 	
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
 	public void logChannelActivities(PublishEventMessage eventData) {
 		String channelId = eventData.getChannel();
 		
@@ -83,19 +98,41 @@ public class SlackService {
 		}
 	}
 	
-	public List<Channel> getChannelsList() {
-		return slackClientApi.getChannelsList();
+	//get all channels - sluzi samo za klijenta, da bi dobio kanale bez "#"
+	public JSONArray getChannelsList(){
+		List<Channel> channelList = new ArrayList<>();
+		
+		JSONArray channelArray = new JSONArray();
+		
+		
+		//channelList = slackClientApi.getChannelsList();
+		try {
+			channelList = slackClientApi.getChannelsList();
+		}catch (JSONException e) {
+			throw new BaseException("Problems with Slack Conectivity");
+		}
+		
+		for (Channel channel : channelList) {
+			JSONObject channelJson = new JSONObject();
+			channelJson.put("id", channel.getId());
+			channelJson.put("channelName", channel.getName().substring(1));
+			channelArray.add(channelJson);
+		}
+		
+		return channelArray;
 	}	
+	
+	
 	public JSONArray getMockupChannels() {
 			JSONArray channelList = new JSONArray();
 
 			JSONObject daily = new JSONObject();
 			daily.put("id", "1");
-			daily.put("type", "kanal 1");
+			daily.put("type", "general mockup");
 			
 			JSONObject weekly = new JSONObject();
 			weekly.put("id", "2");
-			weekly.put("type", "kanal 2");
+			weekly.put("type", "random mockup");
 			
 			JSONObject monthly = new JSONObject();
 			monthly.put("id", "3");
@@ -114,15 +151,29 @@ public class SlackService {
 
 	public void createPoll(Poll poll, List<Choice> choiceList, String channelId) {
 		//preparing and sending to slack
-		HashMap<Integer, String> choicesValuesToNumbersMap = new HashMap<>();
+		HashMap<Integer, String> choicesMap = new HashMap<>();
 		for (Choice choice : choiceList) {
-			choicesValuesToNumbersMap.put(choice.getChoiceId(), choice.getChoiceValue());
+			choicesMap.put(choice.getChoiceId(), choice.getChoiceValue());
 		}
 		try {
-			slackClientApi.sendMessagePoll(channelId, poll.getTitle(), choicesValuesToNumbersMap, poll.getPollUuid());
+			//slackClientApi.createPoll(channelId, poll.getTitle(), choicesMap, poll.getPollUuid());
+			// MISSING DATE
 		}catch (Exception e) {
 			throw new BaseException("Couldn't send poll to slack");
 		}
+		
+	}
+
+	public void createAVote(String userId, Integer choiceId, UUID pollId) {
+		PollResult pollResult = pollResultsRepository.findByUserIdAndPollId(userId, pollId);
+		System.out.println(pollResult);
+		if(pollResult == null) {
+			pollResult = new PollResult(userId, choiceId, pollId);
+		}else {
+			pollResult.setChoiceId(choiceId);
+		}
+		
+		pollResultsRepository.save(pollResult);
 		
 	}
 }	

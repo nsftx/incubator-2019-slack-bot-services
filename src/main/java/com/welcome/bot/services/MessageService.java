@@ -14,7 +14,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,8 +29,10 @@ import com.welcome.bot.domain.Message;
 import com.welcome.bot.domain.Trigger;
 import com.welcome.bot.domain.User;
 import com.welcome.bot.exception.ResourceNotFoundException;
+import com.welcome.bot.exception.base.BaseException;
 import com.welcome.bot.exception.message.MessageNotFoundException;
 import com.welcome.bot.exception.message.MessageValidationException;
+import com.welcome.bot.exception.user.UserNotFoundException;
 import com.welcome.bot.models.MessageCreateDTO;
 import com.welcome.bot.models.MessageDTO;
 import com.welcome.bot.models.TriggerDTO;
@@ -48,17 +54,20 @@ public class MessageService {
 	@Autowired
 	private UserRepository userRepository;
 	
-	
-	public Page<MessageDTO> getAllMessages(Pageable pageParam, UserPrincipal userPrincipal){
-		User user = userRepository.findById(userPrincipal.getId())
-				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+	public Page<MessageDTO> getAllMessages(Pageable pageParam){
+		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		User user = userRepository.findById(principal.getId())
+				.orElseThrow(() -> new UserNotFoundException(principal.getId()));
 		
 		Page<Message> messagePage = null;
 		
-		if(user.getRole().equals("ADMIN")) {
+		String role = principal.getAuthorities().toString();
+		
+		if(role.equals("[ROLE_ADMIN]")) {
 			messagePage = messageRepository.findAllByDeleted(pageParam, false);
 		}
-		else if(user.getRole().equals("USER")) {
+		else if(role.equals("[ROLE_USER]")) {
 			messagePage = messageRepository.findAllByUserAndDeleted(pageParam, user, false);
 		}
 		
@@ -70,9 +79,6 @@ public class MessageService {
 
 		//creating Page with DTO
 		Page<MessageDTO> messageDTOPage = new PageImpl<MessageDTO>(messageDTOs, pageParam, messagePage.getTotalElements());
-		System.out.println(messageDTOs);
-		System.out.println(pageParam);
-		System.out.println(messagePage.getTotalElements());
 		return messageDTOPage;
 	}
 	
@@ -84,13 +90,20 @@ public class MessageService {
 		return messageDTO;
 	}
 	
-	public @ResponseBody MessageDTO createMessage(MessageCreateDTO messageModel, UserPrincipal userPrincipal) {
-		//throws exception if validation don't pass
-		validateMessageInput(messageModel);
+	public @ResponseBody MessageDTO createMessage(MessageCreateDTO messageModel) {
+		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		User user = userRepository.findById(userPrincipal.getId())
-				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+		try {
+			validateMessageInput(messageModel);
+			validateMessageDuplicates(messageModel);
+		}
+		catch (MessageValidationException messageValidationException) {
+			throw messageValidationException;
+		}
 		
+		User user = userRepository.findById(principal.getId())
+				.orElseThrow(() -> new UserNotFoundException(principal.getId()));
+	
 		Message message = new Message(messageModel.getTitle(), messageModel.getText(), user);
 		
 		//save message
@@ -98,7 +111,6 @@ public class MessageService {
 				
 		//set attributes to message DTO
 		MessageDTO messageDTO = convertToDto(message);
-		System.out.println(messageDTO);
 							
 		//return https status with header "location" and response body
 		return messageDTO;
@@ -113,13 +125,18 @@ public class MessageService {
 		Message message = messageRepository.findById(id)
 				.orElseThrow(() -> new MessageNotFoundException(id));
 
-		//throws exception if not validated
-		if(!messageModel.getTitle().equals(message.getTitle())) {
-			validateMessageDuplicates(messageModel);
+		try {
+			validateMessageInput(messageModel);
+			if(!messageModel.getTitle().equals(message.getTitle())) {
+				validateMessageDuplicates(messageModel);
+			}
 		}
-		//throws exceptioon
-		validateMessageInput(messageModel);
+		catch (MessageValidationException e) {
+			throw new MessageValidationException(e.getMessage());
+		}
 
+		
+		
 		//set updated attributes of message
 		message.setTitle(messageModel.getTitle());
 		message.setText(messageModel.getText());
@@ -140,34 +157,36 @@ public class MessageService {
 		Message message = messageRepository.findById(id)
 				.orElseThrow(() -> new MessageNotFoundException(id));
 		
+		//delete message
+		softDelete(message);
+		
 		//deletes all triggers connected with message
 		triggerService.deleteAllTriggersByMessage(message);
 		
 		//deletes all scheduals connected with message
 		scheduleService.deleteAllSchedulesByMessage(message);
-
-		//delete message
-		softDelete(message);
+		
+		
 		
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 	}	
 	
 	private void softDelete(Message message) {
-		message.setDeleted(true);
+		message.setDeleted();
 		messageRepository.save(message);
 	}
 	
 	//validate message input
-	private void validateMessageInput(MessageCreateDTO messageModel) throws MessageValidationException{
+	private void validateMessageInput(MessageCreateDTO messageModel) {
 		if(messageModel.getTitle().length() < 5 || messageModel.getTitle().length() > 30) {
 			throw new MessageValidationException(messageModel.getTitle());
 		}
 		if(messageModel.getText().length() < 20) {
 			throw new MessageValidationException(messageModel.getText());
 		}
-
 	}
-	private void validateMessageDuplicates(MessageCreateDTO messageModel) throws MessageValidationException {
+	
+	private void validateMessageDuplicates(MessageCreateDTO messageModel) {
 		List<Message> msglist = messageRepository.findAllByTitle(messageModel.getTitle());;
 		if(!msglist.isEmpty()) {
 			throw new MessageValidationException(messageModel.getTitle(), "Message is duplicate");
