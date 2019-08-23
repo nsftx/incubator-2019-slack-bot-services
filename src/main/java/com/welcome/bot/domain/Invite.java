@@ -9,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.welcome.bot.models.Language;
 import com.welcome.bot.models.Theme;
 
 
