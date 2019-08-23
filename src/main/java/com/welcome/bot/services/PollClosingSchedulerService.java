@@ -1,6 +1,5 @@
 package com.welcome.bot.services;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +19,7 @@ public class PollClosingSchedulerService {
 	PollService pollService;
 
 	@Scheduled(cron = "0 * * * * ?")
-	public void scheduleTaskUsingCronExpression() throws SlackApiException {
-		// TEST
-		System.out.println("SCHEDULED CRON - " + new Date());
-
+	public void scheduleCheckPollFinished() throws SlackApiException {
 		List<Poll> pollList = pollService.getActivePolls();
 
 		String text = "Thank You for voting! POLL is closed :)";

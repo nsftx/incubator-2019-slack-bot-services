@@ -28,7 +28,6 @@ public class PayloadElement {
 	@JsonProperty("alt_text")
 	private String alt_text;
 
-	// Constructor
 	public PayloadElement() {}
 
 	public String getType() {

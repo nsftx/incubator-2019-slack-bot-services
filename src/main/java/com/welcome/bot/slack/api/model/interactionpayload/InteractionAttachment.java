@@ -13,12 +13,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 	"color",
 	"fallback"
 })
-public class Attachment {
+public class InteractionAttachment {
 
 	@JsonProperty("id")
 	private Integer id;
 	@JsonProperty("blocks")
-	private List<Block> blocks = null;
+	private List<InteractionBlock> blocks = null;
 	@JsonProperty("color")
 	private String color;
 	@JsonProperty("fallback")
@@ -31,10 +31,10 @@ public class Attachment {
 		this.id = id;
 	}
 
-	public List<Block> getBlocks() {
+	public List<InteractionBlock> getBlocks() {
 		return blocks;
 	}
-	public void setBlocks(List<Block> blocks) {
+	public void setBlocks(List<InteractionBlock> blocks) {
 		this.blocks = blocks;
 	}
 

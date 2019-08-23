@@ -23,7 +23,6 @@ public class SlackController {
 	@PostMapping("/api/slimp/incoming-event-hook")
 	@ResponseStatus(HttpStatus.OK)
 	public @ResponseBody String eventHandler(@RequestBody EventPayload event) {
-
 		if(event.getType().equals("url_verification")) {
 			return slackEventService.handleEvent(event);
 		} else {

@@ -1,7 +1,5 @@
 package com.welcome.bot.slack.api.model.interactionpayload;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -9,20 +7,20 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
 	"type",
-	"block_id",
+	"action_id",
 	"text",
-	"elements"
+	"value"
 })
-public class Block {
+public class InteractionElement {
 
 	@JsonProperty("type")
 	private String type;
-	@JsonProperty("block_id")
-	private String blockId;
+	@JsonProperty("action_id")
+	private String actionId;
 	@JsonProperty("text")
-	private Text text;
-	@JsonProperty("elements")
-	private List<Element> elements = null;
+	private InteractionText text;
+	@JsonProperty("value")
+	private String value;
 
 	public String getType() {
 		return type;
@@ -31,24 +29,24 @@ public class Block {
 		this.type = type;
 	}
 
-	public String getBlockId() {
-		return blockId;
+	public String getActionId() {
+		return actionId;
 	}
-	public void setBlockId(String blockId) {
-		this.blockId = blockId;
+	public void setActionId(String actionId) {
+		this.actionId = actionId;
 	}
 
-	public Text getText() {
+	public InteractionText getText() {
 		return text;
 	}
-	public void setText(Text text) {
+	public void setText(InteractionText text) {
 		this.text = text;
 	}
 
-	public List<Element> getElements() {
-		return elements;
+	public String getValue() {
+		return value;
 	}
-	public void setElements(List<Element> elements) {
-		this.elements = elements;
+	public void setValue(String value) {
+		this.value = value;
 	}
 }

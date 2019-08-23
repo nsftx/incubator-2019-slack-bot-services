@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 	"bot_id",
 	"attachments"
 })
-public class Message {
+public class InteractionMessage {
 
 	@JsonProperty("type")
 	private String type;
@@ -31,7 +31,7 @@ public class Message {
 	@JsonProperty("bot_id")
 	private String botId;
 	@JsonProperty("attachments")
-	private List<Attachment> attachments = null;
+	private List<InteractionAttachment> attachments = null;
 
 	public String getType() {
 		return type;
@@ -75,10 +75,10 @@ public class Message {
 		this.botId = botId;
 	}
 
-	public List<Attachment> getAttachments() {
+	public List<InteractionAttachment> getAttachments() {
 		return attachments;
 	}
-	public void setAttachments(List<Attachment> attachments) {
+	public void setAttachments(List<InteractionAttachment> attachments) {
 		this.attachments = attachments;
 	}
 }

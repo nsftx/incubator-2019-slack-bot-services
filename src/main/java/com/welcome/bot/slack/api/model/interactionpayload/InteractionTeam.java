@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 	"id",
 	"domain"
 })
-public class Team {
+public class InteractionTeam {
 
 	@JsonProperty("id")
 	private String id;

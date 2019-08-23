@@ -37,7 +37,6 @@ public class MessagePayload {
 	@JsonProperty("ts")
 	private String ts;
 
-	// Constructor
 	public MessagePayload() {}
 
 	public String getChannel() {

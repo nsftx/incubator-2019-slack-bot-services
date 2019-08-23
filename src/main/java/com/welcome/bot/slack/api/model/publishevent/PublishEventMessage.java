@@ -7,18 +7,7 @@ public class PublishEventMessage {
 	private String channel;
 	private EventType eventType;
 	private String user;
-	
-	//TODO - TEST/DELETE
-	private String txt;
-	public String getTxt() {
-		return txt;
-	}
-	public void setTxt(String txt) {
-		this.txt = txt;
-	}
-	//TODO - TEST/DELETE (ABOVE)
 
-	// Constructor
 	public PublishEventMessage() {}
 
 	public String getChannel() {
