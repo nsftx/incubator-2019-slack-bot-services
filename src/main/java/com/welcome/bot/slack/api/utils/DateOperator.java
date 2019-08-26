@@ -18,14 +18,12 @@ public class DateOperator {
 		List<Date> repeatDates = new ArrayList<>();
 		Calendar c = Calendar.getInstance();
 		c.setTime(date);
-
 		int year = c.get(Calendar.YEAR);
 		int month = c.get(Calendar.MONTH);
 		int weekDay = c.get(Calendar.DAY_OF_WEEK);
 
 		int i = c.get(Calendar.DAY_OF_MONTH);
 		int limit = i+90;
-
 		for(int j=i;j<limit;j++) {
 			c.set(year, month, j);
 			int nextWeekDay = c.get(Calendar.DAY_OF_WEEK);

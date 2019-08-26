@@ -29,10 +29,9 @@ public class Channel {
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	@Override
 	public String toString() {
 		return "Channel [id=" + id + ", name=" + name + "]";
 	}
-	
-	
 }

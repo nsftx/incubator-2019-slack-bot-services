@@ -66,9 +66,6 @@ public class SlackApiEventListener {
 		Integer choiceId = Integer.parseInt(interactionData.getChoiceID());
 		UUID pollId = interactionData.getPollID();
 		
-		String timestamp = interactionData.getTimestamp();
-		System.out.println("IN HANDLE INTERACTION, INTERACTION TS (TIMESTAMP) IS : " + timestamp);
-		
 		String combinedResponse = "RESULT:\nText: " + text + "\nUser: " + user + "\nChoice Selected: " + choice + "\nChoice ID: " + choiceId + "\nBlock ID: " + pollId;
 		
 		slackService.createAVote(user, choiceId, pollId);

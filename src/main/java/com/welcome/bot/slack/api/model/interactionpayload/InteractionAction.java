@@ -6,28 +6,27 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-	"type",
 	"action_id",
+	"block_id",
 	"text",
-	"value"
+	"type",
+	"value",
+	"action_ts"
 })
-public class Element {
+public class InteractionAction {
 
-	@JsonProperty("type")
-	private String type;
 	@JsonProperty("action_id")
 	private String actionId;
+	@JsonProperty("block_id")
+	private String blockId;
 	@JsonProperty("text")
-	private Text text;
+	private InteractionText text;
+	@JsonProperty("type")
+	private String type;
 	@JsonProperty("value")
 	private String value;
-
-	public String getType() {
-		return type;
-	}
-	public void setType(String type) {
-		this.type = type;
-	}
+	@JsonProperty("action_ts")
+	private String actionTs;
 
 	public String getActionId() {
 		return actionId;
@@ -36,11 +35,25 @@ public class Element {
 		this.actionId = actionId;
 	}
 
-	public Text getText() {
+	public String getBlockId() {
+		return blockId;
+	}
+	public void setBlockId(String blockId) {
+		this.blockId = blockId;
+	}
+
+	public InteractionText getText() {
 		return text;
 	}
-	public void setText(Text text) {
+	public void setText(InteractionText text) {
 		this.text = text;
+	}
+
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getValue() {
@@ -48,5 +61,12 @@ public class Element {
 	}
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	public String getActionTs() {
+		return actionTs;
+	}
+	public void setActionTs(String actionTs) {
+		this.actionTs = actionTs;
 	}
 }

@@ -33,7 +33,6 @@ public class PayloadBlock {
 	@JsonProperty("block_id")
 	private String block_id;
 
-	// Constructor
 	public PayloadBlock() {}
 
 	public PayloadElement getAccesosory() {

@@ -116,8 +116,7 @@ public class MessageSender {
 			while ((responseLine = br.readLine()) != null) {
 				responseBuilder.append(responseLine.trim());
 			}
-			System.out.println("SLACK RESPONSE -> " + responseBuilder.toString()); // TODO - TEST/DELETE
-
+			// to check response, print responseBuilder here
 			response = new JSONObject(responseBuilder.toString());
 			br.close();
 		} catch (IOException e) {
@@ -137,7 +136,6 @@ public class MessageSender {
 			while ((responseLine = br.readLine()) != null) {
 				responseBuilder.append(responseLine.trim());
 			}
-			System.out.println("SLACK SCHEDULE RESPONSE -> " + responseBuilder.toString()); // TODO - TEST/DELETE
 			response = new JSONObject(responseBuilder.toString());
 			br.close();
 		} catch (IOException e) {

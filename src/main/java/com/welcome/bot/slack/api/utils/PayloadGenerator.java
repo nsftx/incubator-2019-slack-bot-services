@@ -16,7 +16,6 @@ public class PayloadGenerator {
 
 	DateOperator dateOperator = new DateOperator();
 
-	// Constructor
 	public PayloadGenerator() {}
 
 	public MessagePayload getMessagePayload(String channel, String text) {
@@ -71,7 +70,7 @@ public class PayloadGenerator {
 		List<PayloadBlock> blocks = new ArrayList<>();
 
 		boolean imageExists = false;
-		
+
 		if(text.contains("[img]") && text.contains("[/img]")) {
 			imageExists = true;
 			String[] imageData = extractImageData(text);
@@ -119,7 +118,6 @@ public class PayloadGenerator {
 	}
 
 	private MessagePayload generateMessagePollPayload(String channel, String text, HashMap<Integer,String> choices, String pollID) {
-
 		MessagePayload payload = new MessagePayload();
 		PayloadAttachment attachment = new PayloadAttachment();
 		PayloadBlock pollMessage = new PayloadBlock();

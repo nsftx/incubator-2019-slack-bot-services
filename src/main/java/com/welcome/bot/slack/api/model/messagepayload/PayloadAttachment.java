@@ -18,7 +18,6 @@ public class PayloadAttachment {
 	@JsonProperty("blocks")
 	private List<PayloadBlock> blocks = null;
 
-	// Constructor
 	public PayloadAttachment() {}
 
 	public String getColor() {

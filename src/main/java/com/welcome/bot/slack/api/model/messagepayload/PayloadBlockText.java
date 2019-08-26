@@ -16,7 +16,6 @@ public class PayloadBlockText {
 	@JsonProperty("text")
 	private String text;
 
-	// Constructor
 	public PayloadBlockText() {}
 
 	public String getType() {

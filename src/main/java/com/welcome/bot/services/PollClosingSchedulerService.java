@@ -1,6 +1,5 @@
 package com.welcome.bot.services;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,37 +19,21 @@ public class PollClosingSchedulerService {
 	PollService pollService;
 
 	@Scheduled(cron = "0 * * * * ?")
-	public void scheduleTaskUsingCronExpression() throws SlackApiException {
-		// TEST
 
-		//System.out.println("SCHEDULED CRON - " + currentDate);
-	    
-	    // 2)
-//	    List<Poll> pollList = pollService.getActivePolls();
-	    
-	    // 3)
-//	    String text = "Thank You for voting! POLL is finished :)";
-//	    for(Poll p : pollList) {
-//	    	if(p.getPollId() < 1) {
-//	    		slackService.updateMessage(p.getChannel(), text, p.getTimestamp());
-//	    	}
-//	    }
+	public void scheduleCheckPollFinished() throws SlackApiException {
+		List<Poll> pollList = pollService.getActivePolls();
 
-//		System.out.println("SCHEDULED CRON - " + new Date());
-//
-//		List<Poll> pollList = pollService.getActivePolls();
-//
-//		String text = "Thank You for voting! POLL is closed :)";
-//		if(!pollList.isEmpty()) {
-//			pollService.deactivatePollsByList(pollList);
-//			for(Poll p : pollList) {
-//				try {
-//					slackService.updateMessage(p.getChannel(), text, p.getSlackTimestamp());
-//				} catch (SlackApiException e) {
-//					throw new SlackApiException("Poll closing failed. Cause: " + e.getMessage());
-//				}
-//			}
-//		}
+		String text = "Thank You for voting! POLL is closed :)";
+		if(!pollList.isEmpty()) {
+			pollService.deactivatePollsByList(pollList);
+			for(Poll p : pollList) {
+				try {
+					slackService.updateMessage(p.getChannel(), text, p.getSlackTimestamp());
+				} catch (SlackApiException e) {
+					throw new SlackApiException("Poll closing failed. Cause: " + e.getMessage());
+				}
+			}
+		}
 
 	}
 }

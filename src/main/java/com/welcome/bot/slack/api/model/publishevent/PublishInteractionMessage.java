@@ -9,13 +9,9 @@ public class PublishInteractionMessage {
 	private String choiceID;
 	private UUID pollID;
 	private String user;
-
-	// TODO - TEST/DELETE
 	private String text;
-	private String timestamp;
 
 	public PublishInteractionMessage() {}
-
 
 	public String getChannel() {
 		return channel;
@@ -52,17 +48,10 @@ public class PublishInteractionMessage {
 		this.user = user;
 	}
 
-	// TODO - TEST/DELETE
 	public String getText() {
 		return text;
 	}
 	public void setText(String text) {
 		this.text = text;
-	}
-	public String getTimestamp() {
-		return timestamp;
-	}
-	public void setTimestamp(String timestamp) {
-		this.timestamp = timestamp;
 	}
 }

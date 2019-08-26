@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 	"verbatim",
 	"emoji"
 })
-public class Text {
+public class InteractionText {
 
 	@JsonProperty("type")
 	private String type;

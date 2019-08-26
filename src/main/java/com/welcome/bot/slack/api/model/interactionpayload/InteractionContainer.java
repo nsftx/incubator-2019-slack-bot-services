@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 	"type",
 	"is_app_unfurl"
 })
-public class Container {
+public class InteractionContainer {
 
 	@JsonProperty("attachment_id")
 	private Integer attachmentId;

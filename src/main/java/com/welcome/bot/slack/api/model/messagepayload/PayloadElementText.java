@@ -19,7 +19,6 @@ public class PayloadElementText {
 	@JsonProperty("emoji")
 	private Boolean emoji;
 
-	// Constructor
 	public PayloadElementText() {}
 
 	public String getType() {

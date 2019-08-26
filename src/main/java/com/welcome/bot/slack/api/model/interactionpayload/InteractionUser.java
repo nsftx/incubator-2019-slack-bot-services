@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 	"name",
 	"team_id"
 })
-public class User {
+public class InteractionUser {
 
 	@JsonProperty("id")
 	private String id;
