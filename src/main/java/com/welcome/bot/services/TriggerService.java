@@ -2,6 +2,7 @@ package com.welcome.bot.services;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -13,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -33,6 +36,7 @@ import com.welcome.bot.models.TriggerCreateDTO;
 import com.welcome.bot.repository.MessageRepository;
 import com.welcome.bot.repository.TriggerRepository;
 import com.welcome.bot.repository.UserRepository;
+import com.welcome.bot.security.CurrentUser;
 import com.welcome.bot.security.UserPrincipal;
 
 @Service
@@ -76,23 +80,22 @@ public class TriggerService {
 	}
 	
 	//get all triggers
-	public Page<TriggerDTO> getAllTriggers(Pageable pageable){
-		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	public Page<TriggerDTO> getAllTriggers(Pageable pageable, UserPrincipal userPrincipal){
+		//UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		User user = userRepository.findById(principal.getId())
-				.orElseThrow(() -> new UserNotFoundException(principal.getId()));
-		
-		String role = principal.getAuthorities().toString();
+		User user = userRepository.findById(userPrincipal.getId())
+				.orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
 		
 		Page<Trigger> triggerPage = null;
-
-		if(role.equals("[ROLE_ADMIN]")) {
+		
+		Collection<? extends GrantedAuthority> autorities = userPrincipal.getAuthorities();
+		
+		if(autorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
 			triggerPage = triggerRepository.findAllByDeleted(pageable, false);
 		}
-		
-		else if(role.equals("[ROLE_USER]")) {
+		else if(autorities.contains(new SimpleGrantedAuthority("ROLE_USER"))) {
 			triggerPage = triggerRepository.findAllByUserAndDeleted(pageable, user, false);
-		}	
+		}
 		
 		//preparing data for mapping
 		List<Trigger> triggerList = triggerPage.getContent();
@@ -117,11 +120,11 @@ public class TriggerService {
 	
 	
 	//create trigger
-	public TriggerDTO createTrigger(TriggerCreateDTO triggerModel) {
-		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	public TriggerDTO createTrigger(TriggerCreateDTO triggerModel, UserPrincipal userPrincipal) {
+		//UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		User user = userRepository.findById(principal.getId())
-				.orElseThrow(() -> new UserNotFoundException(principal.getId()));
+		User user = userRepository.findById(userPrincipal.getId())
+				.orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
 		
 		Message message = messageRepository.findById(triggerModel.getMessageId())
 				.orElseThrow(() -> new MessageNotFoundException(triggerModel.getMessageId()));
@@ -163,7 +166,8 @@ public class TriggerService {
 	
 	//delete trigger 
 	public ResponseEntity<Trigger> deleteTrigger(Integer triggerId) {
-		Trigger trigger = triggerRepository.findById(triggerId).orElseThrow();
+		Trigger trigger = triggerRepository.findById(triggerId)
+				.orElseThrow(() -> new TriggerNotFoundException(triggerId));
 		
 		if(trigger.isDeleted()) {
 			throw new TriggerNotFoundException(triggerId);
@@ -171,7 +175,6 @@ public class TriggerService {
 		
 		softDelete(trigger);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-
 	}
 	
 	private void softDelete(Trigger trigger) {

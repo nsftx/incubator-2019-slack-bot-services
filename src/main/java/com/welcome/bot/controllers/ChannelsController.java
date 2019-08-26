@@ -25,8 +25,8 @@ public class ChannelsController {
 	@GetMapping("/api/channels")
 	public JSONArray getChannelsList() {
 		//ne radi dok se ne poveze sa slackom
-		//return slackService.getChannelsList();
-	    return slackService.getMockupChannels();
+		return slackService.getChannelsList();
+	    //return slackService.getMockupChannels();
 	}
 	
 	

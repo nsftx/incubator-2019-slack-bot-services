@@ -26,9 +26,7 @@ public class ChoiceService {
 	ModelMapper modelMapper;
 	
 	public List<Choice> createChoices(Poll poll, List<Choice> choiceList){
-		Integer index = 0;
 		for (Choice choice : choiceList) {
-			choice.setChoiceId(++index);
 			choice.setPoll(poll);
 			choiceRepository.save(choice);
 		}

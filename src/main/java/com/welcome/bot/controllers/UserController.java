@@ -171,8 +171,6 @@ public class UserController {
     	                .body(new ApiResponse(true, "User registered successfully@"));
     	    }
 
-   
-    
     
 }
 

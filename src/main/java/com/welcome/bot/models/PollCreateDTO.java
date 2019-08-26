@@ -7,7 +7,7 @@ import com.welcome.bot.domain.Choice;
 
 public class PollCreateDTO {
 	String title;
-	String channel;
+	String channelId;
 	boolean active;
 	Date activeUntil;
 	
@@ -17,8 +17,8 @@ public class PollCreateDTO {
 		return title;
 	}
 
-	public String getChannel() {
-		return channel;
+	public String getChannelId() {
+		return channelId;
 	}
 
 	public boolean isActive() {
@@ -37,8 +37,8 @@ public class PollCreateDTO {
 		this.title = title;
 	}
 
-	public void setChannel(String channel) {
-		this.channel = channel;
+	public void setChannelId(String channelId) {
+		this.channelId = channelId;
 	}
 
 	public void setActive(boolean active) {
