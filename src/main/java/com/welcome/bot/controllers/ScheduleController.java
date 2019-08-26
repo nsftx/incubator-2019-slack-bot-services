@@ -31,12 +31,12 @@ public class ScheduleController {
 	ScheduleService scheduleService;
 	
 	@PostMapping("/api/schedules")
-	public ScheduleDTO createSchedule(@RequestBody ScheduleCreateDTO scheduleModel){
-		return scheduleService.createSchedule(scheduleModel);
+	public ScheduleDTO createSchedule(@RequestBody ScheduleCreateDTO scheduleModel, @CurrentUser UserPrincipal userPrincipal){
+		return scheduleService.createSchedule(scheduleModel, userPrincipal);
 	}
 	@GetMapping("/api/schedules")
-	public Page<ScheduleDTO> getAllSchedules(Pageable pageable) {
-		return scheduleService.getAllSchedules(pageable);
+	public Page<ScheduleDTO> getAllSchedules(Pageable pageable, @CurrentUser UserPrincipal userPrincipal) {
+		return scheduleService.getAllSchedules(pageable, userPrincipal);
 	}
 	@GetMapping("/api/schedules/{scheduleId}")
 	public ScheduleDTO getSchedule(@PathVariable Integer scheduleId) {

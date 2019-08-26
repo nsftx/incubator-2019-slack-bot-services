@@ -10,7 +10,6 @@ public class SlackCommunicationException extends BaseException{
 
 	public SlackCommunicationException(String message, HttpStatus status) {
 		super("Somethings wrong with Slack communication: ", HttpStatus.BAD_REQUEST);
-		// TODO Auto-generated constructor stub
 	}
 
 	public SlackCommunicationException(String message, Throwable cause) {
@@ -19,7 +18,7 @@ public class SlackCommunicationException extends BaseException{
 
 	public SlackCommunicationException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
+		
 	}
 	
 }

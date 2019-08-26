@@ -2,6 +2,7 @@ package com.welcome.bot.services;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -14,6 +15,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -39,6 +42,7 @@ import com.welcome.bot.models.TriggerDTO;
 import com.welcome.bot.models.UserDTO;
 import com.welcome.bot.repository.MessageRepository;
 import com.welcome.bot.repository.UserRepository;
+import com.welcome.bot.security.CurrentUser;
 import com.welcome.bot.security.UserPrincipal;
 
 @Service
@@ -54,20 +58,20 @@ public class MessageService {
 	@Autowired
 	private UserRepository userRepository;
 	
-	public Page<MessageDTO> getAllMessages(Pageable pageParam){
-		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	public Page<MessageDTO> getAllMessages(Pageable pageParam, UserPrincipal userPrincipal){
+		//UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		User user = userRepository.findById(principal.getId())
-				.orElseThrow(() -> new UserNotFoundException(principal.getId()));
+		User user = userRepository.findById(userPrincipal.getId())
+				.orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
 		
 		Page<Message> messagePage = null;
 		
-		String role = principal.getAuthorities().toString();
+		Collection<? extends GrantedAuthority> autorities = userPrincipal.getAuthorities();
 		
-		if(role.equals("[ROLE_ADMIN]")) {
+		if(autorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
 			messagePage = messageRepository.findAllByDeleted(pageParam, false);
 		}
-		else if(role.equals("[ROLE_USER]")) {
+		else if(autorities.contains(new SimpleGrantedAuthority("ROLE_USER"))) {
 			messagePage = messageRepository.findAllByUserAndDeleted(pageParam, user, false);
 		}
 		
@@ -90,8 +94,8 @@ public class MessageService {
 		return messageDTO;
 	}
 	
-	public @ResponseBody MessageDTO createMessage(MessageCreateDTO messageModel) {
-		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	public @ResponseBody MessageDTO createMessage(MessageCreateDTO messageModel, UserPrincipal userPrincipal) {
+		//UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
 		try {
 			validateMessageInput(messageModel);
@@ -101,8 +105,8 @@ public class MessageService {
 			throw messageValidationException;
 		}
 		
-		User user = userRepository.findById(principal.getId())
-				.orElseThrow(() -> new UserNotFoundException(principal.getId()));
+		User user = userRepository.findById(userPrincipal.getId())
+				.orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
 	
 		Message message = new Message(messageModel.getTitle(), messageModel.getText(), user);
 		

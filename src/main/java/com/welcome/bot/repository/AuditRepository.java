@@ -1,5 +1,7 @@
 package com.welcome.bot.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +14,5 @@ public interface AuditRepository extends JpaRepository<Audit, Integer>{
 	
 	Page<Audit> findAllByUser(Pageable pageable, User user);
 	
-	// NOTIFICATION TODO
-	// List<Audit> findAllByUserAndSeen(User user, boolean seen);
+	List<Audit> findAllByUserAndSeen(User user, boolean seen);
 }

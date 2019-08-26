@@ -19,6 +19,7 @@ public class Poll {
 	private Integer pollId;
 	
 	private String title;
+	private String channelId;
 	private String channel;
 	private boolean active;
 	private Date createdAt;
@@ -29,10 +30,11 @@ public class Poll {
 	@Type(type="org.hibernate.type.UUIDCharType")
 	private UUID pollUuid;
 	
-	public Poll(String title, String channel, boolean active, Date activeUntil) {
+	public Poll(String title, String channelId, String channel, Date activeUntil) {
 		this.title = title;
+		this.channelId = channelId;
 		this.channel = channel;
-		this.active = active;
+		this.active = true;
 		this.createdAt = new Date();
 		this.pollUuid = UUID.randomUUID();
 		this.deleted = false;
@@ -51,10 +53,14 @@ public class Poll {
 		return title;
 	}
 
+	public String getChannelId() {
+		return channelId;
+	}
+
 	public String getChannel() {
 		return channel;
 	}
-
+	
 	public boolean isActive() {
 		return active;
 	}
@@ -87,10 +93,14 @@ public class Poll {
 		this.title = title;
 	}
 
+	public void setChannelId(String channelId) {
+		this.channelId = channelId;
+	}
+
 	public void setChannel(String channel) {
 		this.channel = channel;
 	}
-
+	
 	public void setActive(boolean active) {
 		this.active = active;
 	}
