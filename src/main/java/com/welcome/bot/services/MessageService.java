@@ -64,7 +64,8 @@ public class MessageService {
 		User user = userRepository.findById(userPrincipal.getId())
 				.orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
 		
-		Page<Message> messagePage = null;
+		List<Message> temp = new ArrayList<>();
+		Page<Message> messagePage = new PageImpl<Message>(temp, pageParam, 0);
 		
 		Collection<? extends GrantedAuthority> autorities = userPrincipal.getAuthorities();
 		
