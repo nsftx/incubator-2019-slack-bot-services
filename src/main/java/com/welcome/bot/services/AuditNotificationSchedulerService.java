@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.welcome.bot.controllers.AuditController;
 import com.welcome.bot.domain.Audit;
 
 @Component
@@ -20,17 +19,17 @@ public class AuditNotificationSchedulerService {
 	public void scheduleCheckNewAuditNotifications() {
 		// TEST
 		System.out.println("SCHEDULED NOTIFICATION CRON - " + new Date());
-		System.out.println("SCHEDULED CRON | LOG COUNT IS " + AuditController.NEW_LOGS_COUNT);
+		System.out.println("SCHEDULED CRON | LOG COUNT IS " + AuditService.NEW_LOGS_COUNT);
 		// TEST ABOVE
 		
 		
-//		List<Audit> newAuditList = auditService.getAllLogsWhereSeenFalse();
+//		List<Audit> newAuditList = auditService.findAllWhereSeenFalse();
 //		if(!newAuditList.isEmpty()) {
 //			int count = newAuditList.size();
-//			AuditController.NEW_LOGS_COUNT += count;
+//			AuditService.NEW_LOGS_COUNT += count;
 //		}
 		
 		// TEST
-		AuditController.NEW_LOGS_COUNT++;
+		AuditService.NEW_LOGS_COUNT++;
 	}
 }

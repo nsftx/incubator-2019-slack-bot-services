@@ -38,7 +38,6 @@ public class AuditService {
 	
 	UserRepository userRepository;
 	
-	// NOTIFICATION
 	public static int NEW_LOGS_COUNT = 0;
 	
 	@Autowired

@@ -20,9 +20,6 @@ import reactor.core.publisher.Flux;
 @RestController
 public class AuditController {
 
-	public static int NEW_LOGS_COUNT = 0;
-
-
 	@Autowired
 	AuditService auditService;
 	
@@ -40,7 +37,7 @@ public class AuditController {
 			      .map(sequence -> ServerSentEvent.<String> builder()
 			        .id(String.valueOf(sequence))
 			          .event("new-log-event")
-			          .data(String.valueOf(NEW_LOGS_COUNT))
+			          .data(String.valueOf(AuditService.NEW_LOGS_COUNT))
 			          .build());
 	}
 }
