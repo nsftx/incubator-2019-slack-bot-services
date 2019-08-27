@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.welcome.bot.domain.Audit;
+import com.welcome.bot.security.UserPrincipal;
 
 @Component
 public class AuditNotificationSchedulerService {

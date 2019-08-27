@@ -104,5 +104,11 @@ public class Message {
 	public void setUser(User user) {
 		this.user = user;
 	}
-
+	
+	@Override
+	public String toString() {
+		return "Message [messageId=" + messageId + ", title=" + title + ", text=" + text + ", createdAt=" + createdAt
+				+ ", updatedAt=" + updatedAt + ", deleted=" + deleted + ", user=" + user + "]";
+	}
+	
 }
