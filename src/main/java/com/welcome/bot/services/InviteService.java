@@ -17,7 +17,6 @@ import com.welcome.bot.exception.ResourceNotFoundException;
 import com.welcome.bot.repository.InviteRepository;
 import com.welcome.bot.repository.UserRepository;
 @Service
-@Transactional
 public class InviteService {
 	 @Autowired
 	    InviteRepository inviteRepository;
@@ -30,7 +29,7 @@ public boolean sendInvite(String email) {
 	        SimpleMailMessage msg = new SimpleMailMessage();
 	        msg.setTo(email);
 	        msg.setSubject("You've been addedd to NSoft Welcome Bot application");
-	        msg.setText("Hello"+email+"\n You've been added to Nsoft Welcome Bot application. You can login to application here: http://welcome-bot.tk \n Please login with your google email and google password.");
+	        msg.setText("Hello "+ email+" \n You've been added to Nsoft Welcome Bot application. You can login to application here: http://welcome-bot.tk \n Please login with your google email and google password.");
 	        
 	        javaMailSender.send(msg);
 	        return true;
@@ -44,8 +43,8 @@ public boolean sendInvite(String email) {
 @Scheduled(fixedDelay = 900000)
 public void scheduleFixedDelayTask() {
 	List<User> users=userRepository.findAll();
-    for(User user:users) {
-    	if((user.getInvite().getSent())==false){
+    for(User user : users) {
+    	if((user.getInvite().isDelivered())){
     		if(sendInvite(user.getEmail())) {
     			Invite invite2=inviteRepository.findById(user.getInvite().getId()).orElseThrow(() -> new ResourceNotFoundException("Invite", "id", user.getInvite().getId()));
     	    	invite2.setSent(true);

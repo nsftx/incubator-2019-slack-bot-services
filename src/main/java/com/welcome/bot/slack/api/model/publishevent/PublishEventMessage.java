@@ -8,7 +8,6 @@ public class PublishEventMessage {
 	private EventType eventType;
 	private String user;
 
-	// Constructor
 	public PublishEventMessage() {}
 
 	public String getChannel() {

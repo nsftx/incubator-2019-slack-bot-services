@@ -8,18 +8,18 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-"client_msg_id",
-"type",
-"text",
-"user",
-"ts",
-"team",
-"channel",
-"event_ts",
-"channel_type",
-"is_moved",
-"actor_id",
-"inviter"
+	"client_msg_id",
+	"type",
+	"text",
+	"user",
+	"ts",
+	"team",
+	"channel",
+	"event_ts",
+	"channel_type",
+	"is_moved",
+	"actor_id",
+	"inviter"
 })
 public class EventItem {
 
@@ -69,7 +69,7 @@ public class EventItem {
 					String creator = channelInternal.get("creator").asText();
 					Boolean isShared = channelInternal.get("is_shared").asBoolean();
 					Boolean isOrgShared = channelInternal.get("is_org_shared").asBoolean();
-					
+
 					channel = new EventItemChannel(id, isChannel, name, nameNormalized, created, creator, isShared, isOrgShared);
 				} else {
 					channel = new EventItemChannel(id, isChannel, name, nameNormalized, created);
@@ -77,7 +77,7 @@ public class EventItem {
 			}
 		}
 	}
-	
+
 	public String getType() {
 		return type;
 	}
@@ -140,14 +140,14 @@ public class EventItem {
 	public void setInviter(String inviter) {
 		this.inviter = inviter;
 	}
-	
+
 	public Integer getIsMoved() {
 		return isMoved;
 	}
 	public void setIsMoved(Integer isMoved) {
 		this.isMoved = isMoved;
 	}
-	
+
 	public String getActorId() {
 		return actorId;
 	}

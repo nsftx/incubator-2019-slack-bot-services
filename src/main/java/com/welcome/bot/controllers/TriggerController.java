@@ -13,10 +13,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.welcome.bot.domain.Trigger;
 import com.welcome.bot.models.TriggerDTO;
+import com.welcome.bot.security.CurrentUser;
+import com.welcome.bot.security.UserPrincipal;
 import com.welcome.bot.models.TriggerCreateDTO;
 import com.welcome.bot.services.TriggerService;
 
@@ -35,8 +38,8 @@ public class TriggerController {
 	
 	//get all triggers
 	@GetMapping("/api/triggers")
-	public Page<TriggerDTO> getAllTriggers(Pageable pageable){
-		return triggerService.getAllTriggers(pageable);
+	public Page<TriggerDTO> getAllTriggers(Pageable pageable, @CurrentUser UserPrincipal userPrincipal){
+		return triggerService.getAllTriggers(pageable, userPrincipal);
 	}
 	
 	//get trigger by Message
@@ -47,13 +50,13 @@ public class TriggerController {
 	
 	//create trigger
 	@PostMapping("/api/triggers")
-	public TriggerDTO createTrigger(@RequestBody TriggerCreateDTO triggerModel) {
-		return triggerService.createTrigger(triggerModel);		
+	public TriggerDTO createTrigger(@RequestBody TriggerCreateDTO triggerModel, @CurrentUser UserPrincipal userPrincipal) {
+		return triggerService.createTrigger(triggerModel, userPrincipal);		
 	}
 	
 	@PutMapping("/api/triggers/{triggerId}")
-	public TriggerDTO updateTrigger(@PathVariable Integer triggerId, @RequestBody TriggerCreateDTO triggerModel) {
-		return triggerService.updateTrigger(triggerId, triggerModel);
+	public TriggerDTO updateTrigger(@PathVariable Integer triggerId, @RequestParam(name = "active") boolean active) {
+		return triggerService.updateTrigger(triggerId, active);
 	}
 	
 	@DeleteMapping("/api/triggers/{triggerId}")

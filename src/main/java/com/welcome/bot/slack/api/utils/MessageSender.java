@@ -28,12 +28,16 @@ public class MessageSender {
 		}
 		return status;
 	}
-	
+
 	public String sendPollGetPollTimestamp(HttpURLConnection slackConnection, String payload) {
 		String messageTimestamp = "";
 		JSONObject result = sendMessageReadResponse(slackConnection, payload);
 		try {
-			messageTimestamp = result.getString("ts");
+			if (result.getBoolean("ok")) {
+				messageTimestamp = result.getString("ts");
+			} else {
+				messageTimestamp = null;
+			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -47,7 +51,11 @@ public class MessageSender {
 		String scheduleID = "";
 		JSONObject result = sendMessageReadResponse(slackConnection, payload);
 		try {
-			scheduleID = result.getString("scheduled_message_id");
+			if (result.getBoolean("ok")) {
+				scheduleID = result.getString("scheduled_message_id");
+			} else {
+				scheduleID = null;
+			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -88,19 +96,17 @@ public class MessageSender {
 				channelList.add(c);
 			}
 		} catch (JSONException e) {
-			e.printStackTrace();
+			throw new JSONException(e);
 		}
 		return channelList;
 	}
 
 	private JSONObject sendMessageReadResponse(HttpURLConnection connection, String dataPayload) {
 		JSONObject response = new JSONObject();
-
 		try {
 			OutputStream os = connection.getOutputStream();
 			byte[] input = dataPayload.getBytes();
 			os.write(input, 0, input.length);
-
 			os.flush();
 			os.close();
 
@@ -110,10 +116,8 @@ public class MessageSender {
 			while ((responseLine = br.readLine()) != null) {
 				responseBuilder.append(responseLine.trim());
 			}
-			System.out.println("SLACK RESPONSE -> " + responseBuilder.toString()); // TODO - TEST/DELETE
-
+			// to check response, print responseBuilder here
 			response = new JSONObject(responseBuilder.toString());
-			
 			br.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -125,7 +129,6 @@ public class MessageSender {
 
 	private JSONObject getChannelsOrSchedulesList(HttpURLConnection connection) {
 		JSONObject response = new JSONObject();
-
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
 			StringBuilder responseBuilder = new StringBuilder();
@@ -133,9 +136,7 @@ public class MessageSender {
 			while ((responseLine = br.readLine()) != null) {
 				responseBuilder.append(responseLine.trim());
 			}
-
 			response = new JSONObject(responseBuilder.toString());
-
 			br.close();
 		} catch (IOException e) {
 			e.printStackTrace();

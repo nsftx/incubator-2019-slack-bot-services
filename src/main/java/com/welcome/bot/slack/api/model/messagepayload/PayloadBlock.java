@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 	"block_id"
 })
 public class PayloadBlock {
-	
+
 	@JsonProperty("type")
 	private String type;
 	@JsonProperty("text")
@@ -32,10 +32,9 @@ public class PayloadBlock {
 	private PayloadElement accesosory;
 	@JsonProperty("block_id")
 	private String block_id;
-	
-	// Constructor
+
 	public PayloadBlock() {}
-	
+
 	public PayloadElement getAccesosory() {
 		return accesosory;
 	}
@@ -77,7 +76,7 @@ public class PayloadBlock {
 	public void setElement(List<PayloadElement> element) {
 		this.element = element;
 	}
-	
+
 	public String getBlock_id() {
 		return block_id;
 	}

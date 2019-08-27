@@ -28,6 +28,7 @@ public class UserSettings {
 	 private String language;
 	  public UserSettings() {
 		  this.theme="Light";
+
 		  this.language="en";
 	    }
 	  public UserSettings(UserSettings userSettings) {

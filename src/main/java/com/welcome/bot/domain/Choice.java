@@ -6,19 +6,22 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+
 @Entity
 public class Choice {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer choiceId;
+	private Integer choiceDatabaseId;
 	
-	private String answer;
+	private Integer choiceId;
+	private String choiceValue;
 	
 	@ManyToOne
 	private Poll poll;
 
-	public Choice(String answer, Poll poll) {
-		this.answer = answer;
+	public Choice(Integer choiceId, String choiceValue, Poll poll) {
+		this.choiceId = choiceId;
+		this.choiceValue = choiceValue;
 		this.poll = poll;
 	}
 
@@ -26,24 +29,32 @@ public class Choice {
 
 	}
 
+	public Integer getChoiceDatabaseId() {
+		return choiceDatabaseId;
+	}
+
 	public Integer getChoiceId() {
 		return choiceId;
 	}
 
-	public String getAnswer() {
-		return answer;
+	public String getChoiceValue() {
+		return choiceValue;
 	}
 
 	public Poll getPoll() {
 		return poll;
 	}
 
+	public void setChoiceDatabaseId(Integer choiceDatabaseId) {
+		this.choiceDatabaseId = choiceDatabaseId;
+	}
+
 	public void setChoiceId(Integer choiceId) {
 		this.choiceId = choiceId;
 	}
 
-	public void setAnswer(String answer) {
-		this.answer = answer;
+	public void setChoiceValue(String choiceValue) {
+		this.choiceValue = choiceValue;
 	}
 
 	public void setPoll(Poll poll) {
@@ -52,6 +63,12 @@ public class Choice {
 
 	@Override
 	public String toString() {
-		return "Choice [choiceId=" + choiceId + ", answer=" + answer + ", poll=" + poll + "]";
+		return "Choice [choiceDatabaseId=" + choiceDatabaseId + ", choiceId=" + choiceId + ", choiceValue="
+				+ choiceValue + ", poll=" + poll + "]";
 	}
+
+
+
+
+	
 }

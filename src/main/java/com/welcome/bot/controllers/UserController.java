@@ -51,25 +51,31 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.CollectionUtils;
-
 @RestController
 @RequestMapping("/user")
 public class UserController {
-	@Autowired
-	private InviteService inviteService;
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private UserSettingsRepository userSettingsRepository;
-	@Autowired
-	InviteRepository inviteRepository;
-	@Autowired
-	UserService userService;
-	@Autowired
-	MessageSource messageSource;
-	private Properties prop = null;
 
-	@GetMapping("/translation")
+	 private final InviteService inviteService;
+	 private final UserRepository userRepository;
+     private final UserSettingsRepository userSettingsRepository;
+     private final MessageSource messageSource;
+     private final InviteRepository inviteRepository;
+     private final UserService userService;
+     private Properties prop = null;
+
+ 
+    public UserController(InviteService inviteService, UserRepository userRepository,
+			UserSettingsRepository userSettingsRepository, MessageSource messageSource,
+			InviteRepository inviteRepository, UserService userService) {
+		this.inviteService = inviteService;
+		this.userRepository = userRepository;
+		this.userSettingsRepository = userSettingsRepository;
+		this.messageSource = messageSource;
+		this.inviteRepository = inviteRepository;
+		this.userService = userService;
+}
+
+   @GetMapping("/translation")
 	@PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
 	public Map<String, String> translate() {
 		Map<String, String> data = new HashMap<String, String>();
@@ -90,6 +96,7 @@ public class UserController {
 			data.put(key, this.prop.getProperty(key));
 		}
 		return data;
+
 	}
 
 	@GetMapping("/me")
@@ -168,5 +175,6 @@ public class UserController {
 				.buildAndExpand(result.getId()).toUri();
 		return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully@"));
 	}
+
 
 }

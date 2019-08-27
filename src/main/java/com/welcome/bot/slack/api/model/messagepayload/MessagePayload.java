@@ -8,15 +8,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-"channel",
-"user",
-"post_at",
-"text",
-"time",
-"reminder",
-"scheduled_message_id",
-"ts",
-"attachments"
+	"channel",
+	"user",
+	"post_at",
+	"text",
+	"time",
+	"reminder",
+	"scheduled_message_id",
+	"ts",
+	"attachments"
 })
 public class MessagePayload {
 
@@ -37,9 +37,8 @@ public class MessagePayload {
 	@JsonProperty("ts")
 	private String ts;
 
-	// Constructor
 	public MessagePayload() {}
-	
+
 	public String getChannel() {
 		return channel;
 	}
@@ -53,14 +52,14 @@ public class MessagePayload {
 	public void setAttachments(List<PayloadAttachment> attachments) {
 		this.attachments = attachments;
 	}
-	
+
 	public String getPostAt() {
 		return post_at;
 	}
 	public void setPostAt(String post_at) {
 		this.post_at = post_at;
 	}
-	
+
 	public String getUser() {
 		return user;
 	}
@@ -88,7 +87,7 @@ public class MessagePayload {
 	public void setScheduledMessageId(String scheduled_message_id) {
 		this.scheduled_message_id = scheduled_message_id;
 	}
-	
+
 	public String getTs() {
 		return ts;
 	}

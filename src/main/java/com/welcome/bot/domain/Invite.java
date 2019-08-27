@@ -33,6 +33,9 @@ import javax.persistence.Table;
 		        
 		        
 		    }
+		public boolean isDelivered() {
+			  return this.sent;
+		  }
 		  public Long getId() {
 		        return id;
 		    }

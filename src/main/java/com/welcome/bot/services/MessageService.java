@@ -1,6 +1,9 @@
 package com.welcome.bot.services;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 
@@ -12,7 +15,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,47 +29,60 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.welcome.bot.domain.Message;
+import com.welcome.bot.domain.Trigger;
+import com.welcome.bot.domain.User;
+import com.welcome.bot.exception.ResourceNotFoundException;
+import com.welcome.bot.exception.base.BaseException;
 import com.welcome.bot.exception.message.MessageNotFoundException;
 import com.welcome.bot.exception.message.MessageValidationException;
+import com.welcome.bot.exception.user.UserNotFoundException;
 import com.welcome.bot.models.MessageCreateDTO;
 import com.welcome.bot.models.MessageDTO;
+import com.welcome.bot.models.TriggerDTO;
+import com.welcome.bot.models.UserDTO;
 import com.welcome.bot.repository.MessageRepository;
+import com.welcome.bot.repository.UserRepository;
+import com.welcome.bot.security.CurrentUser;
+import com.welcome.bot.security.UserPrincipal;
 
 @Service
 public class MessageService {	
-
-	private MessageRepository messageRepository;
-
-	private TriggerService triggerService;
-
-	private ScheduleService scheduleService;
-
-	private ModelMapper modelMapper;
-	
 	@Autowired
-	public MessageService(final MessageRepository messageRepository, 
-			final TriggerService triggerService,
-			final ScheduleService scheduleService,
-			final ModelMapper modelMapper) {
-		this.messageRepository = messageRepository;
-		this.triggerService = triggerService;
-		this.scheduleService = scheduleService;
-		this.modelMapper = modelMapper;
-	}
+	private MessageRepository messageRepository;
+	@Autowired
+	private TriggerService triggerService;
+	@Autowired
+	private ScheduleService scheduleService;
+	@Autowired
+	private ModelMapper modelMapper;
+	@Autowired
+	private UserRepository userRepository;
 	
-	public Page<MessageDTO> getAllMessages(Pageable pageParam){
+	public Page<MessageDTO> getAllMessages(Pageable pageParam, UserPrincipal userPrincipal){
+		//UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		Page<Message> messagePage = messageRepository.findAll(pageParam);
+		User user = userRepository.findById(userPrincipal.getId())
+				.orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
+		
+		Page<Message> messagePage = null;
+		
+		Collection<? extends GrantedAuthority> autorities = userPrincipal.getAuthorities();
+		
+		if(autorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+			messagePage = messageRepository.findAllByDeleted(pageParam, false);
+		}
+		else if(autorities.contains(new SimpleGrantedAuthority("ROLE_USER"))) {
+			messagePage = messageRepository.findAllByUserAndDeleted(pageParam, user, false);
+		}
 		
 		//preparing data for mapping
 		List<Message> messagesList = messagePage.getContent();
 
 		//mapping message to DTO
-		List<MessageDTO> messageDTOs = modelMapper.map(messagesList, new TypeToken<List<MessageDTO>>(){}.getType());
+		List<MessageDTO> messageDTOs = convertToListDtos(messagesList);
 
 		//creating Page with DTO
 		Page<MessageDTO> messageDTOPage = new PageImpl<MessageDTO>(messageDTOs, pageParam, messagePage.getTotalElements());
-
 		return messageDTOPage;
 	}
 	
@@ -72,26 +94,30 @@ public class MessageService {
 		return messageDTO;
 	}
 	
-	public @ResponseBody ResponseEntity<MessageDTO> createMessage(MessageCreateDTO messageModel, UriComponentsBuilder ucb) {
-		//throws exception if validation don't pass
-		validateMessageInput(messageModel);
+	public @ResponseBody MessageDTO createMessage(MessageCreateDTO messageModel, UserPrincipal userPrincipal) {
+		//UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		Message message = new Message(messageModel.getTitle(), messageModel.getText());
+		try {
+			validateMessageInput(messageModel);
+			validateMessageDuplicates(messageModel);
+		}
+		catch (MessageValidationException messageValidationException) {
+			throw messageValidationException;
+		}
+		
+		User user = userRepository.findById(userPrincipal.getId())
+				.orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
+	
+		Message message = new Message(messageModel.getTitle(), messageModel.getText(), user);
 		
 		//save message
 		messageRepository.save(message);
-		
-		//make location header
-		Integer messageId = message.getMessageId();
-		UriComponents uriComponents = ucb.path("/api/message/{id}").buildAndExpand(messageId);
-		
+				
 		//set attributes to message DTO
-		MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
+		MessageDTO messageDTO = convertToDto(message);
 							
 		//return https status with header "location" and response body
-		return ResponseEntity
-				.created(uriComponents.toUri())
-				.body(messageDTO);
+		return messageDTO;
 	}
 	
 	public @ResponseBody Page<Message> getMessagesByTitle(@RequestParam String title, Pageable pageParam) {
@@ -103,9 +129,18 @@ public class MessageService {
 		Message message = messageRepository.findById(id)
 				.orElseThrow(() -> new MessageNotFoundException(id));
 
-		//throws exception if not validated
-		validateMessageInput(messageModel);
+		try {
+			validateMessageInput(messageModel);
+			if(!messageModel.getTitle().equals(message.getTitle())) {
+				validateMessageDuplicates(messageModel);
+			}
+		}
+		catch (MessageValidationException e) {
+			throw new MessageValidationException(e.getMessage());
+		}
 
+		
+		
 		//set updated attributes of message
 		message.setTitle(messageModel.getTitle());
 		message.setText(messageModel.getText());
@@ -113,10 +148,9 @@ public class MessageService {
 		//save message
 		message.setUpdatedAt();
 		messageRepository.save(message);
-
 		
 		//set attributes to message DTO
-		MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class); 
+		MessageDTO messageDTO = convertToDto(message);
 				
 		//return message DTO
 		return messageDTO;
@@ -127,33 +161,62 @@ public class MessageService {
 		Message message = messageRepository.findById(id)
 				.orElseThrow(() -> new MessageNotFoundException(id));
 		
+		//delete message
+		if(message.isDeleted()) {
+			throw new MessageNotFoundException(id);
+		}
+		
+		softDelete(message);
+		
 		//deletes all triggers connected with message
 		triggerService.deleteAllTriggersByMessage(message);
 		
 		//deletes all scheduals connected with message
 		scheduleService.deleteAllSchedulesByMessage(message);
-
-		//delete message
-		messageRepository.delete(message);
+		
+		
+		
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 	}	
 	
+	private void softDelete(Message message) {
+		message.setDeleted();
+		messageRepository.save(message);
+	}
+	
 	//validate message input
-	private void validateMessageInput(MessageCreateDTO messageModel) throws MessageValidationException{
+	private void validateMessageInput(MessageCreateDTO messageModel) {
 		if(messageModel.getTitle().length() < 5 || messageModel.getTitle().length() > 30) {
 			throw new MessageValidationException(messageModel.getTitle());
 		}
 		if(messageModel.getText().length() < 20) {
 			throw new MessageValidationException(messageModel.getText());
 		}
+	}
+	
+	private void validateMessageDuplicates(MessageCreateDTO messageModel) {
 		List<Message> msglist = messageRepository.findAllByTitle(messageModel.getTitle());;
 		if(!msglist.isEmpty()) {
 			throw new MessageValidationException(messageModel.getTitle(), "Message is duplicate");
-		}
+		}		
 	}
+
+	
+	public MessageDTO convertToDto(Message message) {
+		MessageDTO messageDTO = modelMapper.map(message, MessageDTO.class);
+		messageDTO.setUserDto(modelMapper.map(message.getUser(), UserDTO.class));
+	    return messageDTO;
+	}
+	
+	private List<MessageDTO> convertToListDtos(List<Message> messagesList){
+		List<MessageDTO> messageListDtos = new ArrayList<>();
+		for (Message message : messagesList) {
+			MessageDTO messageDTO = convertToDto(message);
+			messageListDtos.add(messageDTO);
+		}
+		return messageListDtos;
+	}	
 }
-
-
 
 //public ResponseEntity<Page<Message>> getAllMessages2(Pageable pageParam, @PathParam(value = "title") String title){	
 //Page<Message> messagePage = null;

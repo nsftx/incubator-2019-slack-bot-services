@@ -1,5 +1,6 @@
 package com.welcome.bot.services;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -8,13 +9,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.welcome.bot.domain.Audit;
+import com.welcome.bot.domain.Message;
 import com.welcome.bot.domain.Schedule;
 import com.welcome.bot.domain.Trigger;
+import com.welcome.bot.domain.User;
+import com.welcome.bot.exception.ResourceNotFoundException;
+import com.welcome.bot.exception.user.UserNotFoundException;
 import com.welcome.bot.models.AuditDTO;
 import com.welcome.bot.repository.AuditRepository;
+import com.welcome.bot.repository.UserRepository;
+import com.welcome.bot.security.UserPrincipal;
 
 @Service
 public class AuditService {
@@ -24,46 +36,82 @@ public class AuditService {
 	
 	ModelMapper modelMapper;
 	
+	UserRepository userRepository;
+	
+	// NOTIFICATION
+	public static int NEW_LOGS_COUNT = 0;
+	
 	@Autowired
-	public AuditService(AuditRepository auditScheduleRepository, ModelMapper modelMapper) {
+	public AuditService(AuditRepository auditScheduleRepository,
+					ModelMapper modelMapper,
+					UserRepository userRepository) {
 		this.auditRepository = auditScheduleRepository;
 		this.modelMapper = modelMapper;
+		this.userRepository = userRepository;
 	}
 
-	public Page<AuditDTO> getAllLogs(Pageable pageable) {
-		Page<Audit> auditPage = auditRepository.findAll(pageable);
+	public Page<AuditDTO> getAllLogs(Pageable pageable, UserPrincipal userPrincipal) {
+
+		
+		//UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		User user = userRepository.findById(userPrincipal.getId())
+				.orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
+		
+		Page<Audit> auditPage = null;
+		
+		Collection<? extends GrantedAuthority> autorities = userPrincipal.getAuthorities();
+		
+		if(autorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+			auditPage = auditRepository.findAll(pageable);
+		}
+		else if(autorities.contains(new SimpleGrantedAuthority("ROLE_USER"))) {
+			auditPage = auditRepository.findAllByUser(pageable, user);
+		}
+		
 		List<Audit> auditList = auditPage.getContent();
 		
 		List<AuditDTO> auditDtoList = modelMapper.map(auditList, new TypeToken<List<AuditDTO>>(){}.getType());
+		
 		Page<AuditDTO> auditDtoPage = new PageImpl<AuditDTO>(auditDtoList, pageable, auditPage.getTotalElements());
-		return auditDtoPage;	
+
+		updateSeenStatus(auditList);
+		NEW_LOGS_COUNT = 0;
+		
+		return auditDtoPage;
 	}
 	
-	public void createScheduleLog(List<Schedule> scheduleList, String channel) {
-		String entityInfo = "deleted";
-		String channelInfo = "deleted";
-		String entity = "Schedule";
+	private void updateSeenStatus(List<Audit> auditList) {
+		for (Audit audit : auditList) {
+			audit.setSeen();
+			auditRepository.save(audit);
+		}
 		
+	}
+
+	@Transactional(propagation = Propagation.MANDATORY)
+	public void createScheduleLog(List<Schedule> scheduleList) {
+		String channelName = scheduleList.get(0).getChannel().substring(1);
+		
+		String cause = "because channel " + channelName + " is deleted";
+	
 		for (Schedule schedule : scheduleList) {
-			Integer entityId = schedule.getScheduleId();
-			Audit audit = new Audit(channel, channelInfo, entityId, entity, entityInfo);	 
+			String consequence = "Schedule with id: " + schedule.getScheduleId() + " and text: '" + schedule.getMessage().getText() + "' is deleted ";
+			User user = schedule.getUser();
+			Audit audit = new Audit(cause, consequence, user); 
 			auditRepository.save(audit);
 		}
 	}
 	
-	public void createTriggerLog(List<Trigger> triggerList, String channel) {
-		String entityInfo = "deleted";
-		String channelInfo = "deleted";
-		String entity = "Trigger";
-		
+	@Transactional(propagation = Propagation.MANDATORY)
+	public void createTriggerLog(List<Trigger> triggerList) {
+		String channelName = triggerList.get(0).getChannel();
+		String cause = "because channel " + channelName + "is deleted";
 		for (Trigger trigger : triggerList) {
-			Integer entityId = trigger.getTriggerId();
-			Audit audit = new Audit(channel, channelInfo, entityId, entity, entityInfo);	 
+			String consequence = "Trigger with id: " + trigger.getTriggerId() + " and text: " + trigger.getMessage().getText() + "is deleted ";
+			User user = trigger.getUser();
+			Audit audit = new Audit(cause, consequence, user);	 
 			auditRepository.save(audit);
 		}
 	}
-
-
-
-
 }

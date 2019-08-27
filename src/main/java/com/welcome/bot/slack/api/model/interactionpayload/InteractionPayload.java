@@ -8,117 +8,117 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-"type",
-"team",
-"user",
-"api_app_id",
-"token",
-"container",
-"trigger_id",
-"channel",
-"message",
-"response_url",
-"actions"
+	"type",
+	"team",
+	"user",
+	"api_app_id",
+	"token",
+	"container",
+	"trigger_id",
+	"channel",
+	"message",
+	"response_url",
+	"actions"
 })
 public class InteractionPayload {
 
 	@JsonProperty("type")
 	private String type;
 	@JsonProperty("team")
-	private Team team;
+	private InteractionTeam team;
 	@JsonProperty("user")
-	private User user;
+	private InteractionUser user;
 	@JsonProperty("api_app_id")
 	private String apiAppId;
 	@JsonProperty("token")
 	private String token;
 	@JsonProperty("container")
-	private Container container;
+	private InteractionContainer container;
 	@JsonProperty("trigger_id")
 	private String triggerId;
 	@JsonProperty("channel")
 	private Channel channel;
 	@JsonProperty("message")
-	private Message message;
+	private InteractionMessage message;
 	@JsonProperty("response_url")
 	private String responseUrl;
 	@JsonProperty("actions")
-	private List<Action> actions = null;
-	
+	private List<InteractionAction> actions = null;
+
 	public String getType() {
 		return type;
 	}
 	public void setType(String type) {
 		this.type = type;
 	}
-	
-	public Team getTeam() {
+
+	public InteractionTeam getTeam() {
 		return team;
 	}
-	public void setTeam(Team team) {
+	public void setTeam(InteractionTeam team) {
 		this.team = team;
 	}
-	
-	public User getUser() {
+
+	public InteractionUser getUser() {
 		return user;
 	}
-	public void setUser(User user) {
+	public void setUser(InteractionUser user) {
 		this.user = user;
 	}
-	
+
 	public String getApiAppId() {
 		return apiAppId;
 	}
 	public void setApiAppId(String apiAppId) {
 		this.apiAppId = apiAppId;
 	}
-	
+
 	public String getToken() {
 		return token;
 	}
 	public void setToken(String token) {
 		this.token = token;
 	}
-	
-	public Container getContainer() {
+
+	public InteractionContainer getContainer() {
 		return container;
 	}
-	public void setContainer(Container container) {
+	public void setContainer(InteractionContainer container) {
 		this.container = container;
 	}
-	
+
 	public String getTriggerId() {
 		return triggerId;
 	}
 	public void setTriggerId(String triggerId) {
 		this.triggerId = triggerId;
 	}
-	
+
 	public Channel getChannel() {
 		return channel;
 	}
 	public void setChannel(Channel channel) {
 		this.channel = channel;
 	}
-	
-	public Message getMessage() {
+
+	public InteractionMessage getMessage() {
 		return message;
 	}
-	public void setMessage(Message message) {
+	public void setMessage(InteractionMessage message) {
 		this.message = message;
 	}
-	
+
 	public String getResponseUrl() {
 		return responseUrl;
 	}
 	public void setResponseUrl(String responseUrl) {
 		this.responseUrl = responseUrl;
 	}
-	
-	public List<Action> getActions() {
+
+	public List<InteractionAction> getActions() {
 		return actions;
 	}
-	public void setActions(List<Action> actions) {
+	public void setActions(List<InteractionAction> actions) {
 		this.actions = actions;
 	}
 }

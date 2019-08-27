@@ -9,49 +9,48 @@ import com.welcome.bot.slack.api.model.publishevent.PublishEventMessage;
 
 @Component
 public class SlackEventService {
-	
+
 	@Autowired
-    private ApplicationEventPublisher appEventPublisher;
-	
+	private ApplicationEventPublisher appEventPublisher;
+
 	public String handleEvent(EventPayload event) {
 		if(event.getType().equals("event_callback")) {
 			String user = event.getEventItem().getUser();
-			// ALWAYS CHECK FOR EVENT_TYPE ... DIFFERENT PAYLOADS ARRIVE ON DIFFERENT EVENTS -> -> -> channel-STRING || channel-OBJECT - TODO - TEST/DELETE
-			String channel = event.getEventItem().getChannelId();
-			
+			String channel = "";
+
 			EventType eventType = null;
 			switch(event.getEventItem().getType()) {
 			case "app_mention":
-				System.out.println("app_mention");
 				eventType = EventType.app_mention;
+				channel = event.getEventItem().getChannelId();
 				break;
 			case "member_joined_channel":
-				System.out.println("member_joined_channel");
 				eventType = EventType.member_joined_channel;
+				channel = event.getEventItem().getChannelId();
 				break;
 			case "member_left_channel":
-				System.out.println("member_left_channel");
 				eventType = EventType.member_left_channel;
+				channel = event.getEventItem().getChannelId();
 				break;
 			case "channel_created":
-				System.out.println("channel_created");
 				eventType = EventType.channel_created;
+				channel = event.getEventItem().getChannel().getId();
 				break;
 			case "channel_deleted":
-				System.out.println("channel_deleted");
 				eventType = EventType.channel_deleted;
+				channel = event.getEventItem().getChannelId();
 				break;
 			case "channel_rename":
-				System.out.println("channel_rename");
 				eventType = EventType.channel_rename;
+				channel = event.getEventItem().getChannel().getId();
 				break;
 			case "channel_archive":
-				System.out.println("channel_archive");
 				eventType = EventType.channel_archive;
+				channel = event.getEventItem().getChannelId();
 				break;
 			case "channel_unarchive":
-				System.out.println("channel_unarchive");
 				eventType = EventType.channel_unarchive;
+				channel = event.getEventItem().getChannelId();
 				break;
 			}
 			passEvent(channel, eventType, user);
@@ -67,7 +66,6 @@ public class SlackEventService {
 		eventData.setChannel(channel);
 		eventData.setEventType(eventType);
 		eventData.setUser(user);
-		
 		SlackEventTriggeredEvent eventHandler = new SlackEventTriggeredEvent(this, eventData);
 		appEventPublisher.publishEvent(eventHandler);
 	}

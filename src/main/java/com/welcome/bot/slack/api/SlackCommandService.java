@@ -9,9 +9,9 @@ import com.welcome.bot.slack.api.model.messagepayload.MessagePayload;
 
 @Service
 public class SlackCommandService {
-	
+
 	private ObjectMapper jsonMapper;
-	
+
 	@Autowired
 	public SlackCommandService(ObjectMapper jsonMapper) {
 		this.jsonMapper = jsonMapper;
@@ -19,32 +19,32 @@ public class SlackCommandService {
 
 	public String handleCommand(String command) {
 		String response = "";
-		
+
 		switch(command) {
 		case "about":
-			response = generateJSONResponse("NSoft provides betting solutions to its clients, starting from live betting, bingo, to plenty of different virtual games.");
+			response = generateJSONResponse("NSoft's mission is to provide bet shop owners with a powerful omni-channel platform, visually appealing and revenue generating virtual games and data-packed sportsbook, in order to help them grow their business.");
 			break;
 		case "benefits":
-			response = generateJSONResponse("Benefits of working at NSoft are: Fresh fruits every day, flexible working hours, child bonuses, monthly team buildings, monthly cinema visits, and more");
+			response = generateJSONResponse("NSoft offers plenty of additional benefits to their employees. Some of these are:\n-Free stuff\n-Monthly cinema visits\n-Subsidized food and drinks\n-Flexible work hours\n-Events,games,etc\n-Rewards\n\n For more info check <http://www.nsoft.com/careers/|Nsoft Careers - Perks");
 			break;
 		case "work":
-			response = generateJSONResponse("Flexible work hours enable employees to better organize their time, by allowing them to start working from 07:00h-10:00h and depending on when they start, finish at 15:00h-18:00h.");
+			response = generateJSONResponse("Flexible working hours allow employees to work 8h/day in range starting from 7:00AM-10:00AM and working until 3:00PM-6:00PM.");
 			break;
 		case "docs":
-			response = generateJSONResponse("Check more information about company and general at link: https://www.nsoft.com");
+			response = generateJSONResponse("More information on NSoft products on <http://www.nsoft.com/betting-software|NSoft Products>");
 			break;
 		case "community":
-			response = generateJSONResponse("Our company is active at Google+. Here is the link to our community and G+: www.googleplus.com/community/nsoft");
+			response = generateJSONResponse("Our company is active on social media platforms. Check out our Instagram profile: <http://www.instagram.com/nsoftcompany|NSoft-Instagram>");
 			break;
 		}
 		return response;
 	}
-	
+
 	private String generateJSONResponse(String responseText) {
 		MessagePayload payload = new MessagePayload();
 		payload.setText(responseText);
 		String responseJSON = "";
-		
+
 		try {
 			responseJSON = jsonMapper.writeValueAsString(payload);
 		} catch (JsonProcessingException e) {

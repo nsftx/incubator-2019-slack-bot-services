@@ -13,8 +13,6 @@ import com.welcome.bot.slack.api.model.eventpayload.EventPayload;
 @Controller
 public class SlackController {
 
-	String eventTimeStamp;
-
 	@Autowired
 	SlackEventService slackEventService;
 	@Autowired
@@ -25,18 +23,12 @@ public class SlackController {
 	@PostMapping("/api/slimp/incoming-event-hook")
 	@ResponseStatus(HttpStatus.OK)
 	public @ResponseBody String eventHandler(@RequestBody EventPayload event) {
-		// check here for event type, if not url_verif. return null immediately
-//		if (eventTimeStamp == null) {
-//			eventTimeStamp = event.getEventItem().getEventTs();
-//			return slackEventService.handleEvent(event);
-//		}
-//
-//		if(!event.getEventItem().getEventTs().equals(eventTimeStamp)) {
-//			eventTimeStamp = event.getEventItem().getEventTs();
+		if(event.getType().equals("url_verification")) {
 			return slackEventService.handleEvent(event);
-//		} else {
-//			return null;
-//		}
+		} else {
+			slackEventService.handleEvent(event);
+			return null;
+		}
 	}
 
 	@PostMapping("/api/slimp/incoming-command-about")
