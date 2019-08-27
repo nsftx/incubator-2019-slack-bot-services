@@ -23,13 +23,13 @@ public class AuditNotificationSchedulerService {
 		// TEST ABOVE
 		
 		
-//		List<Audit> newAuditList = auditService.findAllWhereSeenFalse();
-//		if(!newAuditList.isEmpty()) {
-//			int count = newAuditList.size();
-//			AuditService.NEW_LOGS_COUNT += count;
-//		}
+		List<Audit> newAuditList = auditService.getAllNotSeen();
+		if(!newAuditList.isEmpty()) {
+			int count = newAuditList.size();
+			AuditService.NEW_LOGS_COUNT += count;
+		}
 		
 		// TEST
-		AuditService.NEW_LOGS_COUNT++;
+//		AuditService.NEW_LOGS_COUNT++;
 	}
 }
