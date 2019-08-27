@@ -9,10 +9,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.welcome.bot.domain.Message;
 import com.welcome.bot.domain.User;
+import com.welcome.bot.exception.message.MessageNotFoundException;
+import com.welcome.bot.exception.user.UserNotFoundException;
+import com.welcome.bot.models.MessageDTO;
 import com.welcome.bot.models.UserDTO;
 import com.welcome.bot.repository.UserRepository;
 
@@ -63,5 +68,14 @@ public class UserService{
 		userRepository.deleteById(id);
 		return user;
 	}
+
+	public UserDTO getUser(Long userId) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new UserNotFoundException(userId));
+		
+		UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+		return userDTO;
+	}
+
 
 }

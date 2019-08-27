@@ -82,12 +82,37 @@ public class AuditService {
 	
 	private void updateSeenStatus(List<Audit> auditList) {
 		for (Audit audit : auditList) {
-			audit.setSeen();
-			auditRepository.save(audit);
-		}
-		
+			if(!audit.getSeen()) {
+				audit.setSeen();
+				auditRepository.save(audit);
+			}
+		}	
 	}
-
+	
+	//notification method
+	public List<Audit> getAllNotSeen(){
+		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		User user = userRepository.findById(principal.getId())
+				.orElseThrow(() -> new UserNotFoundException(principal.getId()));
+		
+		List<Audit> notSeenList = auditRepository.findAllByUserAndSeen(user, false);
+		
+		return notSeenList;
+	}
+	
+	//notification method
+	public List<Audit> getAllSeen(){
+		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		User user = userRepository.findById(principal.getId())
+				.orElseThrow(() -> new UserNotFoundException(principal.getId()));
+		
+		List<Audit> seenList = auditRepository.findAllByUserAndSeen(user, true);
+		
+		return seenList;
+	}
+	
 	@Transactional(propagation = Propagation.MANDATORY)
 	public void createScheduleLog(List<Schedule> scheduleList) {
 		String channelName = scheduleList.get(0).getChannel().substring(1);

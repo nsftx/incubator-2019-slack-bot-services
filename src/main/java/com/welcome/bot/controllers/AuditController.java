@@ -27,7 +27,6 @@ public class AuditController {
 
 	public Page<AuditDTO> getAllLogs(Pageable pageable, @CurrentUser UserPrincipal userPrincipal){
 		return auditService.getAllLogs(pageable, userPrincipal);
-
 	}
 	
 	// SSE TEST
