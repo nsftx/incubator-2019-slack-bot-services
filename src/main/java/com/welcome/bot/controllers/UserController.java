@@ -125,6 +125,30 @@ public class UserController {
 		return result;
 
 	}
+	@PostMapping("/userSettings/theme")
+	@PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
+	public UserSettings setUserSettingsTheme(@RequestBody String theme,@CurrentUser UserPrincipal userPrincipal) {
+		User user = userRepository.findById(userPrincipal.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+		UserSettings usersettings2 = userSettingsRepository.findById(user.getUserSettings().getId())
+				.orElseThrow(() -> new ResourceNotFoundException("UserSettings", "id", user.getUserSettings().getId()));
+		usersettings2.setTheme(theme);
+		UserSettings result = userSettingsRepository.save(usersettings2);
+		return result;
+
+	}
+	@PostMapping("/userSettings/language")
+	@PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
+	public UserSettings setUserSettingsLanguage(@RequestBody String language,@CurrentUser UserPrincipal userPrincipal) {
+		User user = userRepository.findById(userPrincipal.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+		UserSettings usersettings2 = userSettingsRepository.findById(user.getUserSettings().getId())
+				.orElseThrow(() -> new ResourceNotFoundException("UserSettings", "id", user.getUserSettings().getId()));
+		usersettings2.setLanguage(language);
+		UserSettings result = userSettingsRepository.save(usersettings2);
+		return result;
+
+	}
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/create")

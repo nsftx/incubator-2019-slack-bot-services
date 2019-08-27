@@ -1,6 +1,7 @@
 package com.welcome.bot.domain;
 
 import javax.persistence.CascadeType;
+
 import javax.persistence.Column;
 
 import javax.persistence.Entity;
@@ -14,9 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.welcome.bot.models.Language;
-import com.welcome.bot.models.Theme;
-
 
 @Entity
 @Table(name = "usersettings")
@@ -25,14 +23,12 @@ public class UserSettings {
 	  @GeneratedValue(strategy = GenerationType.IDENTITY)
 	    private Long id;
 	  @Column(nullable = false)
-	  @Enumerated(EnumType.STRING)
-	    private Theme theme;
+	    private String theme;
 	 @Column(nullable = false)
-	 @Enumerated(EnumType.STRING)
-	 private Language language;
+	 private String language;
 	  public UserSettings() {
-		  this.theme=Theme.light;
-		  this.language=Language.en;
+		  this.theme="Light";
+		  this.language="en";
 	    }
 	  public UserSettings(UserSettings userSettings) {
 	        this.id = userSettings.getId();
@@ -47,18 +43,18 @@ public class UserSettings {
 	    public void setId(Long id) {
 	        this.id = id;
 	    }
-	  public Theme getTheme() {
+	  public String getTheme() {
 	        return theme;
 	    }
 
-	    public void setTheme(Theme theme) {
+	    public void setTheme(String theme) {
 	        this.theme= theme;
 	    }
-	    public Language getLanguage() {
+	    public String getLanguage() {
 	        return language;
 	    }
 
-	    public void setLanguage(Language language) {
+	    public void setLanguage(String language) {
 	        this.language= language;
 	    }
 	  
