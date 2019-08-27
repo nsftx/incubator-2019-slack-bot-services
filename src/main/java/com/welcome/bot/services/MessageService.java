@@ -58,15 +58,15 @@ public class MessageService {
 	@Autowired
 	private UserRepository userRepository;
 	
-	public Page<MessageDTO> getAllMessages(Pageable pageParam, UserPrincipal userPrincipal){
-		//UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	public Page<MessageDTO> getAllMessages(Pageable pageParam){
+		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		User user = userRepository.findById(userPrincipal.getId())
-				.orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
+		User user = userRepository.findById(principal.getId())
+				.orElseThrow(() -> new UserNotFoundException(principal.getId()));
 		
 		Page<Message> messagePage = null;
 		
-		Collection<? extends GrantedAuthority> autorities = userPrincipal.getAuthorities();
+		Collection<? extends GrantedAuthority> autorities = principal.getAuthorities();
 		
 		if(autorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
 			messagePage = messageRepository.findAllByDeleted(pageParam, false);
@@ -94,8 +94,9 @@ public class MessageService {
 		return messageDTO;
 	}
 	
-	public @ResponseBody MessageDTO createMessage(MessageCreateDTO messageModel, UserPrincipal userPrincipal) {
-		//UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	public @ResponseBody MessageDTO createMessage(MessageCreateDTO messageModel) {
+		
+		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
 		try {
 			validateMessageInput(messageModel);
@@ -104,9 +105,10 @@ public class MessageService {
 		catch (MessageValidationException messageValidationException) {
 			throw messageValidationException;
 		}
+		System.out.println(principal.getId() + " " + principal.getName());
 		
-		User user = userRepository.findById(userPrincipal.getId())
-				.orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
+		User user = userRepository.findById(principal.getId())
+				.orElseThrow(() -> new UserNotFoundException(principal.getId()));
 	
 		Message message = new Message(messageModel.getTitle(), messageModel.getText(), user);
 		

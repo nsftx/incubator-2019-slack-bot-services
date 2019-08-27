@@ -1,9 +1,9 @@
 package com.welcome.bot.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
-
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,6 +14,7 @@ import com.welcome.bot.domain.User;
 import com.welcome.bot.domain.UserSettings;
 import com.welcome.bot.exception.ResourceNotFoundException;
 import com.welcome.bot.exception.base.BaseException;
+import com.welcome.bot.models.MessageDTO;
 import com.welcome.bot.models.UserDTO;
 import com.welcome.bot.payload.ApiResponse;
 import com.welcome.bot.payload.RegistrationRequest;
@@ -130,8 +131,14 @@ public class UserController {
 		usersettings2.setLanguage(userSettings.getLanguage());
 		UserSettings result = userSettingsRepository.save(usersettings2);
 		return result;
-
 	}
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/{userId}")
+	public UserDTO getUser(@PathVariable Long userId) {
+		return userService.getUser(userId);
+	}
+    
 	@PostMapping("/userSettings/theme")
 	@PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
 	public UserSettings setUserSettingsTheme(@RequestBody String theme,@CurrentUser UserPrincipal userPrincipal) {
