@@ -15,24 +15,6 @@
 	<name>welcome_bot</name>
 	<description>Spring Project for Welcome-Bot</description>
 
-    <profiles>
-        <profile>
-            <id>dev</id>
-            <properties>
-                <activatedProperties>dev</activatedProperties>
-            </properties>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
-        <profile>
-            <id>prod</id>
-            <properties>
-                <activatedProperties>prod</activatedProperties>
-            </properties>
-        </profile>
-    </profiles>
-
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
