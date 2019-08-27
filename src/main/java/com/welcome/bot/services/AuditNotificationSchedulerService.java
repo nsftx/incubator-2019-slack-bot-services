@@ -16,15 +16,21 @@ public class AuditNotificationSchedulerService {
 	@Autowired
 	AuditService auditService;
 
-	@Scheduled(cron = "0 0/5 * * * ?")
+	@Scheduled(cron = "0 0/2 * * * ?")
 	public void scheduleCheckNewAuditNotifications() {
 		// TEST
 		System.out.println("SCHEDULED NOTIFICATION CRON - " + new Date());
+		System.out.println("SCHEDULED CRON | LOG COUNT IS " + AuditController.NEW_LOGS_COUNT);
+		// TEST ABOVE
+		
 		
 //		List<Audit> newAuditList = auditService.getAllLogsWhereSeenFalse();
 //		if(!newAuditList.isEmpty()) {
 //			int count = newAuditList.size();
 //			AuditController.NEW_LOGS_COUNT += count;
 //		}
+		
+		// TEST
+		AuditController.NEW_LOGS_COUNT++;
 	}
 }

@@ -70,6 +70,10 @@ public class PayloadGenerator {
 		List<PayloadBlock> blocks = new ArrayList<>();
 
 		boolean imageExists = false;
+		
+		if(text.contains("<") && text.contains(">")) {
+			text = convertLink(text);
+		}
 
 		if(text.contains("[img]") && text.contains("[/img]")) {
 			imageExists = true;
@@ -250,9 +254,34 @@ public class PayloadGenerator {
 		extractedText = extractedTextPartOne + " " + extractedTextPartTwo;
 		return extractedText;
 	}
+	
+	private String convertLink(String text) {
+		String formatedText = "";
+		if(text.contains("<") && text.contains(">")) {
+			String extractUrl = text.substring(text.indexOf("<")+1, text.indexOf(">"));
+			String[] extractedUrlData = extractUrl.split("\\|");
+			String link = extractedUrlData[0];
+			String linkText = extractedUrlData[1];
+			boolean isLinkOk = checkUrl(link);
+			if(isLinkOk) {
+				if(!link.contains("http://") && !link.contains("https://")) {
+					link = "http://"+link;
+				}
+			} else {
+				return text;
+			}
+			String formatedLink = "<"+link+"|"+linkText+">"; 
+			String textPartOne = text.substring(0, text.indexOf("<")).trim();
+			String textPartTwo = text.substring(text.indexOf(">")+1).trim();
+			formatedText = textPartOne+" "+formatedLink+" "+textPartTwo;
+			return formatedText;
+		} else {
+			return text;
+		}
+	}
 
-	private boolean checkUrl(String imageUrl) {
-		if(imageUrl.startsWith("www.") || imageUrl.startsWith("http://") || imageUrl.startsWith("http://www.") || imageUrl.startsWith("https://") || imageUrl.startsWith("https://www.")) {
+	private boolean checkUrl(String url) {
+		if(url.startsWith("www.") || url.startsWith("http://") || url.startsWith("http://www.") || url.startsWith("https://") || url.startsWith("https://www.")) {
 			return true;
 		}
 		return false;

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,6 +19,7 @@ import com.welcome.bot.slack.api.customexceptionhandler.MessageSendingException;
 import com.welcome.bot.slack.api.customexceptionhandler.SlackApiException;
 import com.welcome.bot.slack.api.model.interactionpayload.Channel;
 import com.welcome.bot.slack.api.model.messagepayload.MessagePayload;
+import com.welcome.bot.slack.api.model.publishevent.PublishEventMessage;
 import com.welcome.bot.slack.api.utils.ConnectionGenerator;
 import com.welcome.bot.slack.api.utils.MessageSender;
 import com.welcome.bot.slack.api.utils.PayloadGenerator;
@@ -298,5 +300,17 @@ public class SlackClientService implements SlackClientApi {
 			e.printStackTrace();
 		}
 		return allChannels;
+	}
+	
+	//test
+	@EventListener
+		public void handleEvent(SlackEventTriggeredEvent event) {
+			PublishEventMessage eventData = event.getEventData();
+			String channel = eventData.getChannel();
+			try {
+				sendMessage(channel, "hi");
+			} catch (SlackApiException e) {
+				e.printStackTrace();
+			}
 	}
 }

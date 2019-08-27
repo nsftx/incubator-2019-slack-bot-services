@@ -1,7 +1,6 @@
 package com.welcome.bot.controllers;
 
 import java.time.Duration;
-import java.time.LocalTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -41,11 +40,11 @@ public class AuditController {
 	// SSE TEST
 	@GetMapping(path = "/api/logs/new-logs-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<ServerSentEvent<String>> emitEvents(){
-		return Flux.interval(Duration.ofMinutes(1))
+		return Flux.interval(Duration.ofMinutes(3))
 			      .map(sequence -> ServerSentEvent.<String> builder()
 			        .id(String.valueOf(sequence))
 			          .event("new-log-event")
-			          .data("New Log Count is: " + String.valueOf(++NEW_LOGS_COUNT) + " .Stream Every 1minute. " + " TIME IS-> " + LocalTime.now().toString())
+			          .data(String.valueOf(NEW_LOGS_COUNT))
 			          .build());
 	}
 }
