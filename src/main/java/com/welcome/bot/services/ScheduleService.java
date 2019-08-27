@@ -2,6 +2,7 @@ package com.welcome.bot.services;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -14,6 +15,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +31,7 @@ import com.welcome.bot.exception.base.BaseException;
 import com.welcome.bot.exception.message.MessageNotFoundException;
 import com.welcome.bot.exception.schedule.ScheduleNotFoundException;
 import com.welcome.bot.exception.schedule.ScheduleValidationException;
+import com.welcome.bot.exception.user.UserNotFoundException;
 import com.welcome.bot.models.MessageDTO;
 import com.welcome.bot.models.ScheduleDTO;
 import com.welcome.bot.models.UserDTO;
@@ -78,12 +83,13 @@ public class ScheduleService {
 
 	//creates schedule
 	public ScheduleDTO createSchedule(ScheduleCreateDTO scheduleModel, UserPrincipal userPrincipal) {
+		//UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
 		Message message = messageRepository.findById(scheduleModel.getMessageId())
 				.orElseThrow(() -> new MessageNotFoundException(scheduleModel.getMessageId()));
 		
 		User user = userRepository.findById(userPrincipal.getId())
-				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+				.orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
 			
 		//throw exception if not validate
 		try {
@@ -104,14 +110,22 @@ public class ScheduleService {
 		}
 		
 		//String channel = "#general";
-		Schedule schedule = new Schedule(scheduleModel.isActive(),
-										scheduleModel.isRepeat(),
-										intervalType,
-										scheduleModel.getRunAt(), 
-										channelName, 
-										message,
-										scheduleModel.getChannelId(),
+		System.out.println(scheduleModel.isActive() + " " +
+										scheduleModel.isRepeat() + " " + 
+										intervalType + " " + 
+										scheduleModel.getRunAt() + " " +  
+										channelName + " " + 
+										message + " " + 
+										scheduleModel.getChannelId() + " " + 
 										user);
+		
+		Schedule schedule = new  Schedule(scheduleModel.isActive(), 
+				scheduleModel.isRepeat(), 
+				scheduleModel.getRunAt(),
+				channelName,
+				scheduleModel.getChannelId(),  
+				user,
+				message);
 
 		//if schedule is active we send it to slack
 		if(schedule.getActive()) {
@@ -132,23 +146,29 @@ public class ScheduleService {
 	
 	//get all schedules
 	public Page<ScheduleDTO> getAllSchedules(Pageable pageable, UserPrincipal userPrincipal) {
+		
+		//UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
 		User user = userRepository.findById(userPrincipal.getId())
-				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+				.orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
 		
-		Page<Schedule> schedulesPage = scheduleRepository.findAll(pageable);
+		Page<Schedule> schedulesPage = null;
 		
-		if(user.getRole().equals("ADMIN")) {
+		Collection<? extends GrantedAuthority> autorities = userPrincipal.getAuthorities();
+		
+		if(autorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
 			schedulesPage = scheduleRepository.findAllByDeleted(pageable, false);
 		}
-		else if(user.getRole().equals("USER")) {
+		else if(autorities.contains(new SimpleGrantedAuthority("ROLE_USER"))) {
 			schedulesPage = scheduleRepository.findAllByUserAndDeleted(pageable, user, false);
 		}
-
+		
 		List<Schedule> scheduleList = schedulesPage.getContent();
-		
+
 		List<ScheduleDTO> scheduleContentDTOlist = convertToListDtos(scheduleList);
-		
+
 		Page<ScheduleDTO> scheduleContentDTOPage = new PageImpl<ScheduleDTO>(scheduleContentDTOlist, pageable, schedulesPage.getTotalElements());
+
 		return scheduleContentDTOPage;
 	}
 	
@@ -191,15 +211,18 @@ public class ScheduleService {
 	
 	public ResponseEntity<Schedule> deleteSchedule(Integer scheduleId) {
 		Schedule schedule = scheduleRepository.findById(scheduleId)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule data for id: " + scheduleId + "not found"));
+				.orElseThrow(() -> new ScheduleNotFoundException(scheduleId));
 		
 		if(schedule.getActive()) {
 			deleteScheduleInSlackApi(schedule);	
 		}
-
-		softDelete(schedule);
+		if(schedule.getDeleted()) {
+			throw new ScheduleNotFoundException(scheduleId);
+		}
 		
+		softDelete(schedule);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+	
 	}
 	
 	//delete all triggers by list you send as parameter
@@ -278,7 +301,6 @@ public class ScheduleService {
 		
 		try {
 			if(schedule.getRepeat()) {
-				// DELETED INTERVAL PARAMETER
 				slackMessageId = slackClientApi.createRepeatedSchedule(schedule.getChannel(), schedule.getMessage().getText(), schedule.getRunAt());
 			}else {
 				slackMessageId = slackClientApi.createSchedule(schedule.getChannel(), schedule.getMessage().getText(), schedule.getRunAt());

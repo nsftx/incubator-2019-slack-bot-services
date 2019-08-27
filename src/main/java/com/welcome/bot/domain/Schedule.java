@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.engine.query.spi.sql.NativeSQLQueryCollectionReturn;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -35,39 +36,36 @@ public class Schedule {
 	private Date createdAt;
 	private Date updatedAt;
 	
+
 	@ManyToOne 
 	private User user;
+
 	
 	@ManyToOne
 	@JoinColumn(name = "message_id")
 	private Message message;
 	
-	
-	
-	public Schedule(Boolean active,
-			Boolean repeat,
-			String intervalType,
+	public Schedule(Boolean active, Boolean repeat, 
 			Date runAt,
 			String channel,
-			Message message,
-			String channelId,
-			User user) {
+			String channelId, 
+			User user,
+			Message message) {
+
 		this.active = active;
 		this.repeat = repeat;
-		this.intervalType = intervalType;
 		this.runAt = runAt;
 		this.channel = channel;
-		this.createdAt = new Date();
-		this.message = message;
-		this.deleted = false;
 		this.channelId = channelId;
+		this.createdAt = new Date();
+		this.deleted = false;
 		this.user = user;
+		this.message = message;
 	}
-	
+
 	protected Schedule() {
 		
 	}
-
 
 	public Integer getScheduleId() {
 		return scheduleId;
@@ -138,6 +136,7 @@ public class Schedule {
 	public User getUser() {
 		return user;
 	}
+
 
 
 
@@ -224,9 +223,7 @@ public class Schedule {
 	}
 
 
-	
-	
-	
+
 	
 	
 }

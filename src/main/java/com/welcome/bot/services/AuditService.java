@@ -1,5 +1,6 @@
 package com.welcome.bot.services;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -8,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +22,7 @@ import com.welcome.bot.domain.Schedule;
 import com.welcome.bot.domain.Trigger;
 import com.welcome.bot.domain.User;
 import com.welcome.bot.exception.ResourceNotFoundException;
+import com.welcome.bot.exception.user.UserNotFoundException;
 import com.welcome.bot.models.AuditDTO;
 import com.welcome.bot.repository.AuditRepository;
 import com.welcome.bot.repository.UserRepository;
@@ -33,6 +38,9 @@ public class AuditService {
 	
 	UserRepository userRepository;
 	
+	// NOTIFICATION
+	public static int NEW_LOGS_COUNT = 0;
+	
 	@Autowired
 	public AuditService(AuditRepository auditScheduleRepository,
 					ModelMapper modelMapper,
@@ -43,15 +51,21 @@ public class AuditService {
 	}
 
 	public Page<AuditDTO> getAllLogs(Pageable pageable, UserPrincipal userPrincipal) {
+
+		
+		//UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
 		User user = userRepository.findById(userPrincipal.getId())
-				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+				.orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
 		
 		Page<Audit> auditPage = null;
-		auditPage = auditRepository.findAll(pageable);
-		if(user.getRole().equals("ADMIN")) {
+		
+		Collection<? extends GrantedAuthority> autorities = userPrincipal.getAuthorities();
+		
+		if(autorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
 			auditPage = auditRepository.findAll(pageable);
 		}
-		else if(user.getRole().equals("USER")) {
+		else if(autorities.contains(new SimpleGrantedAuthority("ROLE_USER"))) {
 			auditPage = auditRepository.findAllByUser(pageable, user);
 		}
 		
@@ -59,12 +73,22 @@ public class AuditService {
 		
 		List<AuditDTO> auditDtoList = modelMapper.map(auditList, new TypeToken<List<AuditDTO>>(){}.getType());
 		
-		System.out.println(auditDtoList);
 		Page<AuditDTO> auditDtoPage = new PageImpl<AuditDTO>(auditDtoList, pageable, auditPage.getTotalElements());
-		System.out.println(auditDtoPage);
-		return auditDtoPage;	
+
+		updateSeenStatus(auditList);
+		NEW_LOGS_COUNT = 0;
+		
+		return auditDtoPage;
 	}
 	
+	private void updateSeenStatus(List<Audit> auditList) {
+		for (Audit audit : auditList) {
+			audit.setSeen();
+			auditRepository.save(audit);
+		}
+		
+	}
+
 	@Transactional(propagation = Propagation.MANDATORY)
 	public void createScheduleLog(List<Schedule> scheduleList) {
 		String channelName = scheduleList.get(0).getChannel().substring(1);

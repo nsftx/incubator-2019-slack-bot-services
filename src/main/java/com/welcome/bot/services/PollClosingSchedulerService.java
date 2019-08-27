@@ -19,6 +19,7 @@ public class PollClosingSchedulerService {
 	PollService pollService;
 
 	@Scheduled(cron = "0 * * * * ?")
+
 	public void scheduleCheckPollFinished() throws SlackApiException {
 		List<Poll> pollList = pollService.getActivePolls();
 
@@ -33,5 +34,6 @@ public class PollClosingSchedulerService {
 				}
 			}
 		}
+
 	}
 }

@@ -1,5 +1,6 @@
 package com.welcome.bot.services;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,8 +83,7 @@ public class SlackService {
 	}
 	
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-	public void logChannelActivities(PublishEventMessage eventData) {
-		String channelId = eventData.getChannel();
+	public void logChannelActivities(String channelId) {
 		
 		List<Schedule> scheduleList = scheduleService.getAllByChannelId(channelId);
 		List<Trigger> triggerList = triggerService.getAllByChannelId(channelId);
@@ -149,19 +149,14 @@ public class SlackService {
 			return channelList;
 		}
 
-	public void createPoll(Poll poll, List<Choice> choiceList, String channelId) {
-		//preparing and sending to slack
-		HashMap<Integer, String> choicesMap = new HashMap<>();
-		for (Choice choice : choiceList) {
-			choicesMap.put(choice.getChoiceId(), choice.getChoiceValue());
-		}
+	public String createPoll(Poll poll, HashMap<Integer, String> choicesMap, String channelId, Date activeUntil) {
+
 		try {
-			//slackClientApi.createPoll(channelId, poll.getTitle(), choicesMap, poll.getPollUuid());
-			// MISSING DATE
+			String slackTimestamp = slackClientApi.createPoll(channelId, poll.getTitle(), choicesMap, poll.getPollUuid(), activeUntil);
+			return slackTimestamp;
 		}catch (Exception e) {
 			throw new BaseException("Couldn't send poll to slack");
 		}
-		
 	}
 
 	public void createAVote(String userId, Integer choiceId, UUID pollId) {

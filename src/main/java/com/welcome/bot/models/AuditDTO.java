@@ -1,12 +1,14 @@
 package com.welcome.bot.models;
 
+import java.sql.Date;
+
 public class AuditDTO {
 	
 	private Integer auditId;
 	private String cause;
 	private String consequence;
+	private Date createdAt;
 	
-
 	public Integer getAuditId() {
 		return auditId;
 	}
@@ -15,6 +17,9 @@ public class AuditDTO {
 	}
 	public String getConsequence() {
 		return consequence;
+	}
+	public Date getCreatedAt() {
+		return createdAt;
 	}
 	public void setAuditId(Integer auditId) {
 		this.auditId = auditId;
@@ -25,4 +30,8 @@ public class AuditDTO {
 	public void setConsequence(String consequence) {
 		this.consequence = consequence;
 	}
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
 }
