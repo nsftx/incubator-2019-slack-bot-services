@@ -1,9 +1,9 @@
 package com.welcome.bot.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
-
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,6 +14,7 @@ import com.welcome.bot.domain.User;
 import com.welcome.bot.domain.UserSettings;
 import com.welcome.bot.exception.ResourceNotFoundException;
 import com.welcome.bot.exception.base.BaseException;
+import com.welcome.bot.models.MessageDTO;
 import com.welcome.bot.models.UserDTO;
 import com.welcome.bot.payload.ApiResponse;
 import com.welcome.bot.payload.RegistrationRequest;
@@ -188,7 +189,13 @@ public class UserController {
     	        return ResponseEntity.created(location)
     	                .body(new ApiResponse(true, "User registered successfully@"));
     	    }
-
+    
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/{userId}")
+	public UserDTO getUser(@PathVariable Long userId) {
+		return userService.getUser(userId);
+	}
+    
     
 }
 

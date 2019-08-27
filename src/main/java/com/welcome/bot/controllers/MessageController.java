@@ -57,8 +57,8 @@ public class MessageController{
 	//get all messages
     
 	@GetMapping("/api/messages")
-	public Page<MessageDTO> getAllMessages(Pageable pageParam, @CurrentUser UserPrincipal userPrincipal){	
-		return messageService.getAllMessages(pageParam, userPrincipal);	
+	public Page<MessageDTO> getAllMessages(Pageable pageParam){	
+		return messageService.getAllMessages(pageParam);	
 	}
 	
 	//get selected message
@@ -69,8 +69,8 @@ public class MessageController{
 	
 	//create message
 	@PostMapping("/api/messages")
-	public @ResponseBody MessageDTO createMessage(@RequestBody MessageCreateDTO messageModel, @CurrentUser UserPrincipal userPrincipal) {
-		return messageService.createMessage(messageModel, userPrincipal);
+	public @ResponseBody MessageDTO createMessage(@RequestBody MessageCreateDTO messageModel) {
+		return messageService.createMessage(messageModel);
 	}
 	
 	//get messages by title
