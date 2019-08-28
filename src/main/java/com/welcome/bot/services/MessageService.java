@@ -57,15 +57,20 @@ public class MessageService {
 	private ModelMapper modelMapper;
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private AuditService auditService;
 	
 	public Page<MessageDTO> getAllMessages(Pageable pageParam, UserPrincipal userPrincipal){
 		//UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		auditService.setCurrentUser(userPrincipal);
 		
 		User user = userRepository.findById(userPrincipal.getId())
 				.orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
 		
 		List<Message> temp = new ArrayList<>();
 		Page<Message> messagePage = new PageImpl<Message>(temp, pageParam, 0);
+		System.out.println("Message page: " + messagePage);
 		
 		Collection<? extends GrantedAuthority> autorities = userPrincipal.getAuthorities();
 		
@@ -77,8 +82,9 @@ public class MessageService {
 		}
 		
 		//preparing data for mapping
+		
 		List<Message> messagesList = messagePage.getContent();
-
+		System.out.println("Message page: " + messagePage);
 		//mapping message to DTO
 		List<MessageDTO> messageDTOs = convertToListDtos(messagesList);
 
@@ -86,6 +92,8 @@ public class MessageService {
 		Page<MessageDTO> messageDTOPage = new PageImpl<MessageDTO>(messageDTOs, pageParam, messagePage.getTotalElements());
 		return messageDTOPage;
 	}
+	
+	
 	
 	public MessageDTO getMessage(@PathVariable Integer message_id) {
 		Message message = messageRepository.findById(message_id)

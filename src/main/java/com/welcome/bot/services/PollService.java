@@ -123,7 +123,9 @@ public class PollService {
 	}
 	
 	public PollDTO getPoll(Pageable pageable, Integer pollId) {
-		Poll poll = pollRepository.findById(pollId).orElseThrow();
+		Poll poll = pollRepository.findById(pollId)
+				.orElseThrow(() -> new BaseException("Poll not found"));
+		
 		List<Choice> choiceList = choiceRepository.findByPoll(poll); 
 		PollDTO pollDTO = convertToDto(poll, choiceList);
 		return pollDTO;

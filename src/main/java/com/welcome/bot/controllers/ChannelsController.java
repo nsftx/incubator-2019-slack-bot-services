@@ -14,6 +14,7 @@ import com.welcome.bot.services.SlackService;
 import com.welcome.bot.slack.api.model.interactionpayload.Channel;
 
 import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 
 @RestController
 public class ChannelsController {
@@ -27,6 +28,11 @@ public class ChannelsController {
 		//ne radi dok se ne poveze sa slackom
 		return slackService.getChannelsList();
 	    //return slackService.getMockupChannels();
+	}
+	
+	@GetMapping("/api/slack-triggers")
+	public JSONArray getTriggerList() {
+		return slackService.getAllTriggers();
 	}
 	
 	

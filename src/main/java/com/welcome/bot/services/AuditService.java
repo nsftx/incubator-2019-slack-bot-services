@@ -106,7 +106,7 @@ public class AuditService {
 
 	
 	//notification method
-	public List<Audit> getAllSeen(UserPrincipal userPrincipal){
+	public List<Audit> getAllSeen(){
 		//UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	
 		User user = userRepository.findById(userPrincipal.getId())
@@ -145,5 +145,9 @@ public class AuditService {
 	
 	public void setCurrentUser(UserPrincipal userPrincipal) {
 		this.userPrincipal = userPrincipal;
+	}
+	
+	public UserPrincipal getCurrentUser() {
+		return userPrincipal;
 	}
 }

@@ -2,6 +2,7 @@ package com.welcome.bot.services;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +24,7 @@ import com.welcome.bot.exception.base.BaseException;
 import com.welcome.bot.repository.PollRepository;
 import com.welcome.bot.repository.PollResultsRepository;
 import com.welcome.bot.repository.TriggerRepository;
+import com.welcome.bot.slack.api.EventType;
 import com.welcome.bot.slack.api.SlackClientApi;
 import com.welcome.bot.slack.api.customexceptionhandler.SlackApiException;
 import com.welcome.bot.slack.api.model.interactionpayload.Channel;
@@ -74,7 +76,7 @@ public class SlackService {
 		List<Trigger> list = triggerRepository.findAllByTriggerTypeAndChannelId(eventType, channelId);
 		for (Trigger trigger : list) {
 			try {
-				slackClientApi.sendMessage(trigger.getChannel(), trigger.getMessage().getText());
+				slackClientApi.sendMessage(trigger.getChannelId(), trigger.getMessage().getText());
 			} catch (SlackApiException e) {
 				// dont forget to throw your exception
 				e.printStackTrace();
@@ -148,6 +150,24 @@ public class SlackService {
 			}
 			return channelList;
 		}
+	
+	public JSONArray getAllTriggers() {
+//		JSONArray triggerArray = new JSONArray();
+//		
+//		List<Enum> enumValues = Arrays.asList(EventType.values());
+//
+//		JSONObject triggerJson = new JSONObject();
+//		triggerJson.put("triggers", enumValues);
+		
+		JSONArray triggerArray = new JSONArray();
+
+		JSONObject obj = new JSONObject();
+		obj.put("type", "app_mention");
+		
+		triggerArray.add(obj);
+		
+		return triggerArray;
+	}
 
 	public String createPoll(Poll poll, HashMap<Integer, String> choicesMap, String channelId, Date activeUntil) {
 
