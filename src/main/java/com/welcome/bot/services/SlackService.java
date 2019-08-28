@@ -76,7 +76,7 @@ public class SlackService {
 		List<Trigger> list = triggerRepository.findAllByTriggerTypeAndChannelId(eventType, channelId);
 		for (Trigger trigger : list) {
 			try {
-				slackClientApi.sendMessage(trigger.getChannel(), trigger.getMessage().getText());
+				slackClientApi.sendMessage(trigger.getChannelId(), trigger.getMessage().getText());
 			} catch (SlackApiException e) {
 				// dont forget to throw your exception
 				e.printStackTrace();
