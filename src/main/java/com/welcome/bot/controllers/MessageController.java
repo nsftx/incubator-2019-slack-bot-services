@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,10 +56,10 @@ public class MessageController{
 
 	
 	//get all messages
-    
+    	@PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
 	@GetMapping("/api/messages")
-	public Page<MessageDTO> getAllMessages(Pageable pageParam){	
-		return messageService.getAllMessages(pageParam);	
+	public Page<MessageDTO> getAllMessages(Pageable pageParam, @CurrentUser UserPrincipal userPrincipal){	
+		return messageService.getAllMessages(pageParam, userPrincipal);	
 	}
 	
 	//get selected message
@@ -69,8 +70,8 @@ public class MessageController{
 	
 	//create message
 	@PostMapping("/api/messages")
-	public @ResponseBody MessageDTO createMessage(@RequestBody MessageCreateDTO messageModel) {
-		return messageService.createMessage(messageModel);
+	public @ResponseBody MessageDTO createMessage(@RequestBody MessageCreateDTO messageModel, @CurrentUser UserPrincipal userPrincipal) {
+		return messageService.createMessage(messageModel, userPrincipal);
 	}
 	
 	//get messages by title

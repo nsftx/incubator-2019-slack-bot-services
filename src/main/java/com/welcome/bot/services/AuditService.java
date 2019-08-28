@@ -38,6 +38,8 @@ public class AuditService {
 	
 	UserRepository userRepository;
 	
+	private UserPrincipal userPrincipal;
+	
 	public static int NEW_LOGS_COUNT = 0;
 	
 	@Autowired
@@ -91,22 +93,24 @@ public class AuditService {
 	
 	//notification method
 	public List<Audit> getAllNotSeen(){
-		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		//UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		User user = userRepository.findById(principal.getId())
-				.orElseThrow(() -> new UserNotFoundException(principal.getId()));
+		User user = userRepository.findById(userPrincipal.getId())
+				.orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
 		
 		List<Audit> notSeenList = auditRepository.findAllByUserAndSeen(user, false);
 		
 		return notSeenList;
 	}
 	
+
+	
 	//notification method
-	public List<Audit> getAllSeen(){
-		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		
-		User user = userRepository.findById(principal.getId())
-				.orElseThrow(() -> new UserNotFoundException(principal.getId()));
+	public List<Audit> getAllSeen(UserPrincipal userPrincipal){
+		//UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	
+		User user = userRepository.findById(userPrincipal.getId())
+				.orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
 		
 		List<Audit> seenList = auditRepository.findAllByUserAndSeen(user, true);
 		
@@ -137,5 +141,9 @@ public class AuditService {
 			Audit audit = new Audit(cause, consequence, user);	 
 			auditRepository.save(audit);
 		}
+	}
+	
+	public void setCurrentUser(UserPrincipal userPrincipal) {
+		this.userPrincipal = userPrincipal;
 	}
 }

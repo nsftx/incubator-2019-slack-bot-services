@@ -30,7 +30,8 @@ public class AuditController {
 	}
 	
 	@GetMapping(path = "/api/logs/new-logs-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public Flux<ServerSentEvent<String>> emitEvents(){
+	public Flux<ServerSentEvent<String>> emitEvents(@CurrentUser UserPrincipal userPrincipal){
+		auditService.setCurrentUser(userPrincipal);
 		return Flux.interval(Duration.ofMinutes(3))
 			      .map(sequence -> ServerSentEvent.<String> builder()
 			        .id(String.valueOf(sequence))
