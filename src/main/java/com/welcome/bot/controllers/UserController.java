@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
+import org.springframework.web.bind.annotation.DeleteMapping;
 import com.welcome.bot.domain.User;
 import com.welcome.bot.domain.UserSettings;
 import com.welcome.bot.exception.ResourceNotFoundException;
@@ -107,9 +107,10 @@ public class UserController {
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
 	}
 
-	@GetMapping("/delete")
+	@DeleteMapping("/delete/{user_id}")
 	@PreAuthorize("hasRole('ADMIN')")
-	public void deleteUser(@RequestBody User user) {
+	public void deleteUser(@PathVariable Long user_id) {
+		User user=userRepository.findById(user_id).orElseThrow(() -> new ResourceNotFoundException("User", "id", user_id));
 		userRepository.delete(user);
 
 	}
