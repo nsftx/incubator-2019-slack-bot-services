@@ -29,7 +29,6 @@ public class AuditController {
 		return auditService.getAllLogs(pageable, userPrincipal);
 	}
 	
-	// SSE TEST
 	@GetMapping(path = "/api/logs/new-logs-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<ServerSentEvent<String>> emitEvents(){
 		return Flux.interval(Duration.ofMinutes(3))

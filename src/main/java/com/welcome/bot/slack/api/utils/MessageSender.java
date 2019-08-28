@@ -116,7 +116,6 @@ public class MessageSender {
 			while ((responseLine = br.readLine()) != null) {
 				responseBuilder.append(responseLine.trim());
 			}
-			// to check response, print responseBuilder here
 			response = new JSONObject(responseBuilder.toString());
 			br.close();
 		} catch (IOException e) {

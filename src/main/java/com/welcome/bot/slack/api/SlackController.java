@@ -20,7 +20,7 @@ public class SlackController {
 	@Autowired
 	SlackInteractionService slackInteractionService;
 
-	@PostMapping("/api/slimp/incoming-event-hook")
+	@PostMapping("/slack-api/incoming-event-hook")
 	@ResponseStatus(HttpStatus.OK)
 	public @ResponseBody String eventHandler(@RequestBody EventPayload event) {
 		if(event.getType().equals("url_verification")) {
@@ -31,37 +31,37 @@ public class SlackController {
 		}
 	}
 
-	@PostMapping("/api/slimp/incoming-command-about")
+	@PostMapping("/slack-api/incoming-command-about")
 	@ResponseStatus(HttpStatus.OK)
 	public @ResponseBody String commandAbout() {
 		return slackCommandService.handleCommand("about");
 	}
 
-	@PostMapping("/api/slimp/incoming-command-benefits")
+	@PostMapping("/slack-api/incoming-command-benefits")
 	@ResponseStatus(HttpStatus.OK)
 	public @ResponseBody String commandBenefits() {
 		return slackCommandService.handleCommand("benefits");
 	}
 
-	@PostMapping("/api/slimp/incoming-command-work")
+	@PostMapping("/slack-api/incoming-command-work")
 	@ResponseStatus(HttpStatus.OK)
 	public @ResponseBody String commandWork() {
 		return slackCommandService.handleCommand("work");
 	}
 
-	@PostMapping("/api/slimp/incoming-command-docs")
+	@PostMapping("/slack-api/incoming-command-docs")
 	@ResponseStatus(HttpStatus.OK)
 	public @ResponseBody String commandDocs() {
 		return slackCommandService.handleCommand("docs");
 	}
 
-	@PostMapping("/api/slimp/incoming-command-community")
+	@PostMapping("/slack-api/incoming-command-community")
 	@ResponseStatus(HttpStatus.OK)
 	public @ResponseBody String commandCommunity() {
 		return slackCommandService.handleCommand("community");
 	}
 
-	@PostMapping("/api/slimp/incoming-action-interaction")
+	@PostMapping("/slack-api/incoming-action-interaction")
 	@ResponseStatus(HttpStatus.OK)
 	public void interactionHandler(@RequestBody String interactionRequestPayload) {
 		slackInteractionService.handleInteraction(interactionRequestPayload);

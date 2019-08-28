@@ -301,16 +301,4 @@ public class SlackClientService implements SlackClientApi {
 		}
 		return allChannels;
 	}
-	
-	//test
-	@EventListener
-		public void handleEvent(SlackEventTriggeredEvent event) {
-			PublishEventMessage eventData = event.getEventData();
-			String channel = eventData.getChannel();
-			try {
-				sendMessage(channel, "hi");
-			} catch (SlackApiException e) {
-				e.printStackTrace();
-			}
-	}
 }
