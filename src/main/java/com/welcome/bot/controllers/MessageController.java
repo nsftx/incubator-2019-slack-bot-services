@@ -56,7 +56,7 @@ public class MessageController{
 
 	
 	//get all messages
-    
+    	@PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
 	@GetMapping("/api/messages")
 	public Page<MessageDTO> getAllMessages(Pageable pageParam, @CurrentUser UserPrincipal userPrincipal){	
 		return messageService.getAllMessages(pageParam, userPrincipal);	
