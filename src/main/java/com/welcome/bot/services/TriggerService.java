@@ -43,32 +43,26 @@ import com.welcome.bot.security.UserPrincipal;
 @Transactional
 public class TriggerService {
 
+	@Autowired
 	TriggerRepository triggerRepository;
 	
+	@Autowired
 	MessageRepository messageRepository;
 	
+	@Autowired
 	ModelMapper modelMapper;
 	
+	@Autowired
 	UserRepository userRepository;
 	
+	@Autowired
 	MessageService messageService;
 	
+	@Autowired
 	ChannelService channelService;
 	
-	@Autowired
-	public TriggerService(final TriggerRepository triggerRepository,
-			final MessageRepository messageRepository,
-			final ModelMapper modelMapper,
-			final UserRepository userRepository,
-			final MessageService messageService,
-			final ChannelService channelService) {
-		this.triggerRepository = triggerRepository;
-		this.messageRepository = messageRepository;
-		this.modelMapper = modelMapper;
-		this.userRepository = userRepository;
-		this.messageService = messageService;
-		this.channelService = channelService;
-	}
+	
+
 
 	//get trigger
 	public TriggerDTO getTrigger(Integer triggerId) {
