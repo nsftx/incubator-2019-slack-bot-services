@@ -165,7 +165,7 @@ public class SlackService {
 		JSONObject obj = new JSONObject();
 		obj.put("type", "app_mention");
 		triggerArray.add(obj);
-		
+		obj = new JSONObject();
 		obj.put("type", "member_joined_channel");
 		triggerArray.add(obj);
 		
