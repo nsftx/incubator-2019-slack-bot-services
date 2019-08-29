@@ -70,7 +70,7 @@ public class PayloadGenerator {
 		List<PayloadBlock> blocks = new ArrayList<>();
 
 		boolean imageExists = false;
-		
+
 		if(text.contains("<") && text.contains(">")) {
 			text = convertLink(text);
 		}
@@ -254,7 +254,7 @@ public class PayloadGenerator {
 		extractedText = extractedTextPartOne + " " + extractedTextPartTwo;
 		return extractedText;
 	}
-	
+
 	private String convertLink(String text) {
 		String formatedText = "";
 		if(text.contains("<") && text.contains(">")) {
