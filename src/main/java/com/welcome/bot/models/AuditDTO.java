@@ -8,6 +8,7 @@ public class AuditDTO {
 	private String cause;
 	private String consequence;
 	private Date createdAt;
+	private boolean seen;
 	
 	public Integer getAuditId() {
 		return auditId;
@@ -21,6 +22,9 @@ public class AuditDTO {
 	public Date getCreatedAt() {
 		return createdAt;
 	}
+	public boolean isSeen() {
+		return seen;
+	}
 	public void setAuditId(Integer auditId) {
 		this.auditId = auditId;
 	}
@@ -33,5 +37,10 @@ public class AuditDTO {
 	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
 	}
+	public void setSeen(boolean seen) {
+		this.seen = seen;
+	}
+	
+
 
 }
