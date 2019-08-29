@@ -62,8 +62,6 @@ public class TriggerService {
 	ChannelService channelService;
 	
 	
-
-
 	//get trigger
 	public TriggerDTO getTrigger(Integer triggerId) {
 		Trigger trigger = triggerRepository.findById(triggerId)

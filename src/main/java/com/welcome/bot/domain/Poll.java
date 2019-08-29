@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Type;
@@ -30,7 +31,10 @@ public class Poll {
 	@Type(type="org.hibernate.type.UUIDCharType")
 	private UUID pollUuid;
 	
-	public Poll(String title, String channelId, String channel, Date activeUntil) {
+	@ManyToOne
+	private User user;
+	
+	public Poll(String title, String channelId, String channel, Date activeUntil, User user) {
 		this.title = title;
 		this.channelId = channelId;
 		this.channel = channel;
@@ -39,6 +43,7 @@ public class Poll {
 		this.pollUuid = UUID.randomUUID();
 		this.deleted = false;
 		this.activeUntil = activeUntil;
+		this.user = user;
 	}
 	
 	protected Poll() {
@@ -77,6 +82,10 @@ public class Poll {
 		return slackTimestamp;
 	}
 
+	public User getUser() {
+		return user;
+	}
+	
 	public boolean isDeleted() {
 		return deleted;
 	}
@@ -124,5 +133,7 @@ public class Poll {
 	public void setPollUuid(UUID pollUuid) {
 		this.pollUuid = pollUuid;
 	}
-
+	public void setUser(User user) {
+		this.user = user;
+	}
 }
