@@ -107,7 +107,7 @@ public class UserController {
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
 	}
 
-	@DeleteMapping("/delete/{user_id}")
+	@DeleteMapping("/{user_id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	public void deleteUser(@PathVariable Long user_id) {
 		User user=userRepository.findById(user_id).orElseThrow(() -> new ResourceNotFoundException("User", "id", user_id));
