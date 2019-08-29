@@ -152,14 +152,7 @@ public class SlackService {
 			return channelList;
 		}
 	
-	public JSONArray getAllSlackTriggers() {
-//		JSONArray triggerArray = new JSONArray();
-//		
-//		List<Enum> enumValues = Arrays.asList(EventType.values());
-//
-//		JSONObject triggerJson = new JSONObject();
-//		triggerJson.put("triggers", enumValues);
-		
+	public JSONArray getAllSlackTriggers() {		
 		JSONArray triggerArray = new JSONArray();
 
 		JSONObject obj = new JSONObject();

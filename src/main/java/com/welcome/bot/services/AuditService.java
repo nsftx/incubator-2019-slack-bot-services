@@ -40,6 +40,8 @@ public class AuditService {
 	
 	private UserPrincipal userPrincipal;
 	
+	public static int USER_ID = 0;
+	
 	public static int NEW_LOGS_COUNT = 0;
 	
 	@Autowired
@@ -93,10 +95,9 @@ public class AuditService {
 	
 	//notification method
 	public List<Audit> getAllNotSeen(){
-		//UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		User user = userRepository.findById(userPrincipal.getId())
-				.orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
+		User user = userRepository.findById((long)USER_ID)
+				.orElseThrow(() -> new UserNotFoundException((long)USER_ID));
 		
 		List<Audit> notSeenList = auditRepository.findAllByUserAndSeen(user, false);
 		
