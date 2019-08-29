@@ -121,7 +121,7 @@ public class AuditService {
 	public void createScheduleLog(List<Schedule> scheduleList) {
 		String channelName = scheduleList.get(0).getChannel().substring(1);
 		
-		String cause = "because channel " + channelName + " is deleted";
+		String cause = "Channel " + channelName + " is deleted";
 	
 		for (Schedule schedule : scheduleList) {
 			String consequence = "Schedule with id: " + schedule.getScheduleId() + " and text: '" + schedule.getMessage().getText() + "' is deleted ";
@@ -134,7 +134,7 @@ public class AuditService {
 	@Transactional(propagation = Propagation.MANDATORY)
 	public void createTriggerLog(List<Trigger> triggerList) {
 		String channelName = triggerList.get(0).getChannel();
-		String cause = "because channel " + channelName + "is deleted";
+		String cause = "Channel " + channelName + "is deleted";
 		for (Trigger trigger : triggerList) {
 			String consequence = "Trigger with id: " + trigger.getTriggerId() + " and text: " + trigger.getMessage().getText() + "is deleted ";
 			User user = trigger.getUser();

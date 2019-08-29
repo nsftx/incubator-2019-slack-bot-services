@@ -23,6 +23,8 @@ public interface TriggerRepository extends PagingAndSortingRepository<Trigger, I
 	
 	public List<Trigger> findAllByTriggerTypeAndChannelId(String triggerType, String channelId);
 	
+	public List<Trigger> findAllByTriggerTypeAndChannelIdAndActive(String triggerType, String channelId, boolean active);
+	
 	public List<Trigger> findAllByTriggerTypeAndChannelAndActive(String triggerType, String channel, boolean active);
 	
 	public Page<Trigger> findAllByDeleted(Pageable pageParam, boolean deleted);

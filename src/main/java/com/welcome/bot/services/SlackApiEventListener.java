@@ -89,12 +89,9 @@ public class SlackApiEventListener {
 		
 		switch (eventType.toString()) {
 		case "app_mention":
+		case "member_joined_channel":
 			System.out.println(eventType + " " + channelId);
 			slackService.triggerApp(eventType, channelId);
-			break;
-		case "member_joined_channel":
-		case "member_left_channel":
-			//slackService.triggerApp(eventType, channel, user);
 			break;
 		case "channel_deleted":
 			System.out.println(eventType + " " + channelId);

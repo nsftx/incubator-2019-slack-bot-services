@@ -323,6 +323,7 @@ public class ScheduleService {
 		boolean status = false;
 		if(slackMessageId != null && !slackMessageId.isEmpty()) {
 			try {
+				System.out.println(":::::::" + schedule.getChannel() + ":::." + schedule.getChannel());
 				slackClientApi.deleteSchedule(schedule.getChannel(), schedule.getSlackScheduleId());
 			} catch (SlackApiException e) {
 				throw new BaseException(e.getMessage());

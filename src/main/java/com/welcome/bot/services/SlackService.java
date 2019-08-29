@@ -74,7 +74,7 @@ public class SlackService {
 	}
 
 	public void triggerApp(String eventType, String channelId) {
-		List<Trigger> list = triggerRepository.findAllByTriggerTypeAndChannelId(eventType, channelId);
+		List<Trigger> list = triggerRepository.findAllByTriggerTypeAndChannelIdAndActive(eventType, channelId, true);
 		for (Trigger trigger : list) {
 			try {
 				slackClientApi.sendMessage(trigger.getChannelId(), trigger.getMessage().getText());
@@ -164,7 +164,9 @@ public class SlackService {
 
 		JSONObject obj = new JSONObject();
 		obj.put("type", "app_mention");
+		triggerArray.add(obj);
 		
+		obj.put("type", "member_joined_channel");
 		triggerArray.add(obj);
 		
 		return triggerArray;
