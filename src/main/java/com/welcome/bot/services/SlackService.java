@@ -21,6 +21,7 @@ import com.welcome.bot.domain.PollResult;
 import com.welcome.bot.domain.Schedule;
 import com.welcome.bot.domain.Trigger;
 import com.welcome.bot.exception.base.BaseException;
+import com.welcome.bot.exception.slackCommunication.SlackCommunicationException;
 import com.welcome.bot.repository.PollRepository;
 import com.welcome.bot.repository.PollResultsRepository;
 import com.welcome.bot.repository.TriggerRepository;
@@ -151,7 +152,7 @@ public class SlackService {
 			return channelList;
 		}
 	
-	public JSONArray getAllTriggers() {
+	public JSONArray getAllSlackTriggers() {
 //		JSONArray triggerArray = new JSONArray();
 //		
 //		List<Enum> enumValues = Arrays.asList(EventType.values());
@@ -175,7 +176,7 @@ public class SlackService {
 			String slackTimestamp = slackClientApi.createPoll(channelId, poll.getTitle(), choicesMap, poll.getPollUuid(), activeUntil);
 			return slackTimestamp;
 		}catch (Exception e) {
-			throw new BaseException("Couldn't send poll to slack");
+			throw new SlackCommunicationException(e);
 		}
 	}
 
@@ -189,7 +190,6 @@ public class SlackService {
 		}
 		
 		pollResultsRepository.save(pollResult);
-		
 	}
 }	
 

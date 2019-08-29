@@ -2,6 +2,7 @@ package com.welcome.bot.services;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -15,24 +16,29 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.welcome.bot.domain.Choice;
 import com.welcome.bot.domain.Poll;
 import com.welcome.bot.domain.PollResult;
+import com.welcome.bot.domain.User;
 import com.welcome.bot.exception.base.BaseException;
+import com.welcome.bot.exception.user.UserNotFoundException;
 import com.welcome.bot.models.ChoiceDTO;
 import com.welcome.bot.models.PollCreateDTO;
 import com.welcome.bot.models.PollDTO;
+import com.welcome.bot.models.UserDTO;
 import com.welcome.bot.repository.ChoiceRepository;
 import com.welcome.bot.repository.PollRepository;
 import com.welcome.bot.repository.PollResultsRepository;
+import com.welcome.bot.repository.UserRepository;
 import com.welcome.bot.security.UserPrincipal;
 import com.welcome.bot.slack.api.SlackClientApi;
 import com.welcome.bot.slack.api.customexceptionhandler.SlackApiException;
 
 @Service
-@Transactional
 public class PollService {
 	
 	PollRepository pollRepository;
@@ -43,6 +49,7 @@ public class PollService {
 	SlackClientApi slackClientApi;
 	ChannelService channelService;
 	SlackService slackService;
+	UserRepository userRepository;
 	
 	@Autowired
 	public PollService(PollRepository pollRepository, 
@@ -52,7 +59,8 @@ public class PollService {
 			PollResultsRepository pollResultsRepository,
 			SlackClientApi slackClientApi, 
 			ChannelService channelService, 
-			SlackService slackService) {
+			SlackService slackService,
+			UserRepository userRepository) {
 		this.pollRepository = pollRepository;
 		this.modelMapper = modelMapper;
 		this.choiceService = choiceService;
@@ -61,18 +69,20 @@ public class PollService {
 		this.slackClientApi = slackClientApi;
 		this.channelService = channelService;
 		this.slackService = slackService;
+		this.userRepository = userRepository;
 	}
 	
 	//@Transactional(propagation = Propagation.MANDATORY)
-	public PollDTO createPoll(PollCreateDTO pollModel) {
+	public PollDTO createPoll(PollCreateDTO pollModel, UserPrincipal userPrincipal) {
 		String channelName = channelService.getChannelById(pollModel.getChannelId());
 		
-		Poll poll = new Poll(pollModel.getTitle(), pollModel.getChannelId(), channelName, pollModel.getActiveUntil());
-
-
+		User user = userRepository.findById(userPrincipal.getId())
+				.orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
+		
+		Poll poll = new Poll(pollModel.getTitle(), pollModel.getChannelId(), channelName, pollModel.getActiveUntil(), user);
+		
 		List<Choice> choiceList = modelMapper.map(pollModel.getChoiceList(), new TypeToken<List<Choice>>(){}.getType());
 
-		
 		HashMap<Integer, String> choicesMap = new HashMap<Integer, String>();
 		int index = 1;
 		for (Choice choice : choiceList) {
@@ -93,8 +103,22 @@ public class PollService {
 		return pollDTO;
 	}
 
-	public Page<PollDTO> getAllPolls(Pageable pageable) {
-		Page<Poll> pollPage = pollRepository.findAllByDeleted(pageable, false);
+	public Page<PollDTO> getAllPolls(Pageable pageable, UserPrincipal userPrincipal) {
+		
+		User user = userRepository.findById(userPrincipal.getId())
+				.orElseThrow(() -> new UserNotFoundException(userPrincipal.getId()));
+		
+	
+		Page<Poll> pollPage = null;
+		Collection<? extends GrantedAuthority> autorities = userPrincipal.getAuthorities();
+		
+		if(autorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+			pollPage = pollRepository.findAllByDeleted(pageable, false);
+		}
+		else if(autorities.contains(new SimpleGrantedAuthority("ROLE_USER"))) {
+			pollPage = pollRepository.findAllByDeleted(pageable, user, false);
+		}
+		
 		
 		List<Poll> pollList = pollPage.getContent();
 		
@@ -102,9 +126,6 @@ public class PollService {
 		for (Poll poll : pollList) {
 			
 			List<Choice> choiceList = choiceRepository.findByPoll(poll);
-			
-			//mockup votes
-			//mockupVotes(choiceList);
 			
 			PollDTO pollDTO = convertToDto(poll, choiceList);
 			pollDtoList.add(pollDTO);
@@ -117,6 +138,7 @@ public class PollService {
 
 	private PollDTO convertToDto(Poll poll, List<Choice> choiceList) {
 		PollDTO pollDTO = modelMapper.map(poll, PollDTO.class);
+		pollDTO.setUserDTO(modelMapper.map(poll.getUser(), UserDTO.class));
 		List<ChoiceDTO> choiceDTOs = choiceService.convertToChoiceDTOs(choiceList);
 		pollDTO.setChoiceList(choiceDTOs);
 		return pollDTO;
@@ -131,18 +153,18 @@ public class PollService {
 		return pollDTO;
 	}
 	
-	public void mockupVotes(List<Choice> choiceList) {
-		//mockup votes
-	    Random rand = new Random();
-	    UUID pollUUID = choiceList.get(0).getPoll().getPollUuid();
-	    int numberOfElements = 25;
-	    for (int i = 0; i < numberOfElements; i++) {
-	        int randomIndex = rand.nextInt(choiceList.size());
-	        Choice randomElement = choiceList.get(randomIndex);
-	        PollResult pollResult = new PollResult(null, randomElement.getChoiceId(), pollUUID);
-	        pollResultsRepository.save(pollResult);
-	    }
-	}
+//	public void mockupVotes(List<Choice> choiceList) {
+//		//mockup votes
+//	    Random rand = new Random();
+//	    UUID pollUUID = choiceList.get(0).getPoll().getPollUuid();
+//	    int numberOfElements = 25;
+//	    for (int i = 0; i < numberOfElements; i++) {
+//	        int randomIndex = rand.nextInt(choiceList.size());
+//	        Choice randomElement = choiceList.get(randomIndex);
+//	        PollResult pollResult = new PollResult(null, randomElement.getChoiceId(), pollUUID);
+//	        pollResultsRepository.save(pollResult);
+//	    }
+//	}
 	
 	//ovdje ce trebat transactional
 	public ResponseEntity<Object> deletePoll(Pageable pageable, Integer pollId) {

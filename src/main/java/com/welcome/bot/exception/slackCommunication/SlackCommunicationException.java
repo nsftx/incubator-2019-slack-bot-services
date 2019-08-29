@@ -11,6 +11,9 @@ public class SlackCommunicationException extends BaseException{
 	public SlackCommunicationException(String message, HttpStatus status) {
 		super("Somethings wrong with Slack communication: ", HttpStatus.BAD_REQUEST);
 	}
+	public SlackCommunicationException(Throwable cause) {
+		super("Somethings wrong with Slack communication: " + cause.getMessage(), HttpStatus.BAD_REQUEST);
+	}
 
 	public SlackCommunicationException(String message, Throwable cause) {
 		super(message, cause);

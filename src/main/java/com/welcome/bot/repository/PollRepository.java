@@ -10,6 +10,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import com.welcome.bot.domain.Poll;
+import com.welcome.bot.domain.User;
 
 @Repository
 public interface PollRepository extends PagingAndSortingRepository<Poll, Integer>{
@@ -18,5 +19,7 @@ public interface PollRepository extends PagingAndSortingRepository<Poll, Integer
 	List<Poll> findAllByActiveUntilLessThan(Date date);
 	
 	Page<Poll> findAllByDeleted(Pageable pageable, boolean deleted);
+	
+	Page<Poll> findAllByDeleted(Pageable pageable, User user, boolean deleted);
 	
 }

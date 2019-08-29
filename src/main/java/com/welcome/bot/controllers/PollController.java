@@ -15,6 +15,8 @@ import com.welcome.bot.domain.Poll;
 import com.welcome.bot.models.MessageDTO;
 import com.welcome.bot.models.PollCreateDTO;
 import com.welcome.bot.models.PollDTO;
+import com.welcome.bot.security.CurrentUser;
+import com.welcome.bot.security.UserPrincipal;
 import com.welcome.bot.services.PollService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,14 +29,15 @@ public class PollController {
 	PollService pollService;
 	
 	@PostMapping("/api/polls")
-	public @ResponseBody PollDTO createMessage(@RequestBody PollCreateDTO pollModel) {
-		return pollService.createPoll(pollModel);
+	public @ResponseBody PollDTO createMessage(@RequestBody PollCreateDTO pollModel, @CurrentUser UserPrincipal userPrincipal) {
+		return pollService.createPoll(pollModel, userPrincipal);
 	}
 	
 	@GetMapping("/api/polls")
-	public @ResponseBody Page<PollDTO> getAllPolls(Pageable pageable) {
-		return pollService.getAllPolls(pageable);
+	public @ResponseBody Page<PollDTO> getAllPolls(Pageable pageable, @CurrentUser UserPrincipal userPrincipal) {
+		return pollService.getAllPolls(pageable, userPrincipal);
 	}
+	
 	@GetMapping("/api/polls/{pollId}")
 	public @ResponseBody PollDTO getPoll(Pageable pageable, @PathVariable Integer pollId) {
 		return pollService.getPoll(pageable, pollId);
